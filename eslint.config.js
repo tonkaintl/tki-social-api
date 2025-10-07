@@ -13,6 +13,7 @@ export default [
         Buffer: 'readonly',
         clearTimeout: 'readonly',
         console: 'readonly',
+        fetch: 'readonly',
         global: 'readonly',
         process: 'readonly',
         setTimeout: 'readonly',
