@@ -40,7 +40,7 @@ app.get('/health', (req, res) => {
 
 // Application routes
 app.use('/social', socialRoutes);
-app.use('/social/webhooks', webhooksRoutes);
+app.use('/webhooks', webhooksRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {
