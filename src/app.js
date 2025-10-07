@@ -42,7 +42,8 @@ app.get('/health', (req, res) => {
 app.get('/privacy', (req, res) => {
   res.json({
     contact: 'stephen@tonkaintl.com',
-    message: 'This service processes social media data for authorized applications only.',
+    message:
+      'This service processes social media data for authorized applications only.',
     title: 'TKI Social API Privacy Policy',
     updated: new Date().toISOString(),
   });
@@ -51,13 +52,13 @@ app.get('/privacy', (req, res) => {
 // Data deletion endpoint for Facebook compliance (no auth required)
 app.post('/data-deletion', (req, res) => {
   const { signed_request } = req.body;
-  
+
   // Log the deletion request for compliance
   logger.info('Data deletion request received', {
     signed_request,
     timestamp: new Date().toISOString(),
   });
-  
+
   // Return confirmation URL as required by Facebook
   res.json({
     confirmation_code: `DEL_${Date.now()}`,
