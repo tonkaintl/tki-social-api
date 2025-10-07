@@ -206,6 +206,56 @@ export class MetaAdapter extends SocialAdapter {
     }
   }
 
+  async handleOAuthCallback(params, req) {
+    try {
+      const { code } = params;
+
+      // Exchange authorization code for user access token
+      const tokenResponse = await this.client.post('/oauth/access_token', {
+        client_id: this.config.META_APP_ID,
+        client_secret: this.config.META_APP_SECRET,
+        code,
+        redirect_uri: `${req.protocol}://${req.get('host')}/webhooks/facebook/callback`,
+      });
+
+      // Get user's pages to find page access tokens
+      const pagesResponse = await this.client.get('/me/accounts', {
+        access_token: tokenResponse.access_token,
+      });
+
+      const pages =
+        pagesResponse.data?.map(page => ({
+          id: page.id,
+          name: page.name,
+          page_token: page.access_token,
+        })) || [];
+
+      logger.info('Meta OAuth callback completed', {
+        pages_count: pages.length,
+        user_token: tokenResponse.access_token.substring(0, 20) + '...',
+      });
+
+      return {
+        message: 'Facebook OAuth completed successfully',
+        pages: pages.map(page => ({
+          ...page,
+          page_token: page.page_token.substring(0, 20) + '...',
+        })),
+        user_token: tokenResponse.access_token.substring(0, 20) + '...',
+      };
+    } catch (error) {
+      logger.error('Failed to process Meta OAuth callback', {
+        error: error.message,
+      });
+
+      throw new ApiError(
+        ERROR_CODES.PROVIDER_REQUEST_FAILED,
+        `Failed to process Meta OAuth callback: ${error.message}`,
+        500
+      );
+    }
+  }
+
   async handleWebhook(req) {
     try {
       // Handle GET request for webhook verification

@@ -38,43 +38,6 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Privacy policy endpoint (no auth required)
-app.get('/privacy', (req, res) => {
-  res.json({
-    contact: 'stephen@tonkaintl.com',
-    message:
-      'This service processes social media data for authorized applications only.',
-    title: 'TKI Social API Privacy Policy',
-    updated: new Date().toISOString(),
-  });
-});
-
-// Data deletion endpoint for Facebook compliance (no auth required)
-app.post('/data-deletion', (req, res) => {
-  const { signed_request } = req.body;
-
-  // Log the deletion request for compliance
-  logger.info('Data deletion request received', {
-    signed_request,
-    timestamp: new Date().toISOString(),
-  });
-
-  // Return confirmation URL as required by Facebook
-  res.json({
-    confirmation_code: `DEL_${Date.now()}`,
-    url: `https://api.social.tkibinder.com/data-deletion/status?id=${Date.now()}`,
-  });
-});
-
-// Data deletion status endpoint (no auth required)
-app.get('/data-deletion/status', (req, res) => {
-  res.json({
-    message: 'Data deletion request has been processed.',
-    status: 'completed',
-    timestamp: new Date().toISOString(),
-  });
-});
-
 // Application routes
 app.use('/social', socialRoutes);
 app.use('/webhooks', webhooksRoutes);
