@@ -1,6 +1,7 @@
 import express from 'express';
 
 import {
+  handleFacebookCallback,
   handleLinkedInWebhook,
   handleMetaWebhook,
   verifyLinkedInWebhook,
@@ -26,6 +27,11 @@ router.post('/meta', express.json(), handleMetaWebhook);
 // ----------------------------------------------------------------------------
 router.get('/linkedin', verifyLinkedInWebhook);
 router.post('/linkedin', express.json(), handleLinkedInWebhook);
+
+// ----------------------------------------------------------------------------
+// Facebook OAuth Callback
+// ----------------------------------------------------------------------------
+router.get('/facebook/callback', handleFacebookCallback);
 
 // ----------------------------------------------------------------------------
 export default router;
