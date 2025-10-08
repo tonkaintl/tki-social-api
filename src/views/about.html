@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About - TKI Social API</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
+          Cantarell, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .container {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        max-width: 800px;
+        padding: 40px;
+      }
+
+      h1 {
+        color: #667eea;
+        margin-bottom: 20px;
+        font-size: 2.5em;
+      }
+
+      h2 {
+        color: #764ba2;
+        margin-top: 30px;
+        margin-bottom: 15px;
+        font-size: 1.5em;
+      }
+
+      p {
+        margin-bottom: 15px;
+        color: #555;
+      }
+
+      ul {
+        margin-bottom: 15px;
+        margin-left: 20px;
+      }
+
+      li {
+        margin-bottom: 8px;
+        color: #555;
+      }
+
+      .info-box {
+        background: #f7fafc;
+        border-left: 4px solid #667eea;
+        padding: 20px;
+        margin: 20px 0;
+        border-radius: 5px;
+      }
+
+      footer {
+        margin-top: 40px;
+        padding-top: 20px;
+        border-top: 1px solid #e2e8f0;
+        text-align: center;
+        color: #718096;
+        font-size: 0.9em;
+      }
+
+      a {
+        color: #667eea;
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>About TKI Social API</h1>
+
+      <h2>Purpose</h2>
+      <p>
+        TKI Social API is an internal microservice designed to simplify social
+        media integration for Tonka International applications. It provides a
+        unified interface for posting content, fetching posts, and managing
+        interactions across multiple social media platforms.
+      </p>
+
+      <h2>Architecture</h2>
+      <p>
+        The service uses a modular adapter pattern to isolate platform-specific
+        implementations:
+      </p>
+      <ul>
+        <li>
+          <strong>Meta Adapter:</strong> Handles Facebook and Instagram via
+          Graph API
+        </li>
+        <li>
+          <strong>LinkedIn Adapter:</strong> Manages professional networking
+          posts and engagement
+        </li>
+        <li>
+          <strong>X Adapter:</strong> Interfaces with Twitter/X for
+          microblogging
+        </li>
+        <li>
+          <strong>Reddit Adapter:</strong> Enables community-based content
+          sharing
+        </li>
+      </ul>
+
+      <h2>Security</h2>
+      <div class="info-box">
+        <p>
+          This API is for internal use only and requires authentication via the
+          <code>x-internal-secret</code> header. All requests are rate-limited
+          and logged for security and monitoring purposes.
+        </p>
+      </div>
+
+      <h2>Technology Stack</h2>
+      <ul>
+        <li><strong>Runtime:</strong> Node.js</li>
+        <li><strong>Framework:</strong> Express.js</li>
+        <li><strong>Logging:</strong> Pino</li>
+        <li><strong>Security:</strong> Helmet, CORS</li>
+        <li><strong>Testing:</strong> Vitest</li>
+      </ul>
+
+      <h2>Webhook Support</h2>
+      <p>
+        The service includes webhook handlers for real-time event processing
+        from social media platforms. This enables automated responses to
+        comments, mentions, and other platform interactions.
+      </p>
+
+      <h2>Integration</h2>
+      <p>
+        TKI Social API integrates with other Tonka International services
+        including:
+      </p>
+      <ul>
+        <li>
+          <strong>Binder Service:</strong> For Twilio messaging integration
+        </li>
+        <li>
+          <strong>Portal Service:</strong> For configuration and secrets
+          management
+        </li>
+      </ul>
+
+      <h2>Contact</h2>
+      <p>
+        For technical support, API access, or integration questions, please
+        contact your system administrator or the development team.
+      </p>
+
+      <footer>
+        <p>&copy; 2025 Tonka International. All rights reserved.</p>
+        <p>
+          <a href="/">Home</a> |
+          <a href="/health">Health Check</a>
+        </p>
+      </footer>
+    </div>
+  </body>
+</html>
