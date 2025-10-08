@@ -1,3 +1,6 @@
+import path from 'path';
+import { fileURLToPath } from 'url';
+
 import cors from 'cors';
 import express from 'express';
 import helmet from 'helmet';
@@ -8,6 +11,9 @@ import { rateLimiter } from './middleware/rateLimit.js';
 import { requestId } from './middleware/requestId.js';
 import { socialRoutes, webhooksRoutes } from './routes/index.js';
 import { logger } from './utils/logger.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 
@@ -27,6 +33,15 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Rate limiting
 app.use(rateLimiter);
+
+// Serve static HTML pages (for platform verification)
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'index.html'));
+});
+
+app.get('/about', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'about.html'));
+});
 
 // Health check (no auth required)
 app.get('/health', (req, res) => {
