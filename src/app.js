@@ -54,8 +54,8 @@ app.get('/health', (req, res) => {
 });
 
 // Application routes
-app.use('/social', socialRoutes);
-app.use('/webhooks', webhooksRoutes);
+app.use('/api/social', socialRoutes);
+app.use('/api/webhooks', webhooksRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {
