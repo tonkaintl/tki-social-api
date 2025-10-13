@@ -2,6 +2,7 @@ import request from 'supertest';
 import { describe, expect, it, vi } from 'vitest';
 
 import { app } from '../app.js';
+import { config } from '../config/env.js';
 
 // Mock the Meta adapter
 vi.mock('../adapters/meta/meta.adapter.js', () => {
@@ -27,8 +28,8 @@ vi.mock('../services/binder.service.js', () => {
   };
 });
 
-describe('POST /social/post', () => {
-  const validSecret = 'test-secret-key';
+describe('POST /api/social/post', () => {
+  const validSecret = config.INTERNAL_SECRET_KEY;
 
   it('should create a post successfully with valid Meta request', async () => {
     const postData = {
@@ -38,7 +39,7 @@ describe('POST /social/post', () => {
     };
 
     const response = await request(app)
-      .post('/social/post')
+      .post('/api/social/post')
       .set('x-internal-secret', validSecret)
       .send(postData)
       .expect(200);
@@ -63,7 +64,7 @@ describe('POST /social/post', () => {
     };
 
     const response = await request(app)
-      .post('/social/post')
+      .post('/api/social/post')
       .set('x-internal-secret', validSecret)
       .send(postData)
       .expect(207); // Multi-status expected due to LinkedIn stub
@@ -83,7 +84,7 @@ describe('POST /social/post', () => {
     };
 
     const response = await request(app)
-      .post('/social/post')
+      .post('/api/social/post')
       .send(postData)
       .expect(401);
 
@@ -98,7 +99,7 @@ describe('POST /social/post', () => {
     };
 
     const response = await request(app)
-      .post('/social/post')
+      .post('/api/social/post')
       .set('x-internal-secret', 'invalid_secret')
       .send(postData)
       .expect(401);
@@ -113,7 +114,7 @@ describe('POST /social/post', () => {
     };
 
     const response = await request(app)
-      .post('/social/post')
+      .post('/api/social/post')
       .set('x-internal-secret', validSecret)
       .send(invalidPostData)
       .expect(400);
@@ -130,7 +131,7 @@ describe('POST /social/post', () => {
     };
 
     const response = await request(app)
-      .post('/social/post')
+      .post('/api/social/post')
       .set('x-internal-secret', validSecret)
       .send(postData)
       .expect(400);
@@ -153,7 +154,7 @@ describe('POST /social/post', () => {
     };
 
     const response = await request(app)
-      .post('/social/post')
+      .post('/api/social/post')
       .set('x-internal-secret', validSecret)
       .send(postData)
       .expect(200);
