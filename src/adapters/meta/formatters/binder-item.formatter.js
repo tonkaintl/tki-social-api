@@ -1,5 +1,7 @@
 /**
- * Format a Binder inventory item for Facebook/Meta posting
+ * Format a Binder   }
+
+  if (!item.location) {nventory item for Facebook/Meta posting
  * Optimized for Facebook's format with emojis and clear structure
  */
 export function formatBinderItemForMeta(item) {
@@ -17,14 +19,6 @@ export function formatBinderItemForMeta(item) {
   // Key details
   if (item.stockNumber) {
     lines.push(`📋 Stock #${item.stockNumber}`);
-  }
-
-  if (item.condition) {
-    lines.push(`✨ Condition: ${item.condition}`);
-  }
-
-  if (item.hours) {
-    lines.push(`⏱️ Hours: ${item.hours.toLocaleString()}`);
   }
 
   if (item.location) {

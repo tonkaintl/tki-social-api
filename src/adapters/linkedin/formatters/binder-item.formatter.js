@@ -17,8 +17,7 @@ export function formatBinderItemForLinkedIn(item) {
   // Key specifications
   const specs = [];
   if (item.stockNumber) specs.push(`Stock #${item.stockNumber}`);
-  if (item.condition) specs.push(item.condition);
-  if (item.hours) specs.push(`${item.hours.toLocaleString()} hours`);
+
   if (item.location) {
     specs.push(item.location);
   }

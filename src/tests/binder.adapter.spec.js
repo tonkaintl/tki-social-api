@@ -39,20 +39,6 @@ describe('BinderAdapter', () => {
         value: '1234',
       },
     ],
-    item_media: [
-      {
-        filename: 'test1.jpg',
-        filepath: 'images/test1.jpg',
-        is_primary: true,
-        type: 'Image',
-      },
-      {
-        filename: 'test2.jpg',
-        filepath: 'images/test2.jpg',
-        is_primary: false,
-        type: 'Image',
-      },
-    ],
     item_status: [
       {
         date: new Date(),
@@ -75,6 +61,20 @@ describe('BinderAdapter', () => {
         entered_by: 'Test User',
         rating: 5,
         value: { $numberDecimal: '185000.00' },
+      },
+    ],
+    web_media: [
+      {
+        filename: 'test1.jpg',
+        filepath: 'images/test1.jpg',
+        is_primary: true,
+        type: 'Image',
+      },
+      {
+        filename: 'test2.jpg',
+        filepath: 'images/test2.jpg',
+        is_primary: false,
+        type: 'Image',
       },
     ],
     year: '2020',
