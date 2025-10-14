@@ -1,5 +1,7 @@
+import { logger } from '../../utils/logger.js';
 import { SocialAdapter } from '../adapter.types.js';
 
+import { formatBinderItemForLinkedIn } from './formatters/binder-item.formatter.js';
 import { LinkedInClient } from './linkedin.client.js';
 import { normalizeLinkedInPost } from './linkedin.normalize.js';
 
@@ -116,6 +118,39 @@ export class LinkedInAdapter extends SocialAdapter {
 
       return {
         externalCommentId: null,
+        raw: { error: error.message },
+        status: 'failed',
+      };
+    }
+  }
+
+  async createPostFromItem(item, options = {}) {
+    try {
+      const { pageIdOrHandle } = options;
+
+      logger.info('Creating LinkedIn post from binder item', {
+        provider: 'linkedin',
+        stockNumber: item.stockNumber,
+      });
+
+      // Format the item for LinkedIn
+      const message = formatBinderItemForLinkedIn(item);
+
+      // Use createPost with formatted content
+      return await this.createPost({
+        message,
+        pageIdOrHandle,
+      });
+    } catch (error) {
+      logger.error('Failed to create LinkedIn post from item', {
+        error: error.message,
+        provider: 'linkedin',
+        stockNumber: item?.stockNumber,
+      });
+
+      return {
+        externalPostId: null,
+        permalink: null,
         raw: { error: error.message },
         status: 'failed',
       };

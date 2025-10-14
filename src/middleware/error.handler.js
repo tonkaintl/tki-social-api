@@ -5,12 +5,16 @@ import { logger } from '../utils/logger.js';
  * Formats and logs errors consistently
  */
 export function errorHandler(error, req, res, _next) {
+  // Log full error details
   logger.error('Unhandled error', {
+    code: error.code,
     error: error.message,
     method: req.method,
+    name: error.name,
     path: req.path,
     requestId: req.id,
-    stack: error.stack,
+    stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+    statusCode: error.statusCode || error.status,
   });
 
   // Default error response
@@ -20,6 +24,15 @@ export function errorHandler(error, req, res, _next) {
     message: 'An unexpected error occurred',
     requestId: req.id,
   };
+
+  // Include full error details in development
+  if (process.env.NODE_ENV === 'development') {
+    errorResponse.debug = {
+      message: error.message,
+      name: error.name,
+      stack: error.stack,
+    };
+  }
 
   // Handle known error types
   if (error.name === 'ValidationError' || error.name === 'ZodError') {

@@ -166,7 +166,7 @@ describe('POST /api/social/post', () => {
 
 describe('Health Check', () => {
   it('should return healthy status', async () => {
-    const response = await request(app).get('/health').expect(200);
+    const response = await request(app).get('/api/health').expect(200);
 
     expect(response.body).toMatchObject({
       service: 'tki-social-api',
