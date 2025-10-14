@@ -7,8 +7,8 @@ export function normalizeBinderItem(dbItem) {
     return null;
   }
 
-  // Extract images from item_media
-  const images = (dbItem.item_media || [])
+  // Extract images from web_media
+  const images = (dbItem.web_media || [])
     .filter(media => media.type === 'Image')
     .map(image => ({
       filename: image.filename,
@@ -39,23 +39,6 @@ export function normalizeBinderItem(dbItem) {
       return acc;
     }, {});
 
-  // Get condition from item_details if available
-  const condition =
-    webDetails['Engine Condition'] ||
-    webDetails['Condition'] ||
-    webDetails['Overall Condition'] ||
-    null;
-
-  // Get hours from item_details (various possible names)
-  let hours = null;
-  if (webDetails['Hours']) {
-    hours = parseInt(webDetails['Hours']);
-  } else if (webDetails['Engine Hours']) {
-    hours = parseInt(webDetails['Engine Hours']);
-  } else if (webDetails['Odometer Reading']) {
-    hours = parseInt(webDetails['Odometer Reading']);
-  }
-
   // Build flat location string (only city, state, zip allowed)
   let locationString = null;
   if (dbItem.location) {
@@ -70,17 +53,13 @@ export function normalizeBinderItem(dbItem) {
 
   return {
     category: dbItem.industry || null,
-    condition: condition,
     description: dbItem.title || null, // Use title as description
-    equipmentDescription: dbItem.title || null,
-    hours: hours,
     images: images,
     itemDetails: webDetails, // Keep web details for potential future use
     location: locationString, // Flat string, not object
     make: dbItem.manufacturer || null,
     model: dbItem.model || null,
     price: latestPrice,
-    serialNumber: null, // NOT allowed per requirements
     status: latestStatus,
     stockNumber: dbItem.stock_number,
     title: dbItem.title || null,

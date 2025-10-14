@@ -17,10 +17,6 @@ export function formatBinderItemForX(item) {
     parts.push(`Stock #${item.stockNumber}`);
   }
 
-  if (item.hours) {
-    parts.push(`${item.hours.toLocaleString()} hrs`);
-  }
-
   if (item.price) {
     const formattedPrice = new Intl.NumberFormat('en-US', {
       currency: 'USD',

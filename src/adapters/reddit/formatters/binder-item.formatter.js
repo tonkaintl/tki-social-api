@@ -22,18 +22,6 @@ export function formatBinderItemForReddit(item) {
     lines.push(`* **Stock Number:** ${item.stockNumber}`);
   }
 
-  if (item.condition) {
-    lines.push(`* **Condition:** ${item.condition}`);
-  }
-
-  if (item.hours) {
-    lines.push(`* **Hours:** ${item.hours.toLocaleString()}`);
-  }
-
-  if (item.serialNumber) {
-    lines.push(`* **Serial:** ${item.serialNumber}`);
-  }
-
   if (item.location) {
     lines.push(`* **Location:** ${item.location}`);
   }

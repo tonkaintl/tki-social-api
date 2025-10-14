@@ -8,15 +8,12 @@ import { formatBinderItemForX } from '../adapters/x/formatters/binder-item.forma
 describe('Binder Item Formatters', () => {
   const mockItem = {
     category: 'Tractors',
-    condition: 'Excellent',
     description: 'Premium tractor with all features',
-    hours: 1234,
     images: ['url1.jpg', 'url2.jpg'],
     location: 'Des Moines, IA',
     make: 'John Deere',
     model: '8345R',
     price: 185000,
-    serialNumber: null, // NOT allowed per requirements
     status: 'Available',
     stockNumber: 'TEST-001',
     year: 2020,
@@ -28,8 +25,6 @@ describe('Binder Item Formatters', () => {
 
       expect(result).toContain('🚜 2020 John Deere 8345R');
       expect(result).toContain('📋 Stock #TEST-001');
-      expect(result).toContain('✨ Condition: Excellent');
-      expect(result).toContain('⏱️ Hours: 1,234');
       expect(result).toContain('📍 Des Moines, IA');
       expect(result).toContain('💰 $185,000.00');
       expect(result).toContain('tonkaintl.com');
@@ -69,8 +64,6 @@ describe('Binder Item Formatters', () => {
 
       expect(result).toContain('2020 John Deere 8345R');
       expect(result).toContain('Stock #TEST-001');
-      expect(result).toContain('Excellent');
-      expect(result).toContain('1,234 hours');
       expect(result).toContain('Des Moines, IA');
       expect(result).toContain('Price: $185,000.00');
       expect(result).toContain('tonkaintl.com');
@@ -140,8 +133,6 @@ describe('Binder Item Formatters', () => {
       expect(result).toContain('# 2020 John Deere 8345R');
       expect(result).toContain('**Specifications:**');
       expect(result).toContain('* **Stock Number:** TEST-001');
-      expect(result).toContain('* **Condition:** Excellent');
-      expect(result).toContain('* **Hours:** 1,234');
       expect(result).toContain('* **Location:** Des Moines, IA');
       expect(result).toContain('* **Price:** $185,000.00');
     });
