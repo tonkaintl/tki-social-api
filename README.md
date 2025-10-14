@@ -111,6 +111,24 @@ curl "http://localhost:8080/social/fetch?provider=meta&pageIdOrHandle=your-page-
   -H "x-internal-secret: your-secret-key"
 ```
 
+### Get Inventory Item (with Formatting)
+
+```bash
+# Get item as JSON
+curl "http://localhost:8080/inventory/item?stockNumber=12345&format=json" \
+  -H "x-internal-secret: your-secret-key"
+
+# Get item formatted for social media
+curl "http://localhost:8080/inventory/item?stockNumber=12345&format=social" \
+  -H "x-internal-secret: your-secret-key"
+
+# Get item as a summary
+curl "http://localhost:8080/inventory/item?stockNumber=12345&format=summary" \
+  -H "x-internal-secret: your-secret-key"
+```
+
+For detailed documentation on the Inventory API and formatter system, see [INVENTORY_API.md](docs/INVENTORY_API.md).
+
 ## Environment Variables
 
 | Variable                 | Description                     | Required | Default                 |

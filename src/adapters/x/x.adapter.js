@@ -1,5 +1,7 @@
 import { SocialAdapter } from '../adapter.types.js';
 
+// import { formatBinderItemForX } from './formatters/binder-item.formatter.js';
+
 export class XAdapter extends SocialAdapter {
   constructor(config) {
     super('x', config);
@@ -33,6 +35,18 @@ export class XAdapter extends SocialAdapter {
     return {
       externalCommentId: null,
       raw: { error: 'X replies not configured yet' },
+      status: 'failed',
+    };
+  }
+
+  async createPostFromItem(item, _options = {}) {
+    // TODO: Implement X post from item
+    // When implemented, use: formatBinderItemForX(item)
+
+    return {
+      externalPostId: null,
+      permalink: null,
+      raw: { error: 'X adapter not configured yet', item },
       status: 'failed',
     };
   }

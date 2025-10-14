@@ -1,5 +1,7 @@
 import { SocialAdapter } from '../adapter.types.js';
 
+// import { formatBinderItemForReddit } from './formatters/binder-item.formatter.js';
+
 export class RedditAdapter extends SocialAdapter {
   constructor(config) {
     super('reddit', config);
@@ -34,6 +36,18 @@ export class RedditAdapter extends SocialAdapter {
     return {
       externalCommentId: null,
       raw: { error: 'Reddit comments not configured yet' },
+      status: 'failed',
+    };
+  }
+
+  async createPostFromItem(item, _options = {}) {
+    // TODO: Implement Reddit post from item
+    // When implemented, use: formatBinderItemForReddit(item)
+
+    return {
+      externalPostId: null,
+      permalink: null,
+      raw: { error: 'Reddit adapter not configured yet', item },
       status: 'failed',
     };
   }

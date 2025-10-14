@@ -1,0 +1,136 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+import { BinderAdapter } from '../adapters/binder/binder.adapter.js';
+import { ApiError, ERROR_CODES } from '../constants/errors.js';
+
+// Mock the client
+vi.mock('../adapters/binder/binder.client.js', () => ({
+  BinderClient: vi.fn().mockImplementation(() => ({
+    close: vi.fn(),
+    findItemByStockNumber: vi.fn(),
+  })),
+}));
+
+// Mock logger
+vi.mock('../utils/logger.js', () => ({
+  logger: {
+    debug: vi.fn(),
+    error: vi.fn(),
+    info: vi.fn(),
+    warn: vi.fn(),
+  },
+}));
+
+describe('BinderAdapter', () => {
+  let adapter;
+  let mockConfig;
+
+  const mockDbItem = {
+    category: 'Tractors',
+    condition: 'Excellent',
+    description: 'Premium tractor',
+    equipment_description: 'Full specs tractor',
+    hours: 1234,
+    images: ['url1.jpg', 'url2.jpg'],
+    location: 'Des Moines, IA',
+    make: 'John Deere',
+    model: '8345R',
+    price: 185000,
+    serial_number: 'ABC123XYZ',
+    status: 'Available',
+    stock_number: 'TEST-001',
+    year: 2020,
+  };
+
+  beforeEach(() => {
+    mockConfig = {
+      MONGODB_TKIBINDER_URI: 'mongodb://localhost:27017/test-binder',
+    };
+
+    adapter = new BinderAdapter(mockConfig);
+    vi.clearAllMocks();
+  });
+
+  describe('getItem', () => {
+    it('should fetch and normalize item successfully', async () => {
+      adapter.client.findItemByStockNumber.mockResolvedValue(mockDbItem);
+
+      const result = await adapter.getItem('TEST-001');
+
+      expect(adapter.client.findItemByStockNumber).toHaveBeenCalledWith(
+        'TEST-001'
+      );
+      expect(result).toEqual({
+        category: 'Tractors',
+        condition: 'Excellent',
+        description: 'Premium tractor',
+        equipmentDescription: 'Full specs tractor',
+        hours: 1234,
+        images: ['url1.jpg', 'url2.jpg'],
+        location: 'Des Moines, IA',
+        make: 'John Deere',
+        model: '8345R',
+        price: 185000,
+        serialNumber: 'ABC123XYZ',
+        status: 'Available',
+        stockNumber: 'TEST-001',
+        year: 2020,
+      });
+    });
+
+    it('should throw RESOURCE_NOT_FOUND when item does not exist', async () => {
+      adapter.client.findItemByStockNumber.mockResolvedValue(null);
+
+      await expect(adapter.getItem('NONEXISTENT')).rejects.toThrow(ApiError);
+
+      try {
+        await adapter.getItem('NONEXISTENT');
+      } catch (error) {
+        expect(error.code).toBe(ERROR_CODES.RESOURCE_NOT_FOUND);
+        expect(error.statusCode).toBe(404);
+        expect(error.message).toContain('NONEXISTENT');
+      }
+    });
+
+    it('should handle database errors', async () => {
+      adapter.client.findItemByStockNumber.mockRejectedValue(
+        new Error('Connection timeout')
+      );
+
+      await expect(adapter.getItem('TEST-001')).rejects.toThrow(ApiError);
+
+      try {
+        await adapter.getItem('TEST-001');
+      } catch (error) {
+        expect(error.code).toBe(ERROR_CODES.EXTERNAL_SERVICE_ERROR);
+        expect(error.statusCode).toBe(500);
+      }
+    });
+
+    it('should handle items with missing optional fields', async () => {
+      const minimalItem = {
+        make: 'Caterpillar',
+        model: 'D6',
+        stock_number: 'TEST-002',
+      };
+
+      adapter.client.findItemByStockNumber.mockResolvedValue(minimalItem);
+
+      const result = await adapter.getItem('TEST-002');
+
+      expect(result.stockNumber).toBe('TEST-002');
+      expect(result.make).toBe('Caterpillar');
+      expect(result.model).toBe('D6');
+      expect(result.price).toBeNull();
+      expect(result.hours).toBeNull();
+    });
+  });
+
+  describe('close', () => {
+    it('should close the client connection', async () => {
+      await adapter.close();
+
+      expect(adapter.client.close).toHaveBeenCalled();
+    });
+  });
+});

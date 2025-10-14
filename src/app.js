@@ -4,12 +4,20 @@ import { fileURLToPath } from 'url';
 import cors from 'cors';
 import express from 'express';
 import helmet from 'helmet';
-import pinoHttp from 'pino-http';
+import passport from 'passport';
 
+import { config } from './config/env.js';
 import { errorHandler } from './middleware/error.handler.js';
+import { httpLogger } from './middleware/httpLogger.js';
+import configurePassport from './middleware/passport.js';
 import { rateLimiter } from './middleware/rateLimit.js';
 import { requestId } from './middleware/requestId.js';
-import { socialRoutes, webhooksRoutes } from './routes/index.js';
+import {
+  healthRoutes,
+  inventoryRoutes,
+  socialRoutes,
+  webhooksRoutes,
+} from './routes/index.js';
 import { logger } from './utils/logger.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -17,12 +25,21 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
+// Configure passport for Azure AD authentication (if credentials are provided)
+if (config.AZURE_CLIENT_ID && config.AZURE_TENANT_ID) {
+  configurePassport();
+  app.use(passport.initialize());
+  logger.info('Azure AD Bearer authentication enabled');
+} else {
+  logger.warn('Azure AD credentials not configured - bearer auth disabled');
+}
+
 // Security middleware
 app.use(helmet());
 app.use(cors());
 
 // Request logging
-app.use(pinoHttp({ logger }));
+app.use(httpLogger);
 
 // Request ID middleware
 app.use(requestId);
@@ -43,17 +60,9 @@ app.get('/about', (req, res) => {
   res.sendFile(path.join(__dirname, 'views', 'about.html'));
 });
 
-// Health check (no auth required)
-app.get('/health', (req, res) => {
-  res.json({
-    service: 'tki-social-api',
-    status: 'healthy',
-    timestamp: new Date().toISOString(),
-    version: '1.0.0',
-  });
-});
-
 // Application routes
+app.use('/api/health', healthRoutes);
+app.use('/api/inventory', inventoryRoutes);
 app.use('/api/social', socialRoutes);
 app.use('/api/webhooks', webhooksRoutes);
 

@@ -3,6 +3,7 @@ import { logger } from '../../utils/logger.js';
 import { appendUtmToUrl } from '../../utils/mapping.js';
 import { SocialAdapter } from '../adapter.types.js';
 
+import { formatBinderItemForMeta } from './formatters/binder-item.formatter.js';
 import { MetaGraphClient } from './meta.graph.client.js';
 import {
   normalizeMetaPost,
@@ -145,6 +146,48 @@ export class MetaAdapter extends SocialAdapter {
 
       return {
         externalCommentId: null,
+        raw: { error: error.message },
+        status: 'failed',
+      };
+    }
+  }
+
+  async createPostFromItem(item, options = {}) {
+    try {
+      const { mediaUrls, pageIdOrHandle, utm } = options;
+
+      logger.info('Creating Meta post from binder item', {
+        provider: 'meta',
+        stockNumber: item.stockNumber,
+      });
+
+      // Format the item for Meta
+      const message = formatBinderItemForMeta(item);
+
+      // Build link to item detail page if needed
+      let linkUrl = null;
+      if (item.stockNumber) {
+        linkUrl = `https://tonkaintl.com/equipment/${item.stockNumber}`;
+      }
+
+      // Use createPost with formatted content
+      return await this.createPost({
+        linkUrl,
+        mediaUrls: mediaUrls || item.images || [],
+        message,
+        pageIdOrHandle,
+        utm,
+      });
+    } catch (error) {
+      logger.error('Failed to create Meta post from item', {
+        error: error.message,
+        provider: 'meta',
+        stockNumber: item?.stockNumber,
+      });
+
+      return {
+        externalPostId: null,
+        permalink: null,
         raw: { error: error.message },
         status: 'failed',
       };

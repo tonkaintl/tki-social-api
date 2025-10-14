@@ -4,6 +4,7 @@ import {
   createSocialComment,
   createSocialPost,
   fetchSocialPosts,
+  postItemToSocial,
 } from '../controllers/social/methods.js';
 import { internalAuth } from '../middleware/auth.internal.js';
 
@@ -18,6 +19,7 @@ router.use(internalAuth);
 // POST Routes
 // ----------------------------------------------------------------------------
 router.post('/post', createSocialPost);
+router.post('/post-item', postItemToSocial);
 router.post('/comment', createSocialComment);
 
 // ----------------------------------------------------------------------------
