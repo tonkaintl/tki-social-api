@@ -20,12 +20,7 @@ export function formatBinderItemForLinkedIn(item) {
   if (item.condition) specs.push(item.condition);
   if (item.hours) specs.push(`${item.hours.toLocaleString()} hours`);
   if (item.location) {
-    const locationParts = [];
-    if (item.location.city) locationParts.push(item.location.city);
-    if (item.location.state) locationParts.push(item.location.state);
-    if (locationParts.length > 0) {
-      specs.push(locationParts.join(', '));
-    }
+    specs.push(item.location);
   }
 
   if (specs.length > 0) {

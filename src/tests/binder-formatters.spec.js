@@ -16,7 +16,7 @@ describe('Binder Item Formatters', () => {
     make: 'John Deere',
     model: '8345R',
     price: 185000,
-    serialNumber: 'ABC123XYZ',
+    serialNumber: null, // NOT allowed per requirements
     status: 'Available',
     stockNumber: 'TEST-001',
     year: 2020,

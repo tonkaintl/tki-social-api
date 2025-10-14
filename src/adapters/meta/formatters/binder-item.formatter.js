@@ -28,12 +28,7 @@ export function formatBinderItemForMeta(item) {
   }
 
   if (item.location) {
-    const locationParts = [];
-    if (item.location.city) locationParts.push(item.location.city);
-    if (item.location.state) locationParts.push(item.location.state);
-    if (locationParts.length > 0) {
-      lines.push(`📍 ${locationParts.join(', ')}`);
-    }
+    lines.push(`📍 ${item.location}`);
   }
 
   if (item.price) {
