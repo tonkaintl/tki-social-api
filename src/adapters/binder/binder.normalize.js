@@ -53,10 +53,10 @@ export function normalizeBinderItem(dbItem) {
 
   return {
     category: dbItem.industry || null,
-    description: dbItem.title || null, // Use title as description
+    description: dbItem.title || null,
     images: images,
-    itemDetails: webDetails, // Keep web details for potential future use
-    location: locationString, // Flat string, not object
+    itemDetails: webDetails,
+    location: locationString,
     make: dbItem.manufacturer || null,
     model: dbItem.model || null,
     price: latestPrice,

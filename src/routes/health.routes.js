@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { getHealth } from '../controllers/health/health.controller.js';
+import { getHealth } from '../controllers/health/methods';
 
 // ----------------------------------------------------------------------------
 const router = express.Router();

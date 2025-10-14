@@ -21,6 +21,7 @@ const envSchema = z.object({
   META_VERIFY_TOKEN: z.string().default('verify_me'),
   MONGODB_TKIBINDER_URI: z.string().optional(),
   MONGODB_TKIPORTAL_URI: z.string().optional(),
+  MONGODB_TKISOCIAL_URI: z.string().optional(),
   NODE_ENV: z
     .enum(['development', 'production', 'test'])
     .default('development'),
