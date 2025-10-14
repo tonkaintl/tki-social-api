@@ -35,12 +35,7 @@ export function formatBinderItemForReddit(item) {
   }
 
   if (item.location) {
-    const locationParts = [];
-    if (item.location.city) locationParts.push(item.location.city);
-    if (item.location.state) locationParts.push(item.location.state);
-    if (locationParts.length > 0) {
-      lines.push(`* **Location:** ${locationParts.join(', ')}`);
-    }
+    lines.push(`* **Location:** ${item.location}`);
   }
 
   if (item.price) {

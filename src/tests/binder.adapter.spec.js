@@ -26,20 +26,58 @@ describe('BinderAdapter', () => {
   let mockConfig;
 
   const mockDbItem = {
-    category: 'Tractors',
-    condition: 'Excellent',
-    description: 'Premium tractor',
-    equipment_description: 'Full specs tractor',
-    hours: 1234,
-    images: ['url1.jpg', 'url2.jpg'],
-    location: 'Des Moines, IA',
-    make: 'John Deere',
+    industry: 'Agriculture',
+    item_details: [
+      {
+        for_web: true,
+        name: 'Condition',
+        value: 'Excellent',
+      },
+      {
+        for_web: true,
+        name: 'Hours',
+        value: '1234',
+      },
+    ],
+    item_media: [
+      {
+        filename: 'test1.jpg',
+        filepath: 'images/test1.jpg',
+        is_primary: true,
+        type: 'Image',
+      },
+      {
+        filename: 'test2.jpg',
+        filepath: 'images/test2.jpg',
+        is_primary: false,
+        type: 'Image',
+      },
+    ],
+    item_status: [
+      {
+        date: new Date(),
+        entered_by: 'Test User',
+        value: 'Available',
+      },
+    ],
+    location: {
+      city: 'Des Moines',
+      state: 'IA',
+      zip: '50309',
+    },
+    manufacturer: 'John Deere',
     model: '8345R',
-    price: 185000,
-    serial_number: 'ABC123XYZ',
-    status: 'Available',
     stock_number: 'TEST-001',
-    year: 2020,
+    title: '2020 John Deere 8345R Premium Tractor',
+    tki_advertised_prices: [
+      {
+        date: new Date(),
+        entered_by: 'Test User',
+        rating: 5,
+        value: { $numberDecimal: '185000.00' },
+      },
+    ],
+    year: '2020',
   };
 
   beforeEach(() => {
@@ -61,20 +99,37 @@ describe('BinderAdapter', () => {
         'TEST-001'
       );
       expect(result).toEqual({
-        category: 'Tractors',
+        category: 'Agriculture',
         condition: 'Excellent',
-        description: 'Premium tractor',
-        equipmentDescription: 'Full specs tractor',
+        description: '2020 John Deere 8345R Premium Tractor',
+        equipmentDescription: '2020 John Deere 8345R Premium Tractor',
         hours: 1234,
-        images: ['url1.jpg', 'url2.jpg'],
-        location: 'Des Moines, IA',
+        images: [
+          {
+            filename: 'test1.jpg',
+            filepath: 'images/test1.jpg',
+            isPrimary: true,
+          },
+          {
+            filename: 'test2.jpg',
+            filepath: 'images/test2.jpg',
+            isPrimary: false,
+          },
+        ],
+        itemDetails: {
+          Condition: 'Excellent',
+          Hours: '1234',
+        },
+        location: 'Des Moines, IA, 50309',
         make: 'John Deere',
         model: '8345R',
         price: 185000,
-        serialNumber: 'ABC123XYZ',
+        serialNumber: null,
         status: 'Available',
         stockNumber: 'TEST-001',
-        year: 2020,
+        title: '2020 John Deere 8345R Premium Tractor',
+        unitNumber: null,
+        year: '2020',
       });
     });
 
@@ -109,9 +164,10 @@ describe('BinderAdapter', () => {
 
     it('should handle items with missing optional fields', async () => {
       const minimalItem = {
-        make: 'Caterpillar',
+        manufacturer: 'Caterpillar',
         model: 'D6',
         stock_number: 'TEST-002',
+        title: 'Caterpillar D6',
       };
 
       adapter.client.findItemByStockNumber.mockResolvedValue(minimalItem);
