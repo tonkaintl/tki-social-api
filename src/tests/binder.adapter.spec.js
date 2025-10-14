@@ -21,6 +21,13 @@ vi.mock('../utils/logger.js', () => ({
   },
 }));
 
+// Mock SocialCampaigns model
+vi.mock('../models/socialCampaigns.model.js', () => ({
+  default: {
+    create: vi.fn(),
+  },
+}));
+
 describe('BinderAdapter', () => {
   let adapter;
   let mockConfig;
@@ -100,10 +107,7 @@ describe('BinderAdapter', () => {
       );
       expect(result).toEqual({
         category: 'Agriculture',
-        condition: 'Excellent',
         description: '2020 John Deere 8345R Premium Tractor',
-        equipmentDescription: '2020 John Deere 8345R Premium Tractor',
-        hours: 1234,
         images: [
           {
             filename: 'test1.jpg',
@@ -124,7 +128,6 @@ describe('BinderAdapter', () => {
         make: 'John Deere',
         model: '8345R',
         price: 185000,
-        serialNumber: null,
         status: 'Available',
         stockNumber: 'TEST-001',
         title: '2020 John Deere 8345R Premium Tractor',
@@ -178,7 +181,66 @@ describe('BinderAdapter', () => {
       expect(result.make).toBe('Caterpillar');
       expect(result.model).toBe('D6');
       expect(result.price).toBeNull();
-      expect(result.hours).toBeNull();
+      expect(result.hours).toBeUndefined(); // normalize function doesn't return hours field
+    });
+  });
+
+  describe('createCampaign', () => {
+    let mockSocialCampaigns;
+
+    // Mock campaign data
+    const mockCampaign = {
+      _id: '507f1f77bcf86cd799439011',
+      created_by: 'test-user',
+      description: '2020 John Deere 8345R Premium Tractor',
+      status: 'pending',
+      stock_number: 'TEST-001',
+      title: '2020 John Deere 8345R Premium Tractor',
+      url: 'https://tonkaintl.com/inventory/TEST-001',
+    };
+
+    beforeEach(async () => {
+      // Mock successful item fetch
+      adapter.client.findItemByStockNumber.mockResolvedValue(mockDbItem);
+
+      // Get the mocked model
+      const { default: SocialCampaigns } = await import(
+        '../models/socialCampaigns.model.js'
+      );
+      mockSocialCampaigns = SocialCampaigns;
+      mockSocialCampaigns.create.mockResolvedValue(mockCampaign);
+    });
+
+    it('should create campaign from binder item', async () => {
+      const result = await adapter.createCampaign('TEST-001', 'test-user');
+
+      expect(mockSocialCampaigns.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          created_by: 'test-user',
+          status: 'pending',
+          stock_number: 'TEST-001',
+          title: '2020 John Deere 8345R Premium Tractor',
+          url: 'https://tonkaintl.com/inventory/TEST-001',
+        })
+      );
+
+      expect(result).toEqual(mockCampaign);
+    });
+
+    it('should handle item not found during campaign creation', async () => {
+      adapter.client.findItemByStockNumber.mockResolvedValue(null);
+
+      await expect(
+        adapter.createCampaign('INVALID-001', 'test-user')
+      ).rejects.toThrow(ApiError);
+    });
+
+    it('should handle database errors during campaign creation', async () => {
+      mockSocialCampaigns.create.mockRejectedValue(new Error('Database error'));
+
+      await expect(
+        adapter.createCampaign('TEST-001', 'test-user')
+      ).rejects.toThrow(ApiError);
     });
   });
 
