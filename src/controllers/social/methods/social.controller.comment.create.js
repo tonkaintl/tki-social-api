@@ -10,7 +10,7 @@ import { MetaAdapter } from '../../../adapters/meta/meta.adapter.js';
 import { RedditAdapter } from '../../../adapters/reddit/reddit.adapter.js';
 import { XAdapter } from '../../../adapters/x/x.adapter.js';
 import { config } from '../../../config/env.js';
-import { ERROR_CODES } from '../../../constants/errors.js';
+import { ApiError, ERROR_CODES } from '../../../constants/errors.js';
 import { SUPPORTED_PROVIDERS } from '../../../constants/providers.js';
 import { binderService } from '../../../services/binder.service.js';
 import { logger } from '../../../utils/logger.js';
@@ -48,9 +48,13 @@ export const createSocialComment = async (req, res, next) => {
     // ------------------------------------------------------------------------
     const adapter = adapters[requestData.provider];
     if (!adapter) {
-      return res.status(400).json({
-        code: ERROR_CODES.UNSUPPORTED_PROVIDER,
-        message: `Provider '${requestData.provider}' is not supported`,
+      const error = new ApiError(
+        ERROR_CODES.UNSUPPORTED_PROVIDER,
+        `Provider '${requestData.provider}' is not supported`
+      );
+      return res.status(error.statusCode).json({
+        code: error.code,
+        message: error.message,
         requestId: req.id,
       });
     }
@@ -91,10 +95,16 @@ export const createSocialComment = async (req, res, next) => {
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({
-        code: ERROR_CODES.VALIDATION_ERROR,
-        errors: error.errors,
-        message: 'Request validation failed',
+      const apiError = new ApiError(
+        ERROR_CODES.VALIDATION_ERROR,
+        'Request validation failed',
+        400,
+        error.errors
+      );
+      return res.status(apiError.statusCode).json({
+        code: apiError.code,
+        errors: apiError.details,
+        message: apiError.message,
         requestId: req.id,
       });
     }

@@ -60,6 +60,12 @@ export const ERROR_STATUS_CODES = {
   [ERROR_CODES.VALIDATION_ERROR]: 400,
 };
 
+// Common error messages for consistency
+export const ERROR_MESSAGES = {
+  INTERNAL_SERVER_ERROR: 'Internal server error',
+  INVALID_REQUEST_DATA: 'Invalid request data',
+};
+
 // Create a custom error class for consistent error handling
 export class ApiError extends Error {
   constructor(code, message, statusCode = 500, details = null) {

@@ -5,7 +5,11 @@
 
 import { z } from 'zod';
 
-import { ApiError, ERROR_CODES } from '../../../constants/errors.js';
+import {
+  ApiError,
+  ERROR_CODES,
+  ERROR_MESSAGES,
+} from '../../../constants/errors.js';
 import SocialCampaigns from '../../../models/socialCampaigns.model.js';
 import { logger } from '../../../utils/logger.js';
 
@@ -162,7 +166,7 @@ export const updateCampaign = async (req, res) => {
 
     const apiError = new ApiError(
       ERROR_CODES.INTERNAL_SERVER_ERROR,
-      'Internal server error'
+      ERROR_MESSAGES.INTERNAL_SERVER_ERROR
     );
     res.status(apiError.statusCode).json({
       code: apiError.code,

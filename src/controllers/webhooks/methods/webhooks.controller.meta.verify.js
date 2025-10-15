@@ -5,6 +5,7 @@
 
 import { MetaAdapter } from '../../../adapters/meta/meta.adapter.js';
 import { config } from '../../../config/env.js';
+import { ApiError, ERROR_CODES } from '../../../constants/errors.js';
 import { logger } from '../../../utils/logger.js';
 
 const metaAdapter = new MetaAdapter(config);
@@ -27,8 +28,13 @@ export const verifyMetaWebhook = async (req, res) => {
     if (result.challenge) {
       return res.status(200).send(result.challenge);
     } else {
-      return res.status(403).json({
-        error: 'Webhook verification failed',
+      const error = new ApiError(
+        ERROR_CODES.PROVIDER_AUTH_FAILED,
+        'Webhook verification failed'
+      );
+      return res.status(error.statusCode).json({
+        code: error.code,
+        error: error.message,
       });
     }
   } catch (error) {
@@ -36,8 +42,14 @@ export const verifyMetaWebhook = async (req, res) => {
       error: error.message,
     });
 
-    return res.status(403).json({
-      error: error.message,
+    const apiError = new ApiError(
+      ERROR_CODES.PROVIDER_AUTH_FAILED,
+      error.message,
+      403
+    );
+    return res.status(apiError.statusCode).json({
+      code: apiError.code,
+      error: apiError.message,
     });
   }
 };

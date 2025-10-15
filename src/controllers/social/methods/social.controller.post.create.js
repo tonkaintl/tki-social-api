@@ -9,7 +9,11 @@ import { LinkedInAdapter } from '../../../adapters/linkedin/linkedin.adapter.js'
 import { MetaAdapter } from '../../../adapters/meta/meta.adapter.js';
 import { RedditAdapter } from '../../../adapters/reddit/reddit.adapter.js';
 import { XAdapter } from '../../../adapters/x/x.adapter.js';
-import { ApiError, ERROR_CODES } from '../../../constants/errors.js';
+import {
+  ApiError,
+  ERROR_CODES,
+  ERROR_MESSAGES,
+} from '../../../constants/errors.js';
 import { PROVIDERS } from '../../../constants/providers.js';
 import { logger } from '../../../utils/logger.js';
 
@@ -81,7 +85,7 @@ export const createSocialPost = async (req, res) => {
       });
       const error = new ApiError(
         ERROR_CODES.VALIDATION_ERROR,
-        'Invalid request data',
+        ERROR_MESSAGES.INVALID_REQUEST_DATA,
         400,
         validation.error.errors
       );
@@ -200,7 +204,7 @@ export const createSocialPost = async (req, res) => {
 
     const apiError = new ApiError(
       ERROR_CODES.INTERNAL_SERVER_ERROR,
-      'Internal server error'
+      ERROR_MESSAGES.INTERNAL_SERVER_ERROR
     );
     res.status(apiError.statusCode).json({
       code: apiError.code,
