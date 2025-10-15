@@ -1,6 +1,7 @@
 // Methods index for social controllers
 import { createSocialCampaign } from './methods/social.controller.campaign.create.js';
 import { getCampaignByStockNumber } from './methods/social.controller.campaign.detail.js';
+import { getCampaignsList } from './methods/social.controller.campaign.list.js';
 import { getCampaignPreview } from './methods/social.controller.campaign.preview.js';
 import { updateCampaign } from './methods/social.controller.campaign.update.js';
 import { createSocialComment } from './methods/social.controller.comment.create.js';
@@ -17,6 +18,7 @@ export {
   fetchSocialPosts,
   getCampaignByStockNumber,
   getCampaignPreview,
+  getCampaignsList,
   postItemToSocial,
   updateCampaign,
 };

@@ -7,6 +7,7 @@ import {
   fetchSocialPosts,
   getCampaignByStockNumber,
   getCampaignPreview,
+  getCampaignsList,
   postItemToSocial,
   updateCampaign,
 } from '../controllers/social/methods.js';
@@ -31,9 +32,9 @@ router.post('/comment', createSocialComment);
 // GET Routes
 // ----------------------------------------------------------------------------
 router.get('/fetch', fetchSocialPosts);
-router.get('/campaigns', fetchSocialPosts); // List all campaigns with query params
+router.get('/campaigns', getCampaignsList); // Campaign listing with pagination
 router.get('/campaigns/:stockNumber/preview/:provider', getCampaignPreview); // Campaign preview for specific platform
-router.get('/campaigns/:stockNumber', getCampaignByStockNumber); // Get specific campaign by stock number
+router.get('/campaigns/:stockNumber', getCampaignByStockNumber);
 
 // ----------------------------------------------------------------------------
 // PUT Routes

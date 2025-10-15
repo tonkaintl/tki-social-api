@@ -5,6 +5,7 @@ import { z } from 'zod';
 dotenv.config();
 
 const envSchema = z.object({
+  AZURE_API_AUDIENCE: z.string().optional(),
   AZURE_CLIENT_ID: z.string().optional(),
   AZURE_TENANT_ID: z.string().optional(),
   BINDER_API_URL: z.string().url().default('http://localhost:4100'),
