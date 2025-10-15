@@ -1,83 +1,111 @@
 // ----------------------------------------------------------------------------
 // GET /social/fetch
-// Fetch posts from a social media platform
+// Fetch social media campaigns with pagination and filtering
 // ----------------------------------------------------------------------------
 
 import { z } from 'zod';
 
-import { LinkedInAdapter } from '../../../adapters/linkedin/linkedin.adapter.js';
-import { MetaAdapter } from '../../../adapters/meta/meta.adapter.js';
-import { RedditAdapter } from '../../../adapters/reddit/reddit.adapter.js';
-import { XAdapter } from '../../../adapters/x/x.adapter.js';
-import { config } from '../../../config/env.js';
-import { ERROR_CODES } from '../../../constants/errors.js';
-import { SUPPORTED_PROVIDERS } from '../../../constants/providers.js';
+import SocialCampaigns from '../../../models/socialCampaigns.model.js';
 import { logger } from '../../../utils/logger.js';
 
-// Initialize adapters
-const adapters = {
-  linkedin: new LinkedInAdapter(config),
-  meta: new MetaAdapter(config),
-  reddit: new RedditAdapter(config),
-  x: new XAdapter(config),
-};
-
-// Request validation schema
-const fetchRequestSchema = z.object({
+// Query validation schema
+const fetchCampaignsSchema = z.object({
+  createdBy: z.string().optional(),
   limit: z.coerce.number().int().min(1).max(100).default(10),
-  pageIdOrHandle: z.string().min(1),
-  provider: z.enum(SUPPORTED_PROVIDERS),
-  since: z.string().optional(),
-  until: z.string().optional(),
+  page: z.coerce.number().int().min(1).default(1),
+  sortBy: z
+    .enum(['created_at', 'updated_at', 'stock_number', 'title'])
+    .default('created_at'),
+  sortOrder: z.enum(['asc', 'desc']).default('desc'),
+  status: z
+    .enum(['pending', 'draft', 'scheduled', 'published', 'failed'])
+    .optional(),
+  stockNumber: z.string().optional(),
 });
 
+/**
+ * Fetch social media campaigns with pagination and filtering
+ * GET /social/fetch
+ */
 export const fetchSocialPosts = async (req, res, next) => {
   try {
-    // ------------------------------------------------------------------------
-    // VALIDATE QUERY PARAMETERS
-    // ------------------------------------------------------------------------
-    const queryData = fetchRequestSchema.parse(req.query);
+    // Validate query parameters
+    const validationResult = fetchCampaignsSchema.safeParse(req.query);
 
-    logger.info('Fetch request received', {
-      limit: queryData.limit,
-      pageIdOrHandle: queryData.pageIdOrHandle,
-      provider: queryData.provider,
-      requestId: req.id,
-    });
-
-    // ------------------------------------------------------------------------
-    // GET ADAPTER AND FETCH POSTS
-    // ------------------------------------------------------------------------
-    const adapter = adapters[queryData.provider];
-    if (!adapter) {
+    if (!validationResult.success) {
       return res.status(400).json({
-        code: ERROR_CODES.UNSUPPORTED_PROVIDER,
-        message: `Provider '${queryData.provider}' is not supported`,
+        code: 'VALIDATION_ERROR',
+        errors: validationResult.error.errors,
+        message: 'Invalid query parameters',
         requestId: req.id,
       });
     }
 
-    const result = await adapter.fetchPosts(queryData);
+    const { createdBy, limit, page, sortBy, sortOrder, status, stockNumber } =
+      validationResult.data;
 
-    // ------------------------------------------------------------------------
-    // RETURN RESPONSE
-    // ------------------------------------------------------------------------
-    const responseStatus = result.status === 'success' ? 200 : 400;
-
-    return res.status(responseStatus).json({
+    logger.info('Fetching social campaigns', {
+      createdBy,
+      limit,
+      page,
       requestId: req.id,
-      result,
-      success: result.status === 'success',
+      sortBy,
+      sortOrder,
+      status,
+      stockNumber,
+    });
+
+    // Build query filter
+    const filter = {};
+    if (status) filter.status = status;
+    if (stockNumber)
+      filter.stock_number = { $options: 'i', $regex: stockNumber };
+    if (createdBy) filter.created_by = createdBy;
+
+    // Calculate skip for pagination
+    const skip = (page - 1) * limit;
+
+    // Build sort object
+    const sort = {};
+    sort[sortBy] = sortOrder === 'asc' ? 1 : -1;
+
+    // Execute query with pagination
+    const [campaigns, totalCount] = await Promise.all([
+      SocialCampaigns.find(filter).sort(sort).skip(skip).limit(limit).lean(),
+      SocialCampaigns.countDocuments(filter),
+    ]);
+
+    // Calculate pagination metadata
+    const totalPages = Math.ceil(totalCount / limit);
+    const hasNextPage = page < totalPages;
+    const hasPrevPage = page > 1;
+
+    logger.info('Campaigns fetched successfully', {
+      count: campaigns.length,
+      page,
+      requestId: req.id,
+      totalCount,
+      totalPages,
+    });
+
+    return res.json({
+      campaigns,
+      pagination: {
+        currentPage: page,
+        hasNextPage,
+        hasPrevPage,
+        limit,
+        totalCount,
+        totalPages,
+      },
+      requestId: req.id,
+      success: true,
     });
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return res.status(400).json({
-        code: ERROR_CODES.VALIDATION_ERROR,
-        errors: error.errors,
-        message: 'Request validation failed',
-        requestId: req.id,
-      });
-    }
+    logger.error('Failed to fetch campaigns', {
+      error: error.message,
+      requestId: req.id,
+    });
 
     next(error);
   }
