@@ -10,10 +10,10 @@ export default defineConfig({
     env: {
       BINDER_API_URL: 'http://localhost:4100',
       BINDER_INTERNAL_SECRET: 'test-binder-secret',
-      INTERNAL_SECRET_KEY: 'test-secret-key',
       LOG_LEVEL: 'error',
       NODE_ENV: 'test',
       PORT: '8080',
+      PORTAL_INTERNAL_SECRET: 'test-portal-secret',
     },
     environment: 'node',
     globals: true,

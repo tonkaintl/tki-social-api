@@ -17,9 +17,13 @@ export default function configurePassport() {
     return;
   }
 
+  // Use client ID as audience since that's what Azure AD puts in the token
+  // The API URI format is used for scopes, not audience
+  const audience = authConfig.credentials.clientID;
+
   const bearerStrategy = new BearerStrategy(
     {
-      audience: authConfig.credentials.clientID,
+      audience: audience,
       clientID: authConfig.credentials.clientID,
       identityMetadata: `https://${authConfig.metadata.authority}/${authConfig.credentials.tenantID}/${authConfig.metadata.version}/${authConfig.metadata.discovery}`,
       issuer: `https://${authConfig.metadata.authority}/${authConfig.credentials.tenantID}/${authConfig.metadata.version}`,
@@ -34,10 +38,24 @@ export default function configurePassport() {
         req.email = token.email || token.preferred_username;
         req.azureToken = token;
 
+        // Debug token claims for troubleshooting
         logger.debug('Bearer token validated', {
+          audience: token.aud,
           email: req.email,
+          issuer: token.iss,
           oid: token.oid,
+          scope: token.scp,
         });
+
+        // Validate scope if configured
+        if (token.scp && !token.scp.includes('TKI-Social.ReadWrite')) {
+          logger.warn('Token missing required scope', {
+            email: req.email,
+            requiredScope: 'TKI-Social.ReadWrite',
+            tokenScope: token.scp,
+          });
+          return done(new Error('Insufficient scope permissions'));
+        }
 
         done(null, token);
       } catch (err) {

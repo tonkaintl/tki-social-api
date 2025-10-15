@@ -8,6 +8,15 @@ import { logger } from '../utils/logger.js';
  * Authenticates the user via passport-azure-ad strategy
  */
 export const verifyToken = (req, res, next) => {
+  // Debug: Log request headers to see if Authorization header is present
+  logger.debug('Authentication attempt', {
+    authHeader: req.headers.authorization ? 'Present' : 'Missing',
+    headers: Object.keys(req.headers),
+    method: req.method,
+    requestId: req.id,
+    url: req.url,
+  });
+
   passport.authenticate(
     'oauth-bearer',
     { session: false },

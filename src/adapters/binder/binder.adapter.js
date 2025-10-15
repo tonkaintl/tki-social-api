@@ -1,4 +1,5 @@
 import { ApiError, ERROR_CODES } from '../../constants/errors.js';
+import SocialCampaigns from '../../models/socialCampaigns.model.js';
 import { logger } from '../../utils/logger.js';
 
 import { BinderClient } from './binder.client.js';
@@ -55,6 +56,84 @@ export class BinderAdapter {
       throw new ApiError(
         ERROR_CODES.EXTERNAL_SERVICE_ERROR,
         `Failed to fetch item: ${error.message}`,
+        500
+      );
+    }
+  }
+
+  /**
+   * Create social campaign from binder item
+   * This is the BINDER → NORMALIZE → STORE pipeline
+   * @param {string} stockNumber
+   * @param {string} createdBy - User who created the campaign
+   * @returns {Promise<Object>} Created campaign
+   */
+  async createCampaign(stockNumber, createdBy) {
+    try {
+      logger.info('Creating social campaign from binder item', {
+        createdBy,
+        stockNumber,
+      });
+
+      // Step 1: Fetch and normalize item from binder
+      const normalizedItem = await this.getItem(stockNumber);
+
+      // Step 2: Generate URL for the item (assuming main site pattern)
+      const itemUrl = `https://tonkaintl.com/inventory/${stockNumber}`;
+
+      // Step 3: Create campaign data structure
+      const campaignData = {
+        created_by: createdBy,
+        description: normalizedItem.description,
+        media_urls: normalizedItem.media
+          ? normalizedItem.media.map(m => m.url)
+          : [],
+
+        // Initialize platform content (will be populated by platform adapters)
+        platform_content: {
+          facebook_page: {},
+          instagram_business: {},
+          linkedin_company: {},
+          x_profile: {},
+        },
+
+        // Initialize empty posts array
+        posts: [],
+
+        short_url: normalizedItem.shortUrl,
+
+        // Set initial status
+        status: 'pending',
+
+        stock_number: normalizedItem.stockNumber,
+        title: normalizedItem.title,
+        url: itemUrl,
+      };
+
+      // Step 3: Save to database
+      const campaign = await SocialCampaigns.create(campaignData);
+
+      logger.info('Social campaign created successfully', {
+        campaignId: campaign._id,
+        status: campaign.status,
+        stockNumber,
+      });
+
+      return campaign;
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error;
+      }
+
+      logger.error('Failed to create social campaign', {
+        createdBy,
+        error: error.message,
+        stockNumber,
+      });
+
+      throw new ApiError(
+        ERROR_CODES.DATABASE_ERROR,
+        `Failed to create campaign: ${error.message}`,
         500
       );
     }

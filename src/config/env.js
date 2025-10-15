@@ -5,11 +5,11 @@ import { z } from 'zod';
 dotenv.config();
 
 const envSchema = z.object({
+  AZURE_API_AUDIENCE: z.string().optional(),
   AZURE_CLIENT_ID: z.string().optional(),
   AZURE_TENANT_ID: z.string().optional(),
   BINDER_API_URL: z.string().url().default('http://localhost:4100'),
-  BINDER_INTERNAL_SECRET: z.string().min(1),
-  INTERNAL_SECRET_KEY: z.string().min(1),
+  BINDER_INTERNAL_SECRET: z.string().min(1).default('test-binder-secret'),
   LINKEDIN_ACCESS_TOKEN: z.string().optional(),
   LINKEDIN_CLIENT_ID: z.string().optional(),
   LINKEDIN_CLIENT_SECRET: z.string().optional(),
@@ -21,6 +21,7 @@ const envSchema = z.object({
   META_VERIFY_TOKEN: z.string().default('verify_me'),
   MONGODB_TKIBINDER_URI: z.string().optional(),
   MONGODB_TKIPORTAL_URI: z.string().optional(),
+  MONGODB_TKISOCIAL_URI: z.string().optional(),
   NODE_ENV: z
     .enum(['development', 'production', 'test'])
     .default('development'),

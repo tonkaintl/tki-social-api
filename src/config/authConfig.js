@@ -6,6 +6,7 @@ import { config } from './env.js';
  */
 const authConfig = {
   credentials: {
+    apiAudience: config.AZURE_API_AUDIENCE,
     clientID: config.AZURE_CLIENT_ID,
     tenantID: config.AZURE_TENANT_ID,
   },

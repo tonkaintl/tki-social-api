@@ -49,6 +49,26 @@ describe('Database Connection Tests', () => {
     });
   });
 
+  describe('TKI Social Database', () => {
+    it('should connect to TKI Social MongoDB', async () => {
+      const mongoUri =
+        config.MONGODB_TKISOCIAL_URI || process.env.MONGODB_TKISOCIAL_URI;
+
+      if (!mongoUri) {
+        console.warn('MONGODB_TKISOCIAL_URI not configured, skipping test');
+        return;
+      }
+
+      try {
+        await mongoose.connect(mongoUri);
+        expect(mongoose.connection.readyState).toBe(1); // 1 = connected
+        await mongoose.disconnect();
+      } catch (error) {
+        throw new Error(`Failed to connect to TKI Social DB: ${error.message}`);
+      }
+    });
+  });
+
   describe('Connection Error Handling', () => {
     it('should handle invalid connection string gracefully', async () => {
       const invalidUri = 'mongodb://invalid-host:27017/test';
