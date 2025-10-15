@@ -64,6 +64,7 @@ export const ERROR_STATUS_CODES = {
 export const ERROR_MESSAGES = {
   INTERNAL_SERVER_ERROR: 'Internal server error',
   INVALID_REQUEST_DATA: 'Invalid request data',
+  INVALID_REQUEST_PARAMS: 'Invalid request parameters',
 };
 
 // Create a custom error class for consistent error handling

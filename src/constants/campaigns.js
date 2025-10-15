@@ -16,6 +16,15 @@ export const MEDIA_STORAGE = {
 
 export const MEDIA_STORAGE_VALUES = Object.values(MEDIA_STORAGE);
 
+// Media type constants
+export const MEDIA_TYPE = {
+  IMAGE: 'image',
+  PDF: 'pdf',
+  VIDEO: 'video',
+};
+
+export const MEDIA_TYPE_VALUES = Object.values(MEDIA_TYPE);
+
 // Default values
 export const CAMPAIGN_DEFAULTS = {
   MEDIA_STORAGE: MEDIA_STORAGE.AZURE,

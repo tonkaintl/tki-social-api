@@ -54,7 +54,7 @@ export const updateCampaign = async (req, res) => {
       });
       const error = new ApiError(
         ERROR_CODES.VALIDATION_ERROR,
-        'Invalid request parameters',
+        ERROR_MESSAGES.INVALID_REQUEST_PARAMS,
         400,
         paramsValidation.error.errors
       );

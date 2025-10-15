@@ -5,6 +5,7 @@
 
 import { z } from 'zod';
 
+import { MEDIA_TYPE_VALUES } from '../../../constants/campaigns.js';
 import {
   ApiError,
   ERROR_CODES,
@@ -22,9 +23,13 @@ const mediaParamsSchema = z.object({
 });
 
 const addMediaBodySchema = z.object({
+  alt: z.string().optional(),
   description: z.string().optional(),
-  mediaType: z.enum(['image', 'video']).optional().default('image'),
+  filename: z.string().optional(),
+  mediaType: z.enum(MEDIA_TYPE_VALUES).optional().default('image'),
   mediaUrl: z.string().url('Valid URL is required'),
+  size: z.number().optional(),
+  tags: z.array(z.string()).optional().default([]),
 });
 
 const updateMediaParamsSchema = z.object({
@@ -91,7 +96,7 @@ export const getCampaignMedia = async (req, res) => {
     if (error instanceof z.ZodError) {
       const apiError = new ApiError(
         ERROR_CODES.VALIDATION_ERROR,
-        'Invalid request parameters',
+        ERROR_MESSAGES.INVALID_REQUEST_PARAMS,
         400,
         error.errors
       );
@@ -129,10 +134,22 @@ export const addCampaignMedia = async (req, res) => {
       stockNumber,
     });
 
+    // Create media object with metadata
+    const mediaObject = {
+      alt: mediaData.alt,
+      created_at: new Date(),
+      description: mediaData.description,
+      filename: mediaData.filename,
+      media_type: mediaData.mediaType,
+      size: mediaData.size,
+      tags: mediaData.tags || [],
+      url: mediaData.mediaUrl,
+    };
+
     const updatedCampaign = await SocialCampaigns.findOneAndUpdate(
       { stock_number: stockNumber },
       {
-        $addToSet: { media_urls: mediaData.mediaUrl },
+        $addToSet: { media_urls: mediaObject },
         $set: { updated_at: new Date() },
       },
       { new: true, projection: { media_urls: 1, stock_number: 1, title: 1 } }
@@ -151,7 +168,7 @@ export const addCampaignMedia = async (req, res) => {
     }
 
     const response = {
-      added_media: mediaData.mediaUrl,
+      added_media: mediaObject,
       media_portfolio: updatedCampaign.media_urls,
       message: 'Media added to portfolio successfully',
       portfolio_count: updatedCampaign.media_urls.length,
@@ -295,7 +312,7 @@ export const removeCampaignMedia = async (req, res) => {
     if (error instanceof z.ZodError) {
       const apiError = new ApiError(
         ERROR_CODES.VALIDATION_ERROR,
-        'Invalid request parameters',
+        ERROR_MESSAGES.INVALID_REQUEST_PARAMS,
         400,
         error.errors
       );
