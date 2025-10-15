@@ -95,10 +95,6 @@ var socialCampaignsSchema = new Schema({
 });
 
 socialCampaignsSchema.index({
-  stock_number: 1,
-});
-
-socialCampaignsSchema.index({
   status: 1,
 });
 

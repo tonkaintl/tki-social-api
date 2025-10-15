@@ -16,7 +16,7 @@ const authConfig = {
     version: 'v2.0',
   },
   settings: {
-    loggingLevel: config.NODE_ENV === 'production' ? 'error' : 'info',
+    loggingLevel: config.NODE_ENV === 'production' ? 'error' : 'warn',
     loggingNoPII: config.NODE_ENV === 'production',
     passReqToCallback: true,
     validateIssuer: true,
