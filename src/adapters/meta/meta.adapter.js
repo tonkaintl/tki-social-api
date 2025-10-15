@@ -194,6 +194,82 @@ export class MetaAdapter extends SocialAdapter {
     }
   }
 
+  async createPostFromCampaign(campaign, provider, options = {}) {
+    try {
+      const { mediaUrls = [], pageIdOrHandle } = options;
+
+      logger.info('Creating Meta post from campaign', {
+        campaignId: campaign._id,
+        mediaCount: mediaUrls.length,
+        provider: 'meta',
+        stockNumber: campaign.stock_number,
+      });
+
+      // Generate dynamic content for Meta
+      const message = await this.generateMetaContent(campaign);
+
+      // Build link to item detail page
+      const linkUrl = `https://tonkaintl.com/equipment/${campaign.stock_number}`;
+
+      // Use createPost with generated content
+      return await this.createPost({
+        linkUrl,
+        mediaUrls,
+        message,
+        pageIdOrHandle,
+      });
+    } catch (error) {
+      logger.error('Failed to create Meta post from campaign', {
+        campaignId: campaign._id,
+        error: error.message,
+        provider: 'meta',
+        stockNumber: campaign.stock_number,
+      });
+
+      return {
+        externalPostId: null,
+        permalink: null,
+        raw: { error: error.message },
+        status: 'failed',
+      };
+    }
+  }
+
+  /**
+   * Generate Meta-specific content from campaign data
+   */
+  async generateMetaContent(campaign) {
+    // Use campaign title and description as base
+    let content = `🚗 ${campaign.title}\n\n`;
+
+    if (campaign.description) {
+      content += `${campaign.description}\n\n`;
+    }
+
+    // Add key details from Binder data if available
+    if (campaign.binder_data) {
+      const { make, mileage, model, price, year } = campaign.binder_data;
+
+      if (year && make && model) {
+        content += `Vehicle: ${year} ${make} ${model}\n`;
+      }
+
+      if (price) {
+        content += `💰 ${price}\n`;
+      }
+
+      if (mileage) {
+        content += `📍 ${mileage} miles\n`;
+      }
+    }
+
+    // Add Facebook-friendly call to action
+    content += '\n👆 Click the link to learn more!\n';
+    content += '#cars #automotive #forsale #tonkaintl';
+
+    return content;
+  }
+
   async fetchPosts(input) {
     try {
       const { limit = 25, pageIdOrHandle, since } = input;

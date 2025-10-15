@@ -7,7 +7,11 @@ import { z } from 'zod';
 
 import { BinderAdapter } from '../../../adapters/binder/binder.adapter.js';
 import { config } from '../../../config/env.js';
-import { ApiError } from '../../../constants/errors.js';
+import {
+  ApiError,
+  ERROR_CODES,
+  ERROR_MESSAGES,
+} from '../../../constants/errors.js';
 import { logger } from '../../../utils/logger.js';
 
 // Request validation schema
@@ -26,10 +30,16 @@ export const createSocialCampaign = async (req, res, next) => {
     const validationResult = createCampaignSchema.safeParse(req.body);
 
     if (!validationResult.success) {
-      return res.status(400).json({
-        code: 'VALIDATION_ERROR',
-        details: validationResult.error.errors,
-        message: 'Invalid request data',
+      const error = new ApiError(
+        ERROR_CODES.VALIDATION_ERROR,
+        ERROR_MESSAGES.INVALID_REQUEST_DATA,
+        400,
+        validationResult.error.errors
+      );
+      return res.status(error.statusCode).json({
+        code: error.code,
+        details: error.details,
+        message: error.message,
       });
     }
 
@@ -42,13 +52,10 @@ export const createSocialCampaign = async (req, res, next) => {
     });
 
     // Initialize binder adapter
-    const binderAdapter = new BinderAdapter(config.BINDER_BASE_URL);
+    const binderAdapter = new BinderAdapter(config);
 
     // Create campaign using binder adapter
-    const campaign = await binderAdapter.createCampaign({
-      createdBy,
-      stockNumber,
-    });
+    const campaign = await binderAdapter.createCampaign(stockNumber, createdBy);
 
     logger.info('Campaign created successfully', {
       campaignId: campaign.campaign_id,

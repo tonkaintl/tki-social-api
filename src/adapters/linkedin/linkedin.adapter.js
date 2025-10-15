@@ -22,7 +22,7 @@ export class LinkedInAdapter extends SocialAdapter {
       await this.client.getCurrentUser();
       return true;
     } catch (error) {
-      this.logger.error('LinkedIn config validation failed', {
+      logger.error('LinkedIn config validation failed', {
         error: error.message,
       });
       return false;
@@ -31,7 +31,7 @@ export class LinkedInAdapter extends SocialAdapter {
 
   async createPost(input) {
     try {
-      this.logger.info('Creating LinkedIn post', {
+      logger.info('Creating LinkedIn post', {
         hasMessage: !!input.message,
         pageIdOrHandle: input.pageIdOrHandle,
       });
@@ -55,7 +55,7 @@ export class LinkedInAdapter extends SocialAdapter {
 
       const response = await this.client.post('/ugcPosts', postData);
 
-      this.logger.info('LinkedIn post created successfully', {
+      logger.info('LinkedIn post created successfully', {
         postId: response.id,
       });
 
@@ -66,7 +66,7 @@ export class LinkedInAdapter extends SocialAdapter {
         status: 'success',
       };
     } catch (error) {
-      this.logger.error('LinkedIn post creation failed', {
+      logger.error('LinkedIn post creation failed', {
         error: error.message,
         pageIdOrHandle: input.pageIdOrHandle,
       });
@@ -82,7 +82,7 @@ export class LinkedInAdapter extends SocialAdapter {
 
   async createComment(input) {
     try {
-      this.logger.info('Creating LinkedIn comment', {
+      logger.info('Creating LinkedIn comment', {
         hasMessage: !!input.message,
         threadIdOrPostId: input.threadIdOrPostId,
       });
@@ -101,7 +101,7 @@ export class LinkedInAdapter extends SocialAdapter {
         commentData
       );
 
-      this.logger.info('LinkedIn comment created successfully', {
+      logger.info('LinkedIn comment created successfully', {
         commentId: response.id,
       });
 
@@ -111,7 +111,7 @@ export class LinkedInAdapter extends SocialAdapter {
         status: 'success',
       };
     } catch (error) {
-      this.logger.error('LinkedIn comment creation failed', {
+      logger.error('LinkedIn comment creation failed', {
         error: error.message,
         threadIdOrPostId: input.threadIdOrPostId,
       });
@@ -157,9 +157,79 @@ export class LinkedInAdapter extends SocialAdapter {
     }
   }
 
+  async createPostFromCampaign(campaign, provider, options = {}) {
+    try {
+      const { mediaUrls = [], pageIdOrHandle } = options;
+
+      logger.info('Creating LinkedIn post from campaign', {
+        campaignId: campaign._id,
+        mediaCount: mediaUrls.length,
+        provider: 'linkedin',
+        stockNumber: campaign.stock_number,
+      });
+
+      // Generate dynamic content for LinkedIn
+      const message = await this.generateLinkedInContent(campaign);
+
+      // Use createPost with generated content
+      return await this.createPost({
+        message,
+        pageIdOrHandle,
+      });
+    } catch (error) {
+      logger.error('Failed to create LinkedIn post from campaign', {
+        campaignId: campaign._id,
+        error: error.message,
+        provider: 'linkedin',
+        stockNumber: campaign.stock_number,
+      });
+
+      return {
+        externalPostId: null,
+        permalink: null,
+        raw: { error: error.message },
+        status: 'failed',
+      };
+    }
+  }
+
+  /**
+   * Generate LinkedIn-specific content from campaign data
+   */
+  async generateLinkedInContent(campaign) {
+    // Use campaign title and description as base
+    let content = `${campaign.title}\n\n`;
+
+    if (campaign.description) {
+      content += `${campaign.description}\n\n`;
+    }
+
+    // Add key details from Binder data if available
+    if (campaign.binder_data) {
+      const { make, mileage, model, price, year } = campaign.binder_data;
+
+      if (year && make && model) {
+        content += `🚗 ${year} ${make} ${model}\n`;
+      }
+
+      if (price) {
+        content += `💰 Price: ${price}\n`;
+      }
+
+      if (mileage) {
+        content += `📍 Mileage: ${mileage}\n`;
+      }
+    }
+
+    // Add professional LinkedIn touch
+    content += '\n#automotive #cars #forsale';
+
+    return content;
+  }
+
   async fetchPosts(input) {
     try {
-      this.logger.info('Fetching LinkedIn posts', {
+      logger.info('Fetching LinkedIn posts', {
         pageIdOrHandle: input.pageIdOrHandle,
       });
 
@@ -178,14 +248,14 @@ export class LinkedInAdapter extends SocialAdapter {
       const normalizedPosts =
         response.elements?.map(post => normalizeLinkedInPost(post)) || [];
 
-      this.logger.info('LinkedIn posts fetched successfully', {
+      logger.info('LinkedIn posts fetched successfully', {
         count: normalizedPosts.length,
         pageIdOrHandle: input.pageIdOrHandle,
       });
 
       return normalizedPosts;
     } catch (error) {
-      this.logger.error('LinkedIn posts fetch failed', {
+      logger.error('LinkedIn posts fetch failed', {
         error: error.message,
         pageIdOrHandle: input.pageIdOrHandle,
       });
@@ -197,7 +267,7 @@ export class LinkedInAdapter extends SocialAdapter {
   async handleWebhook(req) {
     // LinkedIn webhooks are very limited and require special approval
     // Most LinkedIn integrations use polling instead of webhooks
-    this.logger.info('LinkedIn webhook received', {
+    logger.info('LinkedIn webhook received', {
       headers: req.headers,
       method: req.method,
     });

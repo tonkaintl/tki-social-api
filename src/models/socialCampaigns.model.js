@@ -1,5 +1,13 @@
 import mongoose from 'mongoose';
 
+import {
+  CAMPAIGN_DEFAULTS,
+  CAMPAIGN_STATUS_VALUES,
+  MEDIA_STORAGE,
+  MEDIA_TYPE,
+  MEDIA_TYPE_VALUES,
+} from '../constants/campaigns.js';
+
 // ----------------------------------------------------------
 
 var Schema = mongoose.Schema;
@@ -7,83 +15,29 @@ var socialCampaignsSchema = new Schema({
   created_at: { default: Date.now, type: Date },
   created_by: { required: true, type: String },
   description: { type: String },
-  // Media storage
-  media_storage: { default: 'azure', type: String },
-  media_urls: [String],
-
-  // Platform-specific content (snake_case following your pattern)
-  platform_content: {
-    facebook_page: {
-      caption: String,
-      character_count: Number,
-      hashtags: [String],
-      html_preview: String,
-      media: [{ azure_blob_url: String, url: String }],
-      share_url: String,
-      utm: String,
-    },
-    instagram_business: {
-      caption: String,
-      character_count: Number,
-      hashtags: [String],
-      html_preview: String,
-      media: [{ azure_blob_url: String, url: String }],
-      share_url: String,
-      utm: String,
-    },
-    linkedin_company: {
-      caption: String,
-      character_count: Number,
-      hashtags: [String],
-      html_preview: String,
-      media: [{ azure_blob_url: String, url: String }],
-      share_url: String,
-      utm: String,
-    },
-    x_profile: {
-      caption: String,
-      character_count: Number,
-      hashtags: [String],
-      html_preview: String,
-      media: [{ azure_blob_url: String, url: String }],
-      share_url: String,
-      utm: String,
-    },
-  },
-
-  // Post tracking
-  posts: [
+  // Media Portfolio - user-curated collection for social posting
+  media_storage: { default: MEDIA_STORAGE.AZURE, type: String },
+  media_urls: [
     {
-      error: String,
-      external_id: String,
-      internal_status: {
-        default: 'created',
-        enum: [
-          'created',
-          'drafted',
-          'scheduled',
-          'published',
-          'failed',
-          'manual_push',
-        ],
+      alt: { type: String },
+      created_at: { default: Date.now, type: Date },
+      description: { type: String },
+      filename: { type: String },
+      media_type: {
+        default: MEDIA_TYPE.IMAGE,
+        enum: MEDIA_TYPE_VALUES,
         type: String,
       },
-      last_status_check: Date,
-      metricool_id: String,
-      metricool_status: {
-        enum: ['draft', 'scheduled', 'published', 'failed'],
-        type: String,
-      },
-      platform: String,
-      published_date: Date,
-      scheduled_date: Date,
+      size: { type: Number },
+      tags: [{ type: String }],
+      url: { required: true, type: String },
     },
-  ],
+  ], // Portfolio of media objects with metadata
   short_url: { type: String },
   // Status and metadata
   status: {
-    default: 'pending',
-    enum: ['pending', 'draft', 'scheduled', 'published', 'failed'],
+    default: CAMPAIGN_DEFAULTS.STATUS,
+    enum: CAMPAIGN_STATUS_VALUES,
     type: String,
   },
   stock_number: { required: true, type: String, unique: true },

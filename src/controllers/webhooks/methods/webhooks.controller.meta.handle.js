@@ -5,6 +5,7 @@
 
 import { MetaAdapter } from '../../../adapters/meta/meta.adapter.js';
 import { config } from '../../../config/env.js';
+import { ApiError, ERROR_CODES } from '../../../constants/errors.js';
 import { binderService } from '../../../services/binder.service.js';
 import { logger } from '../../../utils/logger.js';
 
@@ -82,8 +83,13 @@ export const handleMetaWebhook = async (req, res) => {
       error: error.message,
     });
 
-    return res.status(500).json({
-      error: error.message,
+    const apiError = new ApiError(
+      ERROR_CODES.INTERNAL_SERVER_ERROR,
+      error.message
+    );
+    return res.status(apiError.statusCode).json({
+      code: apiError.code,
+      error: apiError.message,
       status: 'error',
     });
   }

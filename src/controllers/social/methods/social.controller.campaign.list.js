@@ -5,6 +5,11 @@
 
 import { z } from 'zod';
 
+import {
+  ApiError,
+  ERROR_CODES,
+  ERROR_MESSAGES,
+} from '../../../constants/errors.js';
 import SocialCampaigns from '../../../models/socialCampaigns.model.js';
 import { logger } from '../../../utils/logger.js';
 
@@ -68,9 +73,16 @@ export const getCampaignsList = async (req, res) => {
         query: req.query,
         requestId: req.requestId,
       });
-      return res.status(400).json({
-        details: validation.error.errors,
-        error: 'Invalid query parameters',
+      const error = new ApiError(
+        ERROR_CODES.VALIDATION_ERROR,
+        'Invalid query parameters',
+        400,
+        validation.error.errors
+      );
+      return res.status(error.statusCode).json({
+        code: error.code,
+        details: error.details,
+        error: error.message,
       });
     }
 
@@ -110,7 +122,6 @@ export const getCampaignsList = async (req, res) => {
           'inventory_data.make': 1,
           'inventory_data.model': 1,
           'inventory_data.year': 1,
-          posts: 1,
           status: 1,
           stock_number: 1,
           updated_at: 1,
@@ -124,7 +135,7 @@ export const getCampaignsList = async (req, res) => {
     const hasNextPage = page < totalPages;
     const hasPrevPage = page > 1;
 
-    // Format campaigns with post statistics
+    // Format campaigns
     const formattedCampaigns = campaigns.map(campaign => ({
       campaign_id: campaign.campaign_id,
       created_at: campaign.created_at,
@@ -132,13 +143,6 @@ export const getCampaignsList = async (req, res) => {
         make: campaign.inventory_data?.make || null,
         model: campaign.inventory_data?.model || null,
         year: campaign.inventory_data?.year || null,
-      },
-      metadata: {
-        failed_count:
-          campaign.posts?.filter(p => p.status === 'failed').length || 0,
-        posted_count:
-          campaign.posts?.filter(p => p.status === 'posted').length || 0,
-        total_posts: campaign.posts?.length || 0,
       },
       status: campaign.status,
       stock_number: campaign.stock_number,
@@ -172,8 +176,13 @@ export const getCampaignsList = async (req, res) => {
       stack: error.stack,
     });
 
-    res.status(500).json({
-      error: 'Internal server error',
+    const apiError = new ApiError(
+      ERROR_CODES.INTERNAL_SERVER_ERROR,
+      ERROR_MESSAGES.INTERNAL_SERVER_ERROR
+    );
+    res.status(apiError.statusCode).json({
+      code: apiError.code,
+      error: apiError.message,
       message: 'Failed to fetch campaigns list',
     });
   }

@@ -9,7 +9,13 @@ import { LinkedInAdapter } from '../../../adapters/linkedin/linkedin.adapter.js'
 import { MetaAdapter } from '../../../adapters/meta/meta.adapter.js';
 import { RedditAdapter } from '../../../adapters/reddit/reddit.adapter.js';
 import { XAdapter } from '../../../adapters/x/x.adapter.js';
+import {
+  ApiError,
+  ERROR_CODES,
+  ERROR_MESSAGES,
+} from '../../../constants/errors.js';
 import { PROVIDERS } from '../../../constants/providers.js';
+import SocialCampaigns from '../../../models/socialCampaigns.model.js';
 import { logger } from '../../../utils/logger.js';
 
 // ----------------------------------------------------------------------------
@@ -34,6 +40,7 @@ const createPostSchema = z
         ])
       )
       .optional(),
+    stockNumber: z.string().optional(), // Optional: use campaign data if provided
   })
   .refine(data => data.provider || data.providers, {
     message: 'Either provider or providers must be specified',
@@ -54,7 +61,10 @@ const getAdapter = provider => {
     case PROVIDERS.REDDIT:
       return new RedditAdapter();
     default:
-      throw new Error(`Unsupported provider: ${provider}`);
+      throw new ApiError(
+        ERROR_CODES.UNSUPPORTED_PROVIDER,
+        `Unsupported provider: ${provider}`
+      );
   }
 };
 
@@ -75,22 +85,54 @@ export const createSocialPost = async (req, res) => {
         errors: validation.error.errors,
         requestId: req.id,
       });
-      return res.status(400).json({
-        code: 'VALIDATION_ERROR',
-        error: 'Invalid request data',
-        errors: validation.error.errors,
+      const error = new ApiError(
+        ERROR_CODES.VALIDATION_ERROR,
+        ERROR_MESSAGES.INVALID_REQUEST_DATA,
+        400,
+        validation.error.errors
+      );
+      return res.status(error.statusCode).json({
+        code: error.code,
+        error: error.message,
+        errors: error.details,
       });
     }
 
-    const { additionalParams, message, pageIdOrHandle, provider, providers } =
-      validation.data;
+    const {
+      additionalParams,
+      message,
+      pageIdOrHandle,
+      provider,
+      providers,
+      stockNumber,
+    } = validation.data;
     const targetProviders = providers || [provider];
 
+    // If stockNumber provided, get campaign and use campaign-based posting
+    let campaign = null;
+    if (stockNumber) {
+      campaign = await SocialCampaigns.findOne({ stock_number: stockNumber });
+      if (!campaign) {
+        const error = new ApiError(
+          ERROR_CODES.CAMPAIGN_NOT_FOUND,
+          `Campaign not found for stock number: ${stockNumber}`,
+          404
+        );
+        return res.status(error.statusCode).json({
+          code: error.code,
+          error: error.message,
+          requestId: req.id,
+        });
+      }
+    }
+
     logger.info('Creating social media post', {
+      campaignMode: !!campaign,
       message: message.substring(0, 50) + '...',
       pageIdOrHandle,
       providers: targetProviders,
       requestId: req.id,
+      stockNumber: stockNumber || 'none',
     });
 
     // Handle single provider
@@ -98,11 +140,32 @@ export const createSocialPost = async (req, res) => {
       const adapter = getAdapter(targetProviders[0]);
 
       try {
-        const result = await adapter.createPost({
-          message,
-          pageIdOrHandle,
-          ...additionalParams,
-        });
+        let result;
+
+        if (campaign) {
+          // Use campaign-based posting with dynamic content generation
+          const campaignMediaUrls =
+            campaign.media_urls
+              ?.filter(media => ['image', 'video'].includes(media.media_type))
+              ?.map(media => media.url) || [];
+
+          result = await adapter.createPostFromCampaign(
+            campaign,
+            targetProviders[0],
+            {
+              mediaUrls: campaignMediaUrls,
+              pageIdOrHandle,
+              ...additionalParams,
+            }
+          );
+        } else {
+          // Use direct message posting
+          result = await adapter.createPost({
+            message,
+            pageIdOrHandle,
+            ...additionalParams,
+          });
+        }
 
         logger.info('Post created successfully', {
           postId: result.externalPostId,
@@ -122,8 +185,13 @@ export const createSocialPost = async (req, res) => {
           requestId: req.id,
         });
 
-        return res.status(500).json({
-          error: 'Failed to create post',
+        const apiError = new ApiError(
+          ERROR_CODES.PROVIDER_REQUEST_FAILED,
+          'Failed to create post'
+        );
+        return res.status(apiError.statusCode).json({
+          code: apiError.code,
+          error: apiError.message,
           provider: targetProviders[0],
           requestId: req.id,
           success: false,
@@ -139,11 +207,32 @@ export const createSocialPost = async (req, res) => {
     for (const providerName of targetProviders) {
       try {
         const adapter = getAdapter(providerName);
-        const result = await adapter.createPost({
-          message,
-          pageIdOrHandle,
-          ...additionalParams,
-        });
+        let result;
+
+        if (campaign) {
+          // Use campaign-based posting with dynamic content generation
+          const campaignMediaUrls =
+            campaign.media_urls
+              ?.filter(media => ['image', 'video'].includes(media.media_type))
+              ?.map(media => media.url) || [];
+
+          result = await adapter.createPostFromCampaign(
+            campaign,
+            providerName,
+            {
+              mediaUrls: campaignMediaUrls,
+              pageIdOrHandle,
+              ...additionalParams,
+            }
+          );
+        } else {
+          // Use direct message posting
+          result = await adapter.createPost({
+            message,
+            pageIdOrHandle,
+            ...additionalParams,
+          });
+        }
 
         results[providerName] = result;
         hasSuccess = true;
@@ -183,8 +272,13 @@ export const createSocialPost = async (req, res) => {
       stack: error.stack,
     });
 
-    res.status(500).json({
-      error: 'Internal server error',
+    const apiError = new ApiError(
+      ERROR_CODES.INTERNAL_SERVER_ERROR,
+      ERROR_MESSAGES.INTERNAL_SERVER_ERROR
+    );
+    res.status(apiError.statusCode).json({
+      code: apiError.code,
+      error: apiError.message,
       requestId: req.id,
       success: false,
     });

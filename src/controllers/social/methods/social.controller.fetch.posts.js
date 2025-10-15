@@ -5,6 +5,7 @@
 
 import { z } from 'zod';
 
+import { ApiError, ERROR_CODES } from '../../../constants/errors.js';
 import SocialCampaigns from '../../../models/socialCampaigns.model.js';
 import { logger } from '../../../utils/logger.js';
 
@@ -33,10 +34,16 @@ export const fetchSocialPosts = async (req, res, next) => {
     const validationResult = fetchCampaignsSchema.safeParse(req.query);
 
     if (!validationResult.success) {
-      return res.status(400).json({
-        code: 'VALIDATION_ERROR',
-        errors: validationResult.error.errors,
-        message: 'Invalid query parameters',
+      const error = new ApiError(
+        ERROR_CODES.VALIDATION_ERROR,
+        'Invalid query parameters',
+        400,
+        validationResult.error.errors
+      );
+      return res.status(error.statusCode).json({
+        code: error.code,
+        errors: error.details,
+        message: error.message,
         requestId: req.id,
       });
     }

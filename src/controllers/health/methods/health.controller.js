@@ -1,3 +1,5 @@
+import { HEALTH_STATUS, SERVICE_INFO } from '../../../constants/service.js';
+
 // ----------------------------------------------------------------------------
 // GET /health
 // Health check endpoint for load balancers and monitoring
@@ -9,9 +11,9 @@
  */
 export const getHealth = (req, res) => {
   res.json({
-    service: 'tki-social-api',
-    status: 'healthy',
+    service: SERVICE_INFO.NAME,
+    status: HEALTH_STATUS.HEALTHY,
     timestamp: new Date().toISOString(),
-    version: '1.0.0',
+    version: SERVICE_INFO.VERSION,
   });
 };

@@ -1,12 +1,31 @@
 /**
  * Social Campaign Detail Controller
- * Retrieves individual campaign details by stock number
+ * Retrieves individual campaign details with dynamic platform formatting
  */
 
 import { z } from 'zod';
 
+import { BinderAdapter } from '../../../adapters/binder/binder.adapter.js';
+import { formatBinderItemForLinkedIn } from '../../../adapters/linkedin/formatters/binder-item.formatter.js';
+import { formatBinderItemForMeta } from '../../../adapters/meta/formatters/binder-item.formatter.js';
+import { formatBinderItemForReddit } from '../../../adapters/reddit/formatters/binder-item.formatter.js';
+import { formatBinderItemForX } from '../../../adapters/x/formatters/binder-item.formatter.js';
+import { config } from '../../../config/env.js';
+import { ApiError, ERROR_CODES } from '../../../constants/errors.js';
 import SocialCampaigns from '../../../models/socialCampaigns.model.js';
 import { logger } from '../../../utils/logger.js';
+
+// ----------------------------------------------------------------------------
+// Constants
+// ----------------------------------------------------------------------------
+
+const formatters = {
+  facebook_page: formatBinderItemForMeta,
+  instagram_business: formatBinderItemForMeta, // Same as Facebook for now
+  linkedin_company: formatBinderItemForLinkedIn,
+  reddit: formatBinderItemForReddit,
+  x_profile: formatBinderItemForX,
+};
 
 // ----------------------------------------------------------------------------
 // Validation Schemas
@@ -21,97 +40,110 @@ const getCampaignParamsSchema = z.object({
 // ----------------------------------------------------------------------------
 
 /**
- * Get Campaign by Stock Number
+ * Get Campaign by Stock Number with Dynamic Platform Formatting
  * GET /social/campaigns/:stockNumber
  */
-export const getCampaignByStockNumber = async (req, res) => {
+export const getCampaignByStockNumber = async (req, res, next) => {
   try {
-    // Validate parameters
-    const validation = getCampaignParamsSchema.safeParse(req.params);
-    if (!validation.success) {
-      logger.warn('Invalid campaign detail request', {
-        errors: validation.error.errors,
-        params: req.params,
-        requestId: req.requestId,
-      });
-      return res.status(400).json({
-        details: validation.error.errors,
-        error: 'Invalid request parameters',
-      });
-    }
-
-    const { stockNumber } = validation.data;
+    const { stockNumber } = getCampaignParamsSchema.parse(req.params);
 
     logger.info('Fetching campaign details', {
-      requestId: req.requestId,
+      requestId: req.id,
       stockNumber,
     });
 
-    // Find campaign by stock number
-    const campaign = await SocialCampaigns.findOne(
-      { stock_number: stockNumber },
-      {
-        // Include all fields but limit posts to essential data
-        'posts.platform_response': 0, // Exclude large response data
-      }
-    );
+    // Step 1: Find campaign by stock number
+    const campaign = await SocialCampaigns.findOne({
+      stock_number: stockNumber,
+    });
 
     if (!campaign) {
       logger.warn('Campaign not found', {
-        requestId: req.requestId,
+        requestId: req.id,
         stockNumber,
       });
-      return res.status(404).json({
-        error: 'Campaign not found',
-        stock_number: stockNumber,
+      const error = new ApiError(
+        ERROR_CODES.RESOURCE_NOT_FOUND,
+        'Campaign not found',
+        404
+      );
+      return res.status(error.statusCode).json({
+        code: error.code,
+        message: error.message,
+        requestId: req.id,
+        stockNumber,
       });
     }
 
-    // Format response
-    const response = {
-      campaign: {
-        campaign_id: campaign.campaign_id,
-        created_at: campaign.created_at,
-        inventory_data: campaign.inventory_data,
-        metadata: {
-          failed_count: campaign.posts.filter(p => p.status === 'failed')
-            .length,
-          posted_count: campaign.posts.filter(p => p.status === 'posted')
-            .length,
-          total_posts: campaign.posts.length,
-        },
-        platform_content: campaign.platform_content,
-        posts: campaign.posts.map(post => ({
-          engagement: post.engagement,
-          platform: post.platform,
-          post_id: post.post_id,
-          posted_at: post.posted_at,
-          status: post.status,
-        })),
-        status: campaign.status,
-        stock_number: campaign.stock_number,
-        updated_at: campaign.updated_at,
-      },
+    // Step 2: Fetch fresh item from Binder for dynamic formatting
+    const binderAdapter = new BinderAdapter(config);
+    const item = await binderAdapter.getItem(stockNumber);
+
+    // Step 3: Generate platform-specific formatted content
+    const platformContent = {
+      facebook_page: formatters.facebook_page(item),
+      instagram_business: formatters.instagram_business(item),
+      linkedin_company: formatters.linkedin_company(item),
+      reddit: formatters.reddit(item),
+      x_profile: formatters.x_profile(item),
     };
 
-    logger.info('Campaign details retrieved successfully', {
-      requestId: req.requestId,
+    // Step 4: Build response
+    const response = {
+      campaign: {
+        _id: campaign._id,
+        created_at: campaign.created_at,
+        created_by: campaign.created_by,
+        description: campaign.description,
+        media_storage: campaign.media_storage,
+        media_urls: campaign.media_urls,
+        short_url: campaign.short_url,
+        status: campaign.status,
+        stock_number: campaign.stock_number,
+        title: campaign.title,
+        updated_at: campaign.updated_at,
+        url: campaign.url,
+      },
+      item, // Fresh Binder data
+      platformContent, // Dynamically formatted content
+      requestId: req.id,
+      success: true,
+    };
+
+    logger.info('Campaign details retrieved with dynamic formatting', {
+      requestId: req.id,
       stockNumber,
-      totalPosts: response.campaign.metadata.total_posts,
     });
 
-    res.json(response);
+    return res.status(200).json(response);
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      logger.warn('Campaign detail validation failed', {
+        errors: error.errors,
+        requestId: req.id,
+      });
+
+      const apiError = new ApiError(
+        ERROR_CODES.VALIDATION_ERROR,
+        'Request validation failed',
+        400,
+        error.errors
+      );
+      return res.status(apiError.statusCode).json({
+        code: apiError.code,
+        errors: apiError.details,
+        message: apiError.message,
+        requestId: req.id,
+      });
+    }
+
     logger.error('Error fetching campaign details', {
       error: error.message,
-      requestId: req.requestId,
+      requestId: req.id,
       stack: error.stack,
       stockNumber: req.params.stockNumber,
     });
 
-    res.status(500).json({
-      error: 'Internal server error',
-      message: 'Failed to fetch campaign details',
-    });
+    next(error);
   }
 };

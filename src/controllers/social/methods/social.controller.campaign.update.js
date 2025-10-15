@@ -1,10 +1,17 @@
 /**
  * Social Campaign Update Controller
- * Updates campaign status, content, and posts
+ * Updates campaign with fresh Binder data, preserving user-added content like media portfolio
  */
 
 import { z } from 'zod';
 
+import { BinderAdapter } from '../../../adapters/binder/binder.adapter.js';
+import { config } from '../../../config/env.js';
+import {
+  ApiError,
+  ERROR_CODES,
+  ERROR_MESSAGES,
+} from '../../../constants/errors.js';
 import SocialCampaigns from '../../../models/socialCampaigns.model.js';
 import { logger } from '../../../utils/logger.js';
 
@@ -17,15 +24,12 @@ const updateCampaignParamsSchema = z.object({
 });
 
 const updateCampaignBodySchema = z.object({
-  platform_content: z
-    .object({
-      facebook: z.object({ text: z.string() }).optional(),
-      instagram: z.object({ caption: z.string() }).optional(),
-      linkedin: z.object({ text: z.string() }).optional(),
-      x: z.object({ text: z.string() }).optional(),
-    })
+  // Force refresh from Binder data
+  refreshFromBinder: z.boolean().optional().default(true),
+  // Allow status override
+  status: z
+    .enum(['pending', 'draft', 'scheduled', 'published', 'failed'])
     .optional(),
-  status: z.enum(['draft', 'queued', 'posting', 'posted', 'failed']).optional(),
 });
 
 // ----------------------------------------------------------------------------
@@ -48,9 +52,16 @@ export const updateCampaign = async (req, res) => {
         params: req.params,
         requestId: req.requestId,
       });
-      return res.status(400).json({
-        details: paramsValidation.error.errors,
-        error: 'Invalid request parameters',
+      const error = new ApiError(
+        ERROR_CODES.VALIDATION_ERROR,
+        ERROR_MESSAGES.INVALID_REQUEST_PARAMS,
+        400,
+        paramsValidation.error.errors
+      );
+      return res.status(error.statusCode).json({
+        code: error.code,
+        details: error.details,
+        error: error.message,
       });
     }
 
@@ -60,56 +71,98 @@ export const updateCampaign = async (req, res) => {
         errors: bodyValidation.error.errors,
         requestId: req.requestId,
       });
-      return res.status(400).json({
-        details: bodyValidation.error.errors,
-        error: 'Invalid request body',
+      const error = new ApiError(
+        ERROR_CODES.VALIDATION_ERROR,
+        'Invalid request body',
+        400,
+        bodyValidation.error.errors
+      );
+      return res.status(error.statusCode).json({
+        code: error.code,
+        details: error.details,
+        error: error.message,
       });
     }
 
     const { stockNumber } = paramsValidation.data;
     const updateData = bodyValidation.data;
 
-    logger.info('Updating campaign', {
+    logger.info('Updating campaign with fresh Binder data', {
+      refreshFromBinder: updateData.refreshFromBinder,
       requestId: req.requestId,
+      statusOverride: updateData.status,
       stockNumber,
-      updateFields: Object.keys(updateData),
     });
 
-    // Build update object
-    const updateObject = {
+    // Step 1: Find existing campaign
+    const existingCampaign = await SocialCampaigns.findOne({
+      stock_number: stockNumber,
+    });
+
+    if (!existingCampaign) {
+      logger.warn('Campaign not found for update', {
+        requestId: req.requestId,
+        stockNumber,
+      });
+      const error = new ApiError(
+        ERROR_CODES.RESOURCE_NOT_FOUND,
+        'Campaign not found'
+      );
+      return res.status(error.statusCode).json({
+        code: error.code,
+        error: error.message,
+        stock_number: stockNumber,
+      });
+    }
+
+    // Step 2: Fetch fresh data from Binder if requested
+    let updateObject = {
       updated_at: new Date(),
     };
 
+    if (updateData.refreshFromBinder) {
+      try {
+        const binderAdapter = new BinderAdapter(config);
+        const freshItem = await binderAdapter.getItem(stockNumber);
+
+        // Update fields that may have changed in Binder
+        updateObject = {
+          ...updateObject,
+          description: freshItem.description,
+          title: freshItem.title,
+          url: freshItem.url,
+          // Preserve user-added fields like media_urls and status
+        };
+
+        logger.info('Updated campaign with fresh Binder data', {
+          requestId: req.requestId,
+          stockNumber,
+        });
+      } catch (binderError) {
+        logger.warn(
+          'Failed to fetch fresh Binder data, proceeding with status-only update',
+          {
+            binderError: binderError.message,
+            requestId: req.requestId,
+            stockNumber,
+          }
+        );
+      }
+    }
+
+    // Step 3: Apply status override if provided
     if (updateData.status) {
       updateObject.status = updateData.status;
     }
 
-    if (updateData.platform_content) {
-      updateObject.platform_content = updateData.platform_content;
-    }
-
-    // Update campaign
+    // Step 4: Update campaign
     const updatedCampaign = await SocialCampaigns.findOneAndUpdate(
       { stock_number: stockNumber },
       { $set: updateObject },
       {
         new: true,
-        projection: {
-          'posts.platform_response': 0, // Exclude large response data
-        },
       }
     );
-
-    if (!updatedCampaign) {
-      logger.warn('Campaign not found for update', {
-        requestId: req.requestId,
-        stockNumber,
-      });
-      return res.status(404).json({
-        error: 'Campaign not found',
-        stock_number: stockNumber,
-      });
-    }
 
     logger.info('Campaign updated successfully', {
       requestId: req.requestId,
@@ -120,15 +173,21 @@ export const updateCampaign = async (req, res) => {
     // Format response
     const response = {
       campaign: {
-        campaign_id: updatedCampaign.campaign_id,
+        _id: updatedCampaign._id,
         created_at: updatedCampaign.created_at,
-        inventory_data: updatedCampaign.inventory_data,
-        platform_content: updatedCampaign.platform_content,
+        created_by: updatedCampaign.created_by,
+        description: updatedCampaign.description,
+        media_storage: updatedCampaign.media_storage,
+        media_urls: updatedCampaign.media_urls,
+        short_url: updatedCampaign.short_url,
         status: updatedCampaign.status,
         stock_number: updatedCampaign.stock_number,
+        title: updatedCampaign.title,
         updated_at: updatedCampaign.updated_at,
+        url: updatedCampaign.url,
       },
-      message: 'Campaign updated successfully',
+      message: 'Campaign updated with fresh Binder data',
+      refreshedFromBinder: updateData.refreshFromBinder,
     };
 
     res.json(response);
@@ -140,8 +199,13 @@ export const updateCampaign = async (req, res) => {
       stockNumber: req.params.stockNumber,
     });
 
-    res.status(500).json({
-      error: 'Internal server error',
+    const apiError = new ApiError(
+      ERROR_CODES.INTERNAL_SERVER_ERROR,
+      ERROR_MESSAGES.INTERNAL_SERVER_ERROR
+    );
+    res.status(apiError.statusCode).json({
+      code: apiError.code,
+      error: apiError.message,
       message: 'Failed to update campaign',
     });
   }
