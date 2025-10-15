@@ -1,14 +1,17 @@
 import express from 'express';
 
 import {
+  addCampaignMedia,
   createSocialCampaign,
   createSocialComment,
   createSocialPost,
   fetchSocialPosts,
   getCampaignByStockNumber,
+  getCampaignMedia,
   getCampaignPreview,
   getCampaignsList,
   postItemToSocial,
+  removeCampaignMedia,
   updateCampaign,
 } from '../controllers/social/methods.js';
 import { verifyToken } from '../middleware/auth.bearer.js';
@@ -35,11 +38,22 @@ router.get('/fetch', fetchSocialPosts);
 router.get('/campaigns', getCampaignsList); // Campaign listing with pagination
 router.get('/campaigns/:stockNumber/preview/:provider', getCampaignPreview); // Campaign preview for specific platform
 router.get('/campaigns/:stockNumber', getCampaignByStockNumber);
+router.get('/campaigns/:stockNumber/media', getCampaignMedia); // Get campaign media portfolio
 
 // ----------------------------------------------------------------------------
 // PUT Routes
 // ----------------------------------------------------------------------------
 router.put('/campaigns/:stockNumber', updateCampaign);
+
+// ----------------------------------------------------------------------------
+// POST Routes (Media Portfolio)
+// ----------------------------------------------------------------------------
+router.post('/campaigns/:stockNumber/media', addCampaignMedia); // Add media to campaign portfolio
+
+// ----------------------------------------------------------------------------
+// DELETE Routes
+// ----------------------------------------------------------------------------
+router.delete('/campaigns/:stockNumber/media/:mediaIndex', removeCampaignMedia); // Remove media from portfolio
 
 // ----------------------------------------------------------------------------
 export default router;

@@ -162,5 +162,5 @@ coverage/
 
 # Postman collections
 postman/
-postman_environment.json
-postman_collections.json
+*.postman_environment.json
+*.postman_collection.json
