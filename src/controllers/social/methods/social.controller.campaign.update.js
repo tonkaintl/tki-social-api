@@ -5,6 +5,7 @@
 
 import { z } from 'zod';
 
+import { ApiError, ERROR_CODES } from '../../../constants/errors.js';
 import SocialCampaigns from '../../../models/socialCampaigns.model.js';
 import { logger } from '../../../utils/logger.js';
 
@@ -48,9 +49,16 @@ export const updateCampaign = async (req, res) => {
         params: req.params,
         requestId: req.requestId,
       });
-      return res.status(400).json({
-        details: paramsValidation.error.errors,
-        error: 'Invalid request parameters',
+      const error = new ApiError(
+        ERROR_CODES.VALIDATION_ERROR,
+        'Invalid request parameters',
+        400,
+        paramsValidation.error.errors
+      );
+      return res.status(error.statusCode).json({
+        code: error.code,
+        details: error.details,
+        error: error.message,
       });
     }
 
@@ -60,9 +68,16 @@ export const updateCampaign = async (req, res) => {
         errors: bodyValidation.error.errors,
         requestId: req.requestId,
       });
-      return res.status(400).json({
-        details: bodyValidation.error.errors,
-        error: 'Invalid request body',
+      const error = new ApiError(
+        ERROR_CODES.VALIDATION_ERROR,
+        'Invalid request body',
+        400,
+        bodyValidation.error.errors
+      );
+      return res.status(error.statusCode).json({
+        code: error.code,
+        details: error.details,
+        error: error.message,
       });
     }
 
@@ -105,8 +120,13 @@ export const updateCampaign = async (req, res) => {
         requestId: req.requestId,
         stockNumber,
       });
-      return res.status(404).json({
-        error: 'Campaign not found',
+      const error = new ApiError(
+        ERROR_CODES.RESOURCE_NOT_FOUND,
+        'Campaign not found'
+      );
+      return res.status(error.statusCode).json({
+        code: error.code,
+        error: error.message,
         stock_number: stockNumber,
       });
     }
@@ -140,8 +160,13 @@ export const updateCampaign = async (req, res) => {
       stockNumber: req.params.stockNumber,
     });
 
-    res.status(500).json({
-      error: 'Internal server error',
+    const apiError = new ApiError(
+      ERROR_CODES.INTERNAL_SERVER_ERROR,
+      'Internal server error'
+    );
+    res.status(apiError.statusCode).json({
+      code: apiError.code,
+      error: apiError.message,
       message: 'Failed to update campaign',
     });
   }

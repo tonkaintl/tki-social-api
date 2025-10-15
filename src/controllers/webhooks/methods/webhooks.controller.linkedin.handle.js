@@ -3,6 +3,7 @@
 // LinkedIn webhook event handler
 // ----------------------------------------------------------------------------
 
+import { ApiError, ERROR_CODES } from '../../../constants/errors.js';
 import { logger } from '../../../utils/logger.js';
 
 export const handleLinkedInWebhook = async (req, res) => {
@@ -13,8 +14,13 @@ export const handleLinkedInWebhook = async (req, res) => {
     const signature = req.headers['x-li-signature-sha256'];
     if (!signature) {
       logger.warn('LinkedIn webhook missing signature header');
-      return res.status(401).json({
-        error: 'Missing LinkedIn webhook signature',
+      const error = new ApiError(
+        ERROR_CODES.MISSING_WEBHOOK_SIGNATURE,
+        'Missing LinkedIn webhook signature'
+      );
+      return res.status(error.statusCode).json({
+        code: error.code,
+        error: error.message,
       });
     }
 
@@ -29,16 +35,26 @@ export const handleLinkedInWebhook = async (req, res) => {
     // ------------------------------------------------------------------------
     // STUB: LINKEDIN PROCESSING NOT IMPLEMENTED
     // ------------------------------------------------------------------------
-    return res.status(501).json({
-      error: 'LinkedIn webhook processing not implemented yet',
+    const error = new ApiError(
+      ERROR_CODES.PROVIDER_UNSUPPORTED_OPERATION,
+      'LinkedIn webhook processing not implemented yet'
+    );
+    return res.status(error.statusCode).json({
+      code: error.code,
+      error: error.message,
     });
   } catch (error) {
     logger.error('LinkedIn webhook processing failed', {
       error: error.message,
     });
 
-    return res.status(500).json({
-      error: error.message,
+    const apiError = new ApiError(
+      ERROR_CODES.INTERNAL_SERVER_ERROR,
+      error.message
+    );
+    return res.status(apiError.statusCode).json({
+      code: apiError.code,
+      error: apiError.message,
     });
   }
 };

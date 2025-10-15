@@ -5,6 +5,7 @@
 
 import { z } from 'zod';
 
+import { ApiError, ERROR_CODES } from '../../../constants/errors.js';
 import SocialCampaigns from '../../../models/socialCampaigns.model.js';
 import { logger } from '../../../utils/logger.js';
 
@@ -68,9 +69,16 @@ export const getCampaignsList = async (req, res) => {
         query: req.query,
         requestId: req.requestId,
       });
-      return res.status(400).json({
-        details: validation.error.errors,
-        error: 'Invalid query parameters',
+      const error = new ApiError(
+        ERROR_CODES.VALIDATION_ERROR,
+        'Invalid query parameters',
+        400,
+        validation.error.errors
+      );
+      return res.status(error.statusCode).json({
+        code: error.code,
+        details: error.details,
+        error: error.message,
       });
     }
 
@@ -172,8 +180,13 @@ export const getCampaignsList = async (req, res) => {
       stack: error.stack,
     });
 
-    res.status(500).json({
-      error: 'Internal server error',
+    const apiError = new ApiError(
+      ERROR_CODES.INTERNAL_SERVER_ERROR,
+      'Internal server error'
+    );
+    res.status(apiError.statusCode).json({
+      code: apiError.code,
+      error: apiError.message,
       message: 'Failed to fetch campaigns list',
     });
   }

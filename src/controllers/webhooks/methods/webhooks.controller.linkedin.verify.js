@@ -3,6 +3,7 @@
 // LinkedIn webhook verification handler
 // ----------------------------------------------------------------------------
 
+import { ApiError, ERROR_CODES } from '../../../constants/errors.js';
 import { logger } from '../../../utils/logger.js';
 
 export const verifyLinkedInWebhook = async (req, res) => {
@@ -15,16 +16,26 @@ export const verifyLinkedInWebhook = async (req, res) => {
     // ------------------------------------------------------------------------
     // STUB: LINKEDIN VERIFICATION NOT IMPLEMENTED
     // ------------------------------------------------------------------------
-    return res.status(501).json({
-      error: 'LinkedIn webhook verification not implemented yet',
+    const error = new ApiError(
+      ERROR_CODES.PROVIDER_UNSUPPORTED_OPERATION,
+      'LinkedIn webhook verification not implemented yet'
+    );
+    return res.status(error.statusCode).json({
+      code: error.code,
+      error: error.message,
     });
   } catch (error) {
     logger.error('LinkedIn webhook verification failed', {
       error: error.message,
     });
 
-    return res.status(500).json({
-      error: error.message,
+    const apiError = new ApiError(
+      ERROR_CODES.INTERNAL_SERVER_ERROR,
+      error.message
+    );
+    return res.status(apiError.statusCode).json({
+      code: apiError.code,
+      error: apiError.message,
     });
   }
 };

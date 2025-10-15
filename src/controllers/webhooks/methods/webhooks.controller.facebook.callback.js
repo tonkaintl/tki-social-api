@@ -1,5 +1,6 @@
 import { MetaAdapter } from '../../../adapters/meta/meta.adapter.js';
 import { config } from '../../../config/env.js';
+import { ApiError, ERROR_CODES } from '../../../constants/errors.js';
 import { logger } from '../../../utils/logger.js';
 
 const metaAdapter = new MetaAdapter(config);
@@ -21,15 +22,27 @@ export const handleFacebookCallback = async (req, res) => {
         error_description,
       });
 
-      return res.status(400).json({
-        details: error_description || error,
-        error: 'Facebook OAuth failed',
+      const apiError = new ApiError(
+        ERROR_CODES.PROVIDER_AUTH_FAILED,
+        'Facebook OAuth failed',
+        400,
+        error_description || error
+      );
+      return res.status(apiError.statusCode).json({
+        code: apiError.code,
+        details: apiError.details,
+        error: apiError.message,
       });
     }
 
     if (!code) {
-      return res.status(400).json({
-        error: 'Missing authorization code from Facebook',
+      const error = new ApiError(
+        ERROR_CODES.MISSING_REQUIRED_FIELD,
+        'Missing authorization code from Facebook'
+      );
+      return res.status(error.statusCode).json({
+        code: error.code,
+        error: error.message,
       });
     }
 
@@ -48,8 +61,13 @@ export const handleFacebookCallback = async (req, res) => {
       error: error.message,
     });
 
-    res.status(500).json({
-      error: 'Internal server error processing Facebook callback',
+    const apiError = new ApiError(
+      ERROR_CODES.INTERNAL_SERVER_ERROR,
+      'Internal server error processing Facebook callback'
+    );
+    res.status(apiError.statusCode).json({
+      code: apiError.code,
+      error: apiError.message,
     });
   }
 };
