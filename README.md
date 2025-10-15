@@ -2,6 +2,18 @@
 
 A production-ready Node.js service that exposes a stable internal API for posting and fetching social content while hiding provider differences behind adapters.
 
+## 🚀 Recent Major Update (January 2025)
+
+**Inventory Structure Removed**: We've completely removed the confusing "inventory" terminology and structure. All functionality is now properly organized under the **campaign management system**. The preview functionality has been moved from `/api/inventory/item` to `/api/social/campaigns/preview` for better clarity and consistency.
+
+### What Changed:
+
+- ✅ Removed entire `/api/inventory` route structure
+- ✅ Moved preview functionality to `/api/social/campaigns/preview`
+- ✅ All campaign-related operations now live under `/api/social/campaigns`
+- ✅ Updated all documentation and tests
+- ✅ 54/54 tests still passing after refactoring
+
 ## Features
 
 - 🔌 **Modular Adapters**: Support for Meta (Facebook/Instagram), LinkedIn, X (Twitter), and Reddit
@@ -43,7 +55,7 @@ cp .env.example .env
 ```
 
 4. Configure your environment variables in `.env`:
-   - Set `INTERNAL_SECRET_KEY` for API authentication
+   - Configure Azure AD credentials for Bearer token authentication
    - Configure Meta credentials if using Meta adapter
    - Set `BINDER_API_URL` and `BINDER_INTERNAL_SECRET` for Binder integration
 
@@ -111,11 +123,26 @@ curl "http://localhost:8080/social/fetch?provider=meta&pageIdOrHandle=your-page-
   -H "x-internal-secret: your-secret-key"
 ```
 
-### Get Inventory Item (with Formatting)
+### Campaign Management System
 
 ```bash
-# Get item as JSON
-curl "http://localhost:8080/inventory/item?stockNumber=12345&format=json" \
+# Create a campaign
+curl -X POST http://localhost:3001/api/social/campaigns \
+  -H "x-internal-secret: your-secret-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "stockNumber": "TKI2024001",
+    "platforms": ["meta", "linkedin"],
+    "scheduledFor": "2024-12-31T10:00:00Z",
+    "priority": "high"
+  }'
+
+# List all campaigns
+curl "http://localhost:3001/api/social/campaigns" \
+  -H "x-internal-secret: your-secret-key"
+
+# Preview campaign content for a platform
+curl "http://localhost:3001/api/social/campaigns/preview?stockNumber=TKI2024001&provider=meta" \
   -H "x-internal-secret: your-secret-key"
 
 # Get item formatted for social media
@@ -131,19 +158,16 @@ For detailed documentation on the Inventory API and formatter system, see [INVEN
 
 ## Environment Variables
 
-| Variable                 | Description                     | Required | Default                 |
-| ------------------------ | ------------------------------- | -------- | ----------------------- |
-| `PORT`                   | Server port                     | No       | `8080`                  |
-| `INTERNAL_SECRET_KEY`    | Authentication secret           | Yes      | -                       |
-| `META_APP_ID`            | Meta app ID                     | No       | -                       |
-| `META_APP_SECRET`        | Meta app secret                 | No       | -                       |
-| `META_PAGE_ID`           | Meta page ID                    | No       | -                       |
-| `META_PAGE_ACCESS_TOKEN` | Meta page access token          | No       | -                       |
-| `META_VERIFY_TOKEN`      | Meta webhook verification token | No       | `verify_me`             |
-| `BINDER_API_URL`         | Binder service URL              | No       | `http://localhost:4000` |
-| `BINDER_INTERNAL_SECRET` | Binder authentication secret    | Yes      | -                       |
-| `LOG_LEVEL`              | Logging level                   | No       | `info`                  |
-| `NODE_ENV`               | Environment                     | No       | `development`           |
+| Variable                 | Description                     | Required | Default       |
+| ------------------------ | ------------------------------- | -------- | ------------- |
+| `PORT`                   | Server port                     | No       | `8080`        |
+| `META_APP_ID`            | Meta app ID                     | No       | -             |
+| `META_APP_SECRET`        | Meta app secret                 | No       | -             |
+| `META_PAGE_ID`           | Meta page ID                    | No       | -             |
+| `META_PAGE_ACCESS_TOKEN` | Meta page access token          | No       | -             |
+| `META_VERIFY_TOKEN`      | Meta webhook verification token | No       | `verify_me`   |
+| `LOG_LEVEL`              | Logging level                   | No       | `info`        |
+| `NODE_ENV`               | Environment                     | No       | `development` |
 
 ## Provider Status
 
@@ -239,7 +263,6 @@ This service integrates with the Binder system for:
 
 ### Production Checklist
 
-- [ ] Set secure `INTERNAL_SECRET_KEY`
 - [ ] Configure production database connections
 - [ ] Set up Redis for caching and idempotency (replace in-memory stores)
 - [ ] Configure external monitoring and alerting

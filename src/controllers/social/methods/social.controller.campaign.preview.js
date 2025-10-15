@@ -1,3 +1,8 @@
+/**
+ * Social Campaign Preview Controller
+ * Preview how a campaign would look on a specific platform
+ */
+
 import { z } from 'zod';
 
 import { BinderAdapter } from '../../../adapters/binder/binder.adapter.js';
@@ -9,6 +14,10 @@ import { config } from '../../../config/env.js';
 import { ERROR_CODES } from '../../../constants/errors.js';
 import { logger } from '../../../utils/logger.js';
 
+// ----------------------------------------------------------------------------
+// Constants
+// ----------------------------------------------------------------------------
+
 const SUPPORTED_PROVIDERS = ['meta', 'linkedin', 'x', 'reddit'];
 
 const formatters = {
@@ -18,21 +27,34 @@ const formatters = {
   x: formatBinderItemForX,
 };
 
-// Request validation schema
-const getItemSchema = z.object({
-  provider: z.enum(SUPPORTED_PROVIDERS),
-  stockNumber: z.string().min(1),
+// ----------------------------------------------------------------------------
+// Validation Schemas
+// ----------------------------------------------------------------------------
+
+const getCampaignPreviewParamsSchema = z.object({
+  provider: z.enum(SUPPORTED_PROVIDERS, {
+    errorMap: () => ({
+      message: 'Provider must be one of: meta, linkedin, x, reddit',
+    }),
+  }),
+  stockNumber: z.string().min(1, 'Stock number is required'),
 });
 
-/**
- * GET /api/inventory/item
- * Preview formatted content for a specific provider
- */
-export const getItemPreview = async (req, res, next) => {
-  try {
-    const { provider, stockNumber } = getItemSchema.parse(req.query);
+// ----------------------------------------------------------------------------
+// Controllers
+// ----------------------------------------------------------------------------
 
-    logger.info('Get item preview request', {
+/**
+ * Get Campaign Preview for Platform
+ * GET /social/campaigns/preview
+ */
+export const getCampaignPreview = async (req, res, next) => {
+  try {
+    const { provider, stockNumber } = getCampaignPreviewParamsSchema.parse(
+      req.params
+    );
+
+    logger.info('Campaign preview request', {
       provider,
       requestId: req.id,
       stockNumber,
@@ -46,7 +68,7 @@ export const getItemPreview = async (req, res, next) => {
     const formatter = formatters[provider];
     const formattedContent = formatter(item);
 
-    logger.info('Item preview generated', {
+    logger.info('Campaign preview generated', {
       provider,
       requestId: req.id,
       stockNumber,
@@ -58,9 +80,15 @@ export const getItemPreview = async (req, res, next) => {
       provider,
       requestId: req.id,
       stockNumber,
+      success: true,
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
+      logger.warn('Campaign preview validation failed', {
+        errors: error.errors,
+        requestId: req.id,
+      });
+
       return res.status(400).json({
         code: ERROR_CODES.VALIDATION_ERROR,
         errors: error.errors,
@@ -68,6 +96,12 @@ export const getItemPreview = async (req, res, next) => {
         requestId: req.id,
       });
     }
+
+    logger.error('Campaign preview error', {
+      error: error.message,
+      requestId: req.id,
+      stack: error.stack,
+    });
 
     next(error);
   }

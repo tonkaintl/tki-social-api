@@ -6,17 +6,18 @@ import {
   createSocialPost,
   fetchSocialPosts,
   getCampaignByStockNumber,
+  getCampaignPreview,
   postItemToSocial,
   updateCampaign,
 } from '../controllers/social/methods.js';
-import { internalAuth } from '../middleware/auth.internal.js';
+import { verifyToken } from '../middleware/auth.bearer.js';
 
 // ----------------------------------------------------------------------------
 const router = express.Router();
 // ----------------------------------------------------------------------------
 
-// Apply internal authentication to all social routes
-router.use(internalAuth);
+// Apply Bearer token authentication to all social routes
+router.use(verifyToken);
 
 // ----------------------------------------------------------------------------
 // POST Routes
@@ -30,8 +31,9 @@ router.post('/comment', createSocialComment);
 // GET Routes
 // ----------------------------------------------------------------------------
 router.get('/fetch', fetchSocialPosts);
-router.get('/campaigns', fetchSocialPosts); // Alias for better semantics
-router.get('/campaigns/:stockNumber', getCampaignByStockNumber);
+router.get('/campaigns', fetchSocialPosts); // List all campaigns with query params
+router.get('/campaigns/:stockNumber/preview/:provider', getCampaignPreview); // Campaign preview for specific platform
+router.get('/campaigns/:stockNumber', getCampaignByStockNumber); // Get specific campaign by stock number
 
 // ----------------------------------------------------------------------------
 // PUT Routes

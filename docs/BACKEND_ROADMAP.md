@@ -3,47 +3,55 @@
 ## Target Architecture
 
 **Domain**: `socialapi.tonkaintl.com`  
-**Stack**: Node.js 20+ + Express + TypeScript + MongoDB  
+**Stack**: Node.js 20+ + Express + JavaScript + MongoDB  
 **Database**: `tki-social` (new separate database)
 
 ## Project Structure
 
 ```
-apps/socialapi/
+tki-social-api/
 ├── src/
-│   ├── index.ts                 # Bootstrap, CORS, JSON, health
-│   ├── lib/
-│   │   ├── cors.ts             # Allowlist based on ALLOWED_ORIGINS
-│   │   ├── http.ts             # Typed helpers: ok, bad, error, traceId
-│   │   ├── types.ts            # Shared types
-│   │   └── auth.ts             # Bearer token validation
+│   ├── server.js               # Bootstrap, CORS, JSON, health
+│   ├── app.js                  # Express app configuration
 │   ├── routes/
-│   │   ├── campaigns.ts        # Campaign CRUD operations
-│   │   ├── metricool.ts        # Metricool integration
-│   │   ├── webhooks.ts         # Webhook hub
-│   │   └── public.ts           # Public endpoints (docs, health)
+│   │   ├── social.routes.js    # Social & Campaign CRUD operations
+│   │   ├── health.routes.js    # Health check endpoints
+│   │   └── webhooks.routes.js  # Webhook hub
+│   ├── controllers/
+│   │   └── social/
+│   │       └── methods/        # Campaign & social controllers
 │   ├── services/
-│   │   ├── campaigns.ts        # Campaign business logic
-│   │   ├── metricool.ts        # Metricool API client
-│   │   ├── normalize.ts        # Platform content normalization
-│   │   └── storage.ts          # Azure Storage integration
+│   │   ├── binder.service.js   # Binder API integration
+│   │   ├── campaigns.service.js # Campaign business logic
+│   │   └── portal.service.js   # Portal API client
+│   ├── adapters/
+│   │   ├── binder/             # Binder data normalization
+│   │   ├── meta/               # Meta/Facebook integration
+│   │   ├── linkedin/           # LinkedIn integration
+│   │   ├── x/                  # X (Twitter) integration
+│   │   └── reddit/             # Reddit integration
 │   ├── middleware/
-│   │   ├── auth.ts             # Bearer token middleware
-│   │   ├── cache.ts            # Cache headers
-│   │   ├── cors.ts             # CORS middleware
-│   │   └── validation.ts       # Request validation
-│   └── models/
-│       ├── Campaign.ts         # MongoDB campaign schema
-│       └── Post.ts             # Social post tracking
+│   │   ├── auth.internal.js    # Internal secret validation
+│   │   ├── auth.bearer.js      # Bearer token middleware
+│   │   ├── rateLimit.js        # Rate limiting
+│   │   └── error.handler.js    # Error handling
+│   ├── models/
+│   │   └── socialCampaigns.model.js # MongoDB campaign schema
+│   ├── utils/
+│   │   ├── logger.js           # Pino logging
+│   │   └── mapping.js          # Utility functions
+│   └── config/
+│       ├── env.js              # Environment configuration
+│       └── database.js         # MongoDB connection
 ├── package.json
-├── tsconfig.json
-├── Dockerfile
+├── eslint.config.js
+├── vitest.config.js
 └── README.md
 ```
 
 ## Core Type Definitions (`src/lib/types.ts`)
 
-```typescript
+```javascript
 export type Platform =
   | 'facebook_page'
   | 'linkedin_company'
@@ -183,36 +191,53 @@ LINKEDIN_CLIENT_SECRET=your_linkedin_client_secret
 
 ### Public Endpoints (No Auth Required)
 
-```typescript
+```javascript
 // GET / - API health and info
 // GET /docs - Simple API documentation
 // GET /v1/health - Service health status
 // GET /v1/about - Platform verification info
 ```
 
+### Campaign Preview (Bearer Token Required)
+
+```javascript
+// GET /api/social/campaigns/preview - Preview campaign for specific platform
+//   Query params: stockNumber, provider (meta|linkedin|x|reddit)
+//   Returns: Formatted content without storing in database
+//   Use case: Quick preview before creating campaign
+```
+
 ### Campaign Management (Bearer Token Required)
 
-```typescript
-// GET /v1/campaigns - List with pagination, search, filter
-// GET /v1/campaigns/:stockNumber - Get campaign details
-// POST /v1/campaigns/normalize - Create/update from binder data
-// PUT /v1/campaigns/:stockNumber - Update campaign
-// DELETE /v1/campaigns/:stockNumber - Delete campaign
-// GET /v1/campaigns/:stockNumber/preview - Validate data completeness
+```javascript
+// POST /api/social/campaigns - Create campaign from binder data (all platforms)
+// GET /api/social/campaigns - List campaigns with pagination, search, filter
+// GET /api/social/campaigns/:stockNumber - Get campaign details
+// PUT /api/social/campaigns/:stockNumber - Update campaign status/metadata
+// DELETE /api/social/campaigns/:stockNumber - Delete campaign
 ```
 
 ### Metricool Integration (Bearer Token Required)
 
-```typescript
+```javascript
 // POST /v1/campaigns/:stockNumber/draft - Draft single platform
 // POST /v1/campaigns/:stockNumber/bulk-draft - Draft multiple platforms
 // GET /v1/campaigns/:stockNumber/metricool-status - Sync from Metricool
 // PUT /v1/campaigns/:stockNumber/status - Update internal status
 ```
 
-### Content & Sharing (Bearer Token Required)
+### Direct Social Media Posting (Bearer Token Required)
 
-```typescript
+```javascript
+// POST /api/social/post - Direct post to platforms (immediate posting)
+//   Body: { message, pageIdOrHandle, provider/providers, additionalParams }
+//   Returns: Platform response with post IDs and permalinks
+//   Use case: Immediate posting without campaign workflow
+```
+
+### Content & Sharing (Bearer Token Required - Future)
+
+```javascript
 // GET /v1/campaigns/:stockNumber/share-urls - Platform sharing URLs
 // GET /v1/campaigns/:stockNumber/export - Export as HTML/JSON/text
 // POST /v1/campaigns/:stockNumber/email - Send via email
@@ -221,7 +246,7 @@ LINKEDIN_CLIENT_SECRET=your_linkedin_client_secret
 
 ### Webhook Hub (Secret Validation Required)
 
-```typescript
+```javascript
 // POST /webhooks/metricool - Metricool status updates
 // POST /webhooks/n8n - N8N automation triggers
 // POST /webhooks/meta - Meta/Facebook events
@@ -240,7 +265,7 @@ LINKEDIN_CLIENT_SECRET=your_linkedin_client_secret
 
 ### Metricool Service (`src/services/metricool.ts`)
 
-```typescript
+```javascript
 class MetricoolService {
   async createPost(payload: PostPayload): Promise<{ id: string }>;
   async getPostStatus(postId: string): Promise<MetricoolStatus>;
@@ -268,7 +293,7 @@ class MetricoolService {
 
 ### Campaign Collection
 
-```typescript
+```javascript
 const CampaignSchema = new Schema({
   stockNumber: { type: String, required: true, unique: true, index: true },
   title: { type: String, required: true },
@@ -304,7 +329,7 @@ const CampaignSchema = new Schema({
 
 ### Authentication Middleware (`src/middleware/auth.ts`)
 
-```typescript
+```javascript
 export const requireBearerToken = (
   req: Request,
   res: Response,
@@ -323,7 +348,7 @@ export const requireBearerToken = (
 
 ### CORS Configuration (`src/lib/cors.ts`)
 
-```typescript
+```javascript
 export const corsOptions = {
   origin: (origin: string | undefined, callback: Function) => {
     const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [];
