@@ -28,6 +28,7 @@ async function startServer() {
         `Data deletion: http://localhost:${config.PORT}/data-deletion`
       );
       logger.info('Server connected and ready to accept requests');
+      logger.info('*'.repeat(50));
     });
 
     // Graceful shutdown
