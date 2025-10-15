@@ -2,6 +2,7 @@ import request from 'supertest';
 import { describe, expect, it, vi } from 'vitest';
 
 import { app } from '../app.js';
+import { HEALTH_STATUS, SERVICE_INFO } from '../constants/service.js';
 
 // Mock the Meta adapter
 vi.mock('../adapters/meta/meta.adapter.js', () => {
@@ -32,8 +33,8 @@ describe('Health Check', () => {
     const response = await request(app).get('/api/health').expect(200);
 
     expect(response.body).toMatchObject({
-      service: 'tki-social-api',
-      status: 'healthy',
+      service: SERVICE_INFO.NAME,
+      status: HEALTH_STATUS.HEALTHY,
     });
 
     expect(response.body.timestamp).toBeDefined();

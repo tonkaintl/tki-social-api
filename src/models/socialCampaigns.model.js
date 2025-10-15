@@ -1,5 +1,13 @@
 import mongoose from 'mongoose';
 
+import {
+  CAMPAIGN_DEFAULTS,
+  CAMPAIGN_STATUS_VALUES,
+  MEDIA_STORAGE,
+  METRICOOL_STATUS_VALUES,
+  POST_INTERNAL_STATUS_VALUES,
+} from '../constants/campaigns.js';
+
 // ----------------------------------------------------------
 
 var Schema = mongoose.Schema;
@@ -8,7 +16,7 @@ var socialCampaignsSchema = new Schema({
   created_by: { required: true, type: String },
   description: { type: String },
   // Media storage
-  media_storage: { default: 'azure', type: String },
+  media_storage: { default: MEDIA_STORAGE.AZURE, type: String },
   media_urls: [String],
 
   // Platform-specific content (snake_case following your pattern)
@@ -57,21 +65,14 @@ var socialCampaignsSchema = new Schema({
       error: String,
       external_id: String,
       internal_status: {
-        default: 'created',
-        enum: [
-          'created',
-          'drafted',
-          'scheduled',
-          'published',
-          'failed',
-          'manual_push',
-        ],
+        default: CAMPAIGN_DEFAULTS.POST_INTERNAL_STATUS,
+        enum: POST_INTERNAL_STATUS_VALUES,
         type: String,
       },
       last_status_check: Date,
       metricool_id: String,
       metricool_status: {
-        enum: ['draft', 'scheduled', 'published', 'failed'],
+        enum: METRICOOL_STATUS_VALUES,
         type: String,
       },
       platform: String,
@@ -82,8 +83,8 @@ var socialCampaignsSchema = new Schema({
   short_url: { type: String },
   // Status and metadata
   status: {
-    default: 'pending',
-    enum: ['pending', 'draft', 'scheduled', 'published', 'failed'],
+    default: CAMPAIGN_DEFAULTS.STATUS,
+    enum: CAMPAIGN_STATUS_VALUES,
     type: String,
   },
   stock_number: { required: true, type: String, unique: true },
