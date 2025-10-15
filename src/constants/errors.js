@@ -2,6 +2,8 @@
 export const ERROR_CODES = {
   // External service errors
   BINDER_REQUEST_FAILED: 'BINDER_REQUEST_FAILED',
+  // Campaign errors
+  CAMPAIGN_NOT_FOUND: 'CAMPAIGN_NOT_FOUND',
   // Network errors
   CONNECTION_TIMEOUT: 'CONNECTION_TIMEOUT',
 

@@ -24,7 +24,7 @@ export class RedditAdapter extends SocialAdapter {
     return {
       externalPostId: null,
       permalink: null,
-      raw: { error: 'Reddit adapter not configured yet' },
+      raw: { error: 'Reddit API credentials not configured' },
       status: 'failed',
     };
   }
@@ -35,7 +35,7 @@ export class RedditAdapter extends SocialAdapter {
 
     return {
       externalCommentId: null,
-      raw: { error: 'Reddit comments not configured yet' },
+      raw: { error: 'Reddit API credentials not configured' },
       status: 'failed',
     };
   }
@@ -47,7 +47,23 @@ export class RedditAdapter extends SocialAdapter {
     return {
       externalPostId: null,
       permalink: null,
-      raw: { error: 'Reddit adapter not configured yet', item },
+      raw: { error: 'Reddit API credentials not configured', item },
+      status: 'failed',
+    };
+  }
+
+  async createPostFromCampaign(campaign, provider, _options = {}) {
+    // TODO: Implement Reddit post from campaign
+    // When implemented, use: this.generateRedditContent(campaign)
+
+    return {
+      externalPostId: null,
+      permalink: null,
+      raw: {
+        campaign: campaign.stock_number,
+        error: 'Reddit API credentials not configured',
+        provider,
+      },
       status: 'failed',
     };
   }

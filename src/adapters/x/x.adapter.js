@@ -23,7 +23,7 @@ export class XAdapter extends SocialAdapter {
     return {
       externalPostId: null,
       permalink: null,
-      raw: { error: 'X adapter not configured yet' },
+      raw: { error: 'X/Twitter API credentials not configured' },
       status: 'failed',
     };
   }
@@ -34,7 +34,7 @@ export class XAdapter extends SocialAdapter {
 
     return {
       externalCommentId: null,
-      raw: { error: 'X replies not configured yet' },
+      raw: { error: 'X/Twitter API credentials not configured' },
       status: 'failed',
     };
   }
@@ -46,7 +46,23 @@ export class XAdapter extends SocialAdapter {
     return {
       externalPostId: null,
       permalink: null,
-      raw: { error: 'X adapter not configured yet', item },
+      raw: { error: 'X/Twitter API credentials not configured', item },
+      status: 'failed',
+    };
+  }
+
+  async createPostFromCampaign(campaign, provider, _options = {}) {
+    // TODO: Implement X post from campaign
+    // When implemented, use: this.generateXContent(campaign)
+
+    return {
+      externalPostId: null,
+      permalink: null,
+      raw: {
+        campaign: campaign.stock_number,
+        error: 'X/Twitter API credentials not configured',
+        provider,
+      },
       status: 'failed',
     };
   }
