@@ -122,7 +122,6 @@ export const getCampaignsList = async (req, res) => {
           'inventory_data.make': 1,
           'inventory_data.model': 1,
           'inventory_data.year': 1,
-          posts: 1,
           status: 1,
           stock_number: 1,
           updated_at: 1,
@@ -136,7 +135,7 @@ export const getCampaignsList = async (req, res) => {
     const hasNextPage = page < totalPages;
     const hasPrevPage = page > 1;
 
-    // Format campaigns with post statistics
+    // Format campaigns
     const formattedCampaigns = campaigns.map(campaign => ({
       campaign_id: campaign.campaign_id,
       created_at: campaign.created_at,
@@ -144,13 +143,6 @@ export const getCampaignsList = async (req, res) => {
         make: campaign.inventory_data?.make || null,
         model: campaign.inventory_data?.model || null,
         year: campaign.inventory_data?.year || null,
-      },
-      metadata: {
-        failed_count:
-          campaign.posts?.filter(p => p.status === 'failed').length || 0,
-        posted_count:
-          campaign.posts?.filter(p => p.status === 'posted').length || 0,
-        total_posts: campaign.posts?.length || 0,
       },
       status: campaign.status,
       stock_number: campaign.stock_number,

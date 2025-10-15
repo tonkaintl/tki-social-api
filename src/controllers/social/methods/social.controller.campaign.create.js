@@ -52,13 +52,10 @@ export const createSocialCampaign = async (req, res, next) => {
     });
 
     // Initialize binder adapter
-    const binderAdapter = new BinderAdapter(config.BINDER_BASE_URL);
+    const binderAdapter = new BinderAdapter(config);
 
     // Create campaign using binder adapter
-    const campaign = await binderAdapter.createCampaign({
-      createdBy,
-      stockNumber,
-    });
+    const campaign = await binderAdapter.createCampaign(stockNumber, createdBy);
 
     logger.info('Campaign created successfully', {
       campaignId: campaign.campaign_id,

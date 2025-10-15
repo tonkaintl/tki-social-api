@@ -88,18 +88,6 @@ export class BinderAdapter {
         media_urls: normalizedItem.media
           ? normalizedItem.media.map(m => m.url)
           : [],
-
-        // Initialize platform content (will be populated by platform adapters)
-        platform_content: {
-          facebook_page: {},
-          instagram_business: {},
-          linkedin_company: {},
-          x_profile: {},
-        },
-
-        // Initialize empty posts array
-        posts: [],
-
         short_url: normalizedItem.shortUrl,
 
         // Set initial status

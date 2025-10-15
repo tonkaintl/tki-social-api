@@ -4,8 +4,6 @@ import {
   CAMPAIGN_DEFAULTS,
   CAMPAIGN_STATUS_VALUES,
   MEDIA_STORAGE,
-  METRICOOL_STATUS_VALUES,
-  POST_INTERNAL_STATUS_VALUES,
 } from '../constants/campaigns.js';
 
 // ----------------------------------------------------------
@@ -15,71 +13,9 @@ var socialCampaignsSchema = new Schema({
   created_at: { default: Date.now, type: Date },
   created_by: { required: true, type: String },
   description: { type: String },
-  // Media storage
+  // Media Portfolio - user-curated collection for social posting
   media_storage: { default: MEDIA_STORAGE.AZURE, type: String },
-  media_urls: [String],
-
-  // Platform-specific content (snake_case following your pattern)
-  platform_content: {
-    facebook_page: {
-      caption: String,
-      character_count: Number,
-      hashtags: [String],
-      html_preview: String,
-      media: [{ azure_blob_url: String, url: String }],
-      share_url: String,
-      utm: String,
-    },
-    instagram_business: {
-      caption: String,
-      character_count: Number,
-      hashtags: [String],
-      html_preview: String,
-      media: [{ azure_blob_url: String, url: String }],
-      share_url: String,
-      utm: String,
-    },
-    linkedin_company: {
-      caption: String,
-      character_count: Number,
-      hashtags: [String],
-      html_preview: String,
-      media: [{ azure_blob_url: String, url: String }],
-      share_url: String,
-      utm: String,
-    },
-    x_profile: {
-      caption: String,
-      character_count: Number,
-      hashtags: [String],
-      html_preview: String,
-      media: [{ azure_blob_url: String, url: String }],
-      share_url: String,
-      utm: String,
-    },
-  },
-
-  // Post tracking
-  posts: [
-    {
-      error: String,
-      external_id: String,
-      internal_status: {
-        default: CAMPAIGN_DEFAULTS.POST_INTERNAL_STATUS,
-        enum: POST_INTERNAL_STATUS_VALUES,
-        type: String,
-      },
-      last_status_check: Date,
-      metricool_id: String,
-      metricool_status: {
-        enum: METRICOOL_STATUS_VALUES,
-        type: String,
-      },
-      platform: String,
-      published_date: Date,
-      scheduled_date: Date,
-    },
-  ],
+  media_urls: [String], // Portfolio of available images/videos for this campaign
   short_url: { type: String },
   // Status and metadata
   status: {
