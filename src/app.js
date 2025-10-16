@@ -12,7 +12,12 @@ import { httpLogger } from './middleware/httpLogger.js';
 import configurePassport from './middleware/passport.js';
 import { rateLimiter } from './middleware/rateLimit.js';
 import { requestId } from './middleware/requestId.js';
-import { healthRoutes, socialRoutes, webhooksRoutes } from './routes/index.js';
+import {
+  healthRoutes,
+  platformsRoutes,
+  socialRoutes,
+  webhooksRoutes,
+} from './routes/index.js';
 import { logger } from './utils/logger.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -57,6 +62,7 @@ app.get('/about', (req, res) => {
 
 // Application routes
 app.use('/api/health', healthRoutes);
+app.use('/api/platforms', platformsRoutes);
 app.use('/api/social', socialRoutes);
 app.use('/api/webhooks', webhooksRoutes);
 
