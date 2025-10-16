@@ -33,17 +33,17 @@ const createRateLimiter = (windowMs, max, message) => {
   });
 };
 
-// General rate limiter - 100 requests per 15 minutes
+// General rate limiter - 200 requests per 15 minutes (doubled for dev)
 export const rateLimiter = createRateLimiter(
   15 * 60 * 1000, // 15 minutes
-  100,
+  200,
   'Too many requests, please try again later'
 );
 
-// Strict rate limiter for posting - 20 requests per hour
+// Strict rate limiter for posting - 40 requests per hour (doubled for dev)
 export const postRateLimiter = createRateLimiter(
   60 * 60 * 1000, // 1 hour
-  20,
+  40,
   'Too many post requests, please try again later'
 );
 
