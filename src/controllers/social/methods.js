@@ -11,6 +11,8 @@ import {
   getCampaignMedia,
   removeCampaignMedia,
 } from './methods/social.controller.media.js';
+import { createMetricoolDraft } from './methods/social.controller.metricool.draft.js';
+import { scheduleMetricoolPost } from './methods/social.controller.metricool.schedule.js';
 import { createSocialPost } from './methods/social.controller.post.create.js';
 import { postItemToSocial } from './methods/social.controller.post.item.js';
 
@@ -18,6 +20,7 @@ import { postItemToSocial } from './methods/social.controller.post.item.js';
 
 export {
   addCampaignMedia,
+  createMetricoolDraft,
   createSocialCampaign,
   createSocialComment,
   createSocialPost,
@@ -28,5 +31,6 @@ export {
   getCampaignsList,
   postItemToSocial,
   removeCampaignMedia,
+  scheduleMetricoolPost,
   updateCampaign,
 };

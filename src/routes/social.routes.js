@@ -2,6 +2,7 @@ import express from 'express';
 
 import {
   addCampaignMedia,
+  createMetricoolDraft,
   createSocialCampaign,
   createSocialComment,
   createSocialPost,
@@ -12,6 +13,7 @@ import {
   getCampaignsList,
   postItemToSocial,
   removeCampaignMedia,
+  scheduleMetricoolPost,
   updateCampaign,
 } from '../controllers/social/methods.js';
 import { verifyToken } from '../middleware/auth.bearer.js';
@@ -28,6 +30,7 @@ router.use(verifyToken);
 // ----------------------------------------------------------------------------
 router.post('/post', createSocialPost);
 router.post('/campaigns', createSocialCampaign);
+router.post('/campaigns/:campaignId/metricool/draft', createMetricoolDraft);
 router.post('/post-item', postItemToSocial);
 router.post('/comment', createSocialComment);
 
@@ -44,6 +47,14 @@ router.get('/campaigns/:stockNumber/media', getCampaignMedia); // Get campaign m
 // PUT Routes
 // ----------------------------------------------------------------------------
 router.put('/campaigns/:stockNumber', updateCampaign);
+
+// ----------------------------------------------------------------------------
+// PATCH Routes (Metricool)
+// ----------------------------------------------------------------------------
+router.patch(
+  '/campaigns/:campaignId/metricool/:postId/schedule',
+  scheduleMetricoolPost
+);
 
 // ----------------------------------------------------------------------------
 // POST Routes (Media Portfolio)

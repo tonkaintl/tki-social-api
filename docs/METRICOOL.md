@@ -38,16 +38,19 @@ Metricool serves as the **unified social media distribution engine** for TKI Soc
 
 ### Requirements
 
-- **Plan**: Pro or Team plan required for API access
-- **Access**: Private API - request through Metricool support
-- **Credentials**: API key + team_id provided after approval
+- **Plan**: Advanced or Custom plan required for API access
+- **Access**: Request API access through Metricool support
+- **Credentials**: API token provided after approval
 
 ### API Endpoints
 
 ```
-Base URL: https://api.metricool.com/v2/
-Authentication: Bearer token in Authorization header
+Base URL: https://app.metricool.com/api
+Authentication: X-Mc-Auth header with API token
+Content-Type: application/json
 ```
+
+**✅ TESTED & VERIFIED** - Connection working as of Oct 2025
 
 | Endpoint      | Method | Purpose                             |
 | ------------- | ------ | ----------------------------------- |
@@ -93,16 +96,19 @@ Campaign Status Updated
 **API Call**:
 
 ```json
-POST /v2/posts
+POST /posts
 {
-  "team_id": "your_team_id",
-  "networks": ["facebook_page", "linkedin_company"],
+  "user_id": "4189470",
+  "network": "facebook",
   "text": "2020 Kenworth T880 — one-owner, ready to go. #TonkaIntl #HeavyEquipment",
   "media": [
-    { "url": "https://cdn.tonkaintl.com/listings/42000-1.jpg" }
+    {
+      "url": "https://cdn.tonkaintl.com/listings/42000-1.jpg",
+      "type": "image"
+    }
   ],
-  "link": "https://tonkaintl.com/inventory/42000?utm_source=facebook",
-  "publish_date": null  // null = draft mode
+  "publish_datetime": "2026-01-01T12:00:00Z",  // Far future = draft mode
+  "status": "pending"
 }
 ```
 
@@ -110,21 +116,52 @@ POST /v2/posts
 
 ```json
 {
-  "id": "post_abc123",
-  "status": "draft",
+  "id": "post_12345",
+  "status": "pending",
+  "network": "facebook",
+  "publish_date": "2026-01-01T12:00:00Z",
   "created_at": "2025-10-14T10:30:00Z"
 }
 ```
 
-### Scheduled Creation (Auto-publish)
+### Scheduled Creation (Direct Schedule)
 
 **Purpose**: Schedule post for specific date/time without human review
 
-**API Call**: Same as above, but with:
+**API Call**: Same as draft, but with real target time:
 
 ```json
+POST /posts
 {
-  "publish_date": "2025-10-14T15:30:00Z" // ISO 8601 format
+  "user_id": "4189470",
+  "network": "facebook",
+  "text": "(same content)",
+  "media": [...],
+  "publish_datetime": "2025-10-14T15:30:00Z", // Real target time
+  "status": "scheduled"
+}
+```
+
+### Converting Draft to Scheduled
+
+**Purpose**: Take existing draft and schedule it for publishing
+
+**API Call**:
+
+```json
+PATCH /posts/{post_id}
+{
+  "publish_datetime": "2025-10-14T15:30:00Z", // Target publish time
+  "status": "scheduled"
+}
+```
+
+**Or to publish immediately**:
+
+```json
+PATCH /posts/{post_id}
+{
+  "publish_datetime": "2025-10-14T10:32:00Z" // 2 minutes from now
 }
 ```
 
@@ -145,6 +182,32 @@ POST /v2/posts
 - ✅ **Safety**: No accidental posts without review
 - ✅ **Flexibility**: Platform-specific customization available
 - ✅ **Analytics**: Full tracking in Metricool dashboard
+
+### Post Status Verification
+
+**Purpose**: Check post status and verify scheduling
+
+**API Call**:
+
+```json
+GET /posts?status=scheduled
+GET /posts?status=pending
+GET /posts?status=published
+GET /posts/{post_id}
+```
+
+**Response**:
+
+```json
+{
+  "id": "post_12345",
+  "status": "scheduled",
+  "network": "facebook",
+  "publish_datetime": "2025-10-14T15:30:00Z",
+  "text": "...",
+  "created_at": "2025-10-14T10:30:00Z"
+}
+```
 
 ## Platform-Specific Considerations
 
@@ -208,11 +271,27 @@ POST /v2/posts
 
 ### Post Status Lifecycle
 
-1. **draft** - Created but not scheduled
+**Metricool API Status**:
+
+1. **pending** - Created but not scheduled (draft equivalent)
 2. **scheduled** - Queued for future publishing
-3. **published** - Live on social platforms
-4. **failed** - Publishing attempt failed
-5. **deleted** - Removed from queue
+3. **processing** - Currently being published to platforms
+4. **published** - Successfully live on social platforms
+5. **failed** - Publishing attempt failed
+6. **deleted** - Removed from queue
+
+**TKI Campaign Status Mapping**:
+
+```javascript
+const STATUS_MAPPING = {
+  pending: 'draft', // Internal draft state
+  scheduled: 'scheduled', // Approved and queued
+  processing: 'publishing', // In progress
+  published: 'active', // Live and successful
+  failed: 'failed', // Publishing failed
+  deleted: 'cancelled', // Cancelled by user
+};
+```
 
 ### Webhook Integration (Optional)
 

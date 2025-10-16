@@ -55,11 +55,21 @@ cp .env.example .env
 ```
 
 4. Configure your environment variables in `.env`:
-   - Configure Azure AD credentials for Bearer token authentication
-   - Configure Meta credentials if using Meta adapter
-   - Set `BINDER_API_URL` and `BINDER_INTERNAL_SECRET` for Binder integration
+   - See [Environment Configuration Guide](./docs/ENVIRONMENT.md) for detailed setup instructions
+   - **Active Integration**: Metricool API (requires API token, user ID, and blog ID)
+   - Configure other social platform credentials as needed
 
-5. Start the development server:
+5. Test your configuration:
+
+```bash
+# Test Metricool API connection
+node test-metricool.js
+
+# Run full test suite
+npm test
+```
+
+6. Start the development server:
 
 ```bash
 npm run dev
