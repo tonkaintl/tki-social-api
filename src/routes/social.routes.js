@@ -1,20 +1,17 @@
 import express from 'express';
 
+import { platformsControllerGetPlatforms } from '../controllers/platforms/methods.js';
 import {
   addCampaignMedia,
   createMetricoolDraft,
   createSocialCampaign,
   createSocialComment,
-  createSocialPost,
   deleteMetricoolPost,
-  fetchSocialPosts,
-  getAllMetricoolPosts,
+  fetchCampaigns,
   getCampaignByStockNumber,
-  getCampaignMedia,
   getCampaignPreview,
   getCampaignsList,
-  postItemToSocial,
-  refreshMetricoolPosts,
+  postCampaignToSocial,
   removeCampaignMedia,
   scheduleMetricoolPost,
   updateCampaign,
@@ -32,22 +29,20 @@ router.use(verifyToken);
 // ----------------------------------------------------------------------------
 // POST Routes
 // ----------------------------------------------------------------------------
-router.post('/post', createSocialPost);
 router.post('/campaigns', createSocialCampaign);
 router.post('/campaigns/:campaignId/metricool/draft', createMetricoolDraft);
-router.post('/post-item', postItemToSocial);
+router.post('/campaigns/:stockNumber/media', addCampaignMedia); // Add media to campaign portfolio
+router.post('/campaigns/post-to-social', postCampaignToSocial);
 router.post('/comment', createSocialComment);
 
 // ----------------------------------------------------------------------------
 // GET Routes
 // ----------------------------------------------------------------------------
-router.get('/fetch', fetchSocialPosts);
-router.get('/campaigns', getCampaignsList); // Campaign listing with pagination
-router.get('/campaigns/:stockNumber/preview/:provider', getCampaignPreview); // Campaign preview for specific platform
-router.get('/campaigns/:stockNumber', getCampaignByStockNumber);
-router.get('/campaigns/:stockNumber/media', getCampaignMedia); // Get campaign media portfolio
-router.get('/campaigns/:campaignId/metricool/refresh', refreshMetricoolPosts); // Sync Metricool posts with local database
-router.get('/metricool/posts/all', getAllMetricoolPosts); // Get all scheduled and draft posts from Metricool
+router.get('/campaigns', fetchCampaigns);
+router.get('/platforms', platformsControllerGetPlatforms);
+router.get('/campaigns/:campaignId/detail', getCampaignByStockNumber);
+router.get('/campaigns/list', getCampaignsList);
+router.get('/campaigns/:campaignId/preview', getCampaignPreview);
 
 // ----------------------------------------------------------------------------
 // PUT Routes
@@ -62,11 +57,6 @@ router.patch(
   '/campaigns/:campaignId/metricool/:postId/schedule',
   scheduleMetricoolPost
 );
-
-// ----------------------------------------------------------------------------
-// POST Routes (Media Portfolio)
-// ----------------------------------------------------------------------------
-router.post('/campaigns/:stockNumber/media', addCampaignMedia); // Add media to campaign portfolio
 
 // ----------------------------------------------------------------------------
 // DELETE Routes

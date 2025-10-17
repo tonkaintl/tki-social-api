@@ -123,11 +123,6 @@ export const createMetricoolDraft = async (req, res, next) => {
 
     const metricoolResponse = await metricoolClient.createPost(draftPayload);
 
-    console.log(
-      '🟢 CREATE RESPONSE STRUCTURE:',
-      JSON.stringify(metricoolResponse, null, 2)
-    );
-
     logger.info('Metricool API response received', {
       campaignId,
       response: metricoolResponse,

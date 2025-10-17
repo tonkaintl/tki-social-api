@@ -28,7 +28,7 @@ const fetchCampaignsSchema = z.object({
  * Fetch social media campaigns with pagination and filtering
  * GET /social/fetch
  */
-export const fetchSocialPosts = async (req, res, next) => {
+export const fetchCampaigns = async (req, res, next) => {
   try {
     // Validate query parameters
     const validationResult = fetchCampaignsSchema.safeParse(req.query);

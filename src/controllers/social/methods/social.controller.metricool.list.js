@@ -17,10 +17,6 @@ const querySchema = z.object({
     .string()
     .optional()
     .transform(str => str === 'true'),
-  status: z
-    .string()
-    .optional()
-    .transform(str => (str ? str.split(',') : ['DRAFT', 'PENDING'])),
   sync: z
     .string()
     .optional()
@@ -49,13 +45,7 @@ export const getAllMetricoolPosts = async (req, res, next) => {
       );
     }
 
-    const { includePublished, status, sync } = validationResult.data;
-
-    // Add published status if requested
-    const statusFilter = [...status];
-    if (includePublished) {
-      statusFilter.push('PUBLISHED');
-    }
+    const { includePublished, sync } = validationResult.data;
 
     // Initialize Metricool client
     const metricoolClient = new MetricoolClient(config);
@@ -71,17 +61,12 @@ export const getAllMetricoolPosts = async (req, res, next) => {
 
     logger.info('Retrieving all Metricool posts', {
       includePublished,
-      statusFilter,
     });
 
-    let posts;
-    if (statusFilter.length === 0) {
-      // Get all posts without filtering
-      posts = await metricoolClient.getAllScheduledAndDraftPosts();
-    } else {
-      // Get posts filtered by status
-      posts = await metricoolClient.getPostsByStatus(statusFilter);
-    }
+    // Get all posts from Metricool (no status filtering available in API)
+    const posts = includePublished
+      ? await metricoolClient.getAllPosts()
+      : await metricoolClient.getAllScheduledAndDraftPosts();
 
     // Debug logging - let's see what Metricool actually returns
     logger.debug('Metricool API response:', {
@@ -207,7 +192,7 @@ export const getAllMetricoolPosts = async (req, res, next) => {
 
     logger.info('Successfully retrieved Metricool posts', {
       count: transformedPosts.length,
-      statusFilter,
+      includePublished,
       syncEnabled: sync,
     });
 
