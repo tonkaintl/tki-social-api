@@ -64,7 +64,32 @@
 
 ## API Endpoints
 
-### Core CRUD Operations
+### Campaign Management
+
+```
+POST   /api/social/campaigns                                   # Create new campaign
+GET    /api/social/campaigns                                   # List campaigns (paginated)
+GET    /api/social/campaigns/list                              # List campaigns (simple)
+GET    /api/social/campaigns/:campaignId/detail                # Get campaign details
+GET    /api/social/campaigns/:campaignId/preview               # Preview campaign content
+PUT    /api/social/campaigns/:stockNumber                      # Update campaign
+PATCH  /api/social/campaigns/:campaignId/platform-content      # Update platform-specific content
+```
+
+### Campaign Media Portfolio
+
+```
+POST   /api/social/campaigns/:stockNumber/media                # Add media to campaign
+DELETE /api/social/campaigns/:stockNumber/media/:mediaIndex    # Remove media from campaign
+```
+
+### Campaign Social Posting
+
+```
+POST   /api/social/campaigns/post-to-social                    # Post campaign to social platforms
+```
+
+### Metricool Integration (Core CRUD)
 
 ```
 POST   /api/social/campaigns/:campaignId/metricool/draft        # Create draft
@@ -73,7 +98,19 @@ DELETE /api/social/campaigns/:campaignId/metricool/:postId     # Delete
 GET    /api/social/campaigns/:campaignId/metricool/refresh     # Sync changes
 ```
 
-### Global Operations
+### Social Comments
+
+```
+POST   /api/social/comment                                     # Create comment on social post
+```
+
+### Platform Information
+
+```
+GET    /api/social/platforms                                   # Get available social platforms
+```
+
+### Global Operations (Metricool)
 
 ```
 GET    /api/social/metricool/posts/all                         # List all posts
@@ -262,6 +299,255 @@ Syncs database with changes made directly in Metricool dashboard.
       }
     ]
   }
+}
+```
+
+## Campaign Management Endpoints
+
+### 5. Create Campaign
+
+**`POST /api/social/campaigns`**
+
+Creates a new social media campaign linked to inventory.
+
+```json
+// Request
+{
+  "stockNumber": "21001",
+  "title": "2006 John Deere Tractor - Reliable Workhorse",
+  "description": "Heavy-duty tractor perfect for farming operations",
+  "mediaUrls": ["https://example.com/image1.jpg", "https://example.com/image2.jpg"],
+  "platforms": ["facebook", "instagram", "linkedin"]
+}
+
+// Response
+{
+  "success": true,
+  "message": "Social campaign created successfully",
+  "data": {
+    "campaignId": "21001",
+    "stockNumber": "21001",
+    "title": "2006 John Deere Tractor - Reliable Workhorse",
+    "status": "pending",
+    "mediaPortfolio": 2,
+    "createdAt": "2025-10-17T10:00:00Z"
+  }
+}
+```
+
+### 6. List Campaigns
+
+**`GET /api/social/campaigns`**
+
+Retrieves paginated list of campaigns with filtering and sorting.
+
+```json
+// Query Parameters
+?page=1&limit=10&sortBy=created_at&sortOrder=desc&status=pending&stockNumber=21001
+
+// Response
+{
+  "success": true,
+  "campaigns": [
+    {
+      "stockNumber": "21001",
+      "title": "2006 John Deere Tractor",
+      "status": "pending",
+      "mediaCount": 2,
+      "createdAt": "2025-10-17T10:00:00Z"
+    }
+  ],
+  "pagination": {
+    "currentPage": 1,
+    "totalPages": 5,
+    "totalCount": 47,
+    "hasNextPage": true,
+    "hasPrevPage": false
+  }
+}
+```
+
+### 7. Get Campaign Details
+
+**`GET /api/social/campaigns/:campaignId/detail`**
+
+Retrieves detailed information about a specific campaign.
+
+```json
+// Response
+{
+  "success": true,
+  "data": {
+    "stockNumber": "21001",
+    "title": "2006 John Deere Tractor - Reliable Workhorse",
+    "description": "Heavy-duty tractor perfect for farming operations",
+    "status": "pending",
+    "mediaPortfolio": [
+      {
+        "url": "https://example.com/image1.jpg",
+        "mediaType": "image",
+        "alt": "Front view of tractor",
+        "tags": ["tractor", "farming"]
+      }
+    ],
+    "platforms": ["facebook", "instagram", "linkedin"],
+    "createdAt": "2025-10-17T10:00:00Z",
+    "updatedAt": "2025-10-17T10:00:00Z"
+  }
+}
+```
+
+## Campaign Media Endpoints
+
+### 8. Add Media to Campaign
+
+**`POST /api/social/campaigns/:stockNumber/media`**
+
+Adds media to campaign portfolio for social sharing.
+
+```json
+// Request
+{
+  "mediaUrl": "https://example.com/new-image.jpg",
+  "mediaType": "image",
+  "alt": "Side view of equipment",
+  "description": "Equipment in working condition",
+  "tags": ["equipment", "machinery"]
+}
+
+// Response
+{
+  "success": true,
+  "message": "Media added to portfolio successfully",
+  "data": {
+    "stockNumber": "21001",
+    "addedMedia": {
+      "url": "https://example.com/new-image.jpg",
+      "mediaType": "image",
+      "alt": "Side view of equipment"
+    },
+    "portfolioCount": 3
+  }
+}
+```
+
+### 9. Remove Media from Campaign
+
+**`DELETE /api/social/campaigns/:stockNumber/media/:mediaIndex`**
+
+Removes media from campaign portfolio by index position.
+
+```json
+// Response
+{
+  "success": true,
+  "message": "Media removed from portfolio successfully",
+  "data": {
+    "stockNumber": "21001",
+    "removedMedia": {
+      "url": "https://example.com/removed-image.jpg",
+      "mediaType": "image"
+    },
+    "portfolioCount": 2
+  }
+}
+```
+
+## Social Posting Endpoints
+
+### 10. Post Campaign to Social
+
+**`POST /api/social/campaigns/post-to-social`**
+
+Posts campaign content directly to social media platforms using adapters.
+
+```json
+// Request
+{
+  "stockNumber": "21001",
+  "provider": "facebook",
+  "pageIdOrHandle": "your-page-id",
+  "mediaUrls": ["https://example.com/image1.jpg"],
+  "utm": {
+    "source": "facebook",
+    "medium": "social",
+    "campaign": "inventory-21001"
+  }
+}
+
+// Response
+{
+  "success": true,
+  "message": "Campaign posted to social media successfully",
+  "data": {
+    "provider": "facebook",
+    "stockNumber": "21001",
+    "externalPostId": "123456789_987654321",
+    "status": "published",
+    "mediaCount": 1
+  }
+}
+```
+
+### 11. Create Social Comment
+
+**`POST /api/social/comment`**
+
+Creates a comment on an existing social media post.
+
+```json
+// Request
+{
+  "provider": "facebook",
+  "threadIdOrPostId": "123456789_987654321",
+  "message": "Thanks for your interest! This equipment is still available."
+}
+
+// Response
+{
+  "success": true,
+  "message": "Comment created successfully",
+  "result": {
+    "status": "success",
+    "provider": "facebook",
+    "externalCommentId": "987654321_123456789",
+    "message": "Thanks for your interest! This equipment is still available."
+  }
+}
+```
+
+## Platform Information
+
+### 12. Get Available Platforms
+
+**`GET /api/social/platforms`**
+
+Retrieves list of supported social media platforms and their configurations.
+
+```json
+// Response
+{
+  "success": true,
+  "platforms": [
+    {
+      "id": "facebook",
+      "name": "Facebook",
+      "enabled": true,
+      "features": ["posts", "comments", "media", "scheduling"]
+    },
+    {
+      "id": "instagram",
+      "name": "Instagram",
+      "enabled": true,
+      "features": ["posts", "media", "scheduling"]
+    },
+    {
+      "id": "linkedin",
+      "name": "LinkedIn",
+      "enabled": true,
+      "features": ["posts", "comments", "media", "scheduling"]
+    }
+  ]
 }
 ```
 

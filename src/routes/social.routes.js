@@ -40,9 +40,9 @@ router.post('/comment', createSocialComment);
 // ----------------------------------------------------------------------------
 router.get('/campaigns', fetchCampaigns);
 router.get('/platforms', platformsControllerGetPlatforms);
-router.get('/campaigns/:campaignId/detail', getCampaignByStockNumber);
+router.get('/campaigns/:stockNumber/detail', getCampaignByStockNumber);
 router.get('/campaigns/list', getCampaignsList);
-router.get('/campaigns/:campaignId/preview', getCampaignPreview);
+router.get('/campaigns/:stockNumber/preview/:provider', getCampaignPreview);
 
 // ----------------------------------------------------------------------------
 // PUT Routes
