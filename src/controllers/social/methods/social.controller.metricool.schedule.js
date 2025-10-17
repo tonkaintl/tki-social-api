@@ -98,17 +98,9 @@ export const scheduleMetricoolPost = async (req, res, next) => {
     });
 
     // Update the post in Metricool (using UUID for updates)
-    const updateResponse = await metricoolClient.updatePost(
-      metricoolPost.uuid,
-      {
-        publish_datetime,
-      }
-    );
-
-    console.log(
-      '🟡 UPDATE RESPONSE STRUCTURE:',
-      JSON.stringify(updateResponse, null, 2)
-    );
+    await metricoolClient.updatePost(metricoolPost.uuid, {
+      publish_datetime,
+    });
 
     // Update our database record with correct field names
     metricoolPost.publication_date = {
