@@ -7,7 +7,9 @@ import { z } from 'zod';
 
 import { MetricoolClient } from '../../../adapters/metricool/metricool.client.js';
 import { config } from '../../../config/env.js';
+import { CAMPAIGN_STATUS } from '../../../constants/campaigns.js';
 import { ApiError, ERROR_CODES } from '../../../constants/errors.js';
+import MetricoolPosts from '../../../models/metricoolPosts.model.js';
 import SocialCampaigns from '../../../models/socialCampaigns.model.js';
 import { logger } from '../../../utils/logger.js';
 
@@ -64,26 +66,30 @@ export const scheduleMetricoolPost = async (req, res, next) => {
       );
     }
 
-    // Find the Metricool post in the campaign
-    const metricoolPost = campaign.metricoolPosts?.find(
-      post => post.id === postId
-    );
+    // Find the Metricool post
+    const metricoolPost = await MetricoolPosts.findOne({
+      metricool_id: postId,
+      stock_number: campaignId,
+    });
     if (!metricoolPost) {
       throw new ApiError(
-        'Metricool post not found in campaign',
+        'Metricool post not found',
         ERROR_CODES.RESOURCE_NOT_FOUND,
         404
       );
     }
 
+    // Only allow scheduling of draft posts
+    if (metricoolPost.status !== CAMPAIGN_STATUS.DRAFT) {
+      throw new ApiError(
+        `Cannot schedule post with status '${metricoolPost.status}'. Only draft posts can be scheduled.`,
+        ERROR_CODES.VALIDATION_ERROR,
+        400
+      );
+    }
+
     // Initialize Metricool client
     const metricoolClient = new MetricoolClient(config);
-
-    // Update the post to scheduled status
-    const updatePayload = {
-      publish_datetime,
-      status: 'scheduled',
-    };
 
     logger.info('Scheduling Metricool post', {
       campaignId,
@@ -91,19 +97,36 @@ export const scheduleMetricoolPost = async (req, res, next) => {
       publishDate: publish_datetime,
     });
 
-    await metricoolClient.updatePost(postId, updatePayload);
+    // Update the post in Metricool (using UUID for updates)
+    const updateResponse = await metricoolClient.updatePost(
+      metricoolPost.uuid,
+      {
+        publish_datetime,
+      }
+    );
 
-    // Update campaign with new status
-    metricoolPost.publishDate = publish_datetime;
-    metricoolPost.status = 'scheduled';
-    metricoolPost.updatedAt = new Date();
+    console.log(
+      '🟡 UPDATE RESPONSE STRUCTURE:',
+      JSON.stringify(updateResponse, null, 2)
+    );
+
+    // Update our database record with correct field names
+    metricoolPost.publication_date = {
+      date_time: publish_datetime,
+      timezone: 'UTC',
+    };
+    metricoolPost.status = CAMPAIGN_STATUS.SCHEDULED;
+    metricoolPost.updated_at = new Date();
+    await metricoolPost.save();
 
     // Update campaign status if needed
-    if (campaign.status === 'draft' || campaign.status === 'pending_approval') {
-      campaign.status = 'scheduled';
+    if (
+      campaign.status === CAMPAIGN_STATUS.DRAFT ||
+      campaign.status === CAMPAIGN_STATUS.PENDING
+    ) {
+      campaign.status = CAMPAIGN_STATUS.SCHEDULED;
+      await campaign.save();
     }
-
-    await campaign.save();
 
     logger.info('Metricool post scheduled successfully', {
       campaignId,
@@ -118,7 +141,7 @@ export const scheduleMetricoolPost = async (req, res, next) => {
         metricoolDashboardUrl: `https://app.metricool.com/evolution/web?blogId=${config.METRICOOL_BLOG_ID}&userId=${config.METRICOOL_USER_ID}`,
         metricoolPost: {
           id: postId,
-          network: metricoolPost.network,
+          providers: metricoolPost.providers || [],
           publishDate: publish_datetime,
           status: 'scheduled',
         },

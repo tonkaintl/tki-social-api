@@ -1,355 +1,289 @@
-# Metricool Integration Guide
+# Metricool Integration Guide - REAL API BEHAVIOR
 
 ## Overview
 
-Metricool serves as the **unified social media distribution engine** for TKI Social. Instead of managing individual APIs for Facebook, LinkedIn, X, Instagram, etc., we use one Metricool API to handle posting across all platforms.
+Metricool serves as the **unified social media distribution engine** for TKI Social. This document reflects the **actual API behavior** we discovered through testing, not assumptions.
 
-**Core Value**: Your normalized listing data becomes fuel → Metricool distributes it everywhere → Staff can customize with AI → Posts get scheduled/published.
+**Core Value**: Your campaign data becomes social posts → Metricool distributes across platforms → Staff can customize → Posts get scheduled/published.
 
-## What Metricool Provides
+## What We Learned (October 2025)
 
-### Dashboard Features
+### ✅ **Confirmed API Behavior**
 
-- Unified analytics across all social platforms
-- Manual post scheduling interface
-- AI text generator for content optimization
-- Cross-platform engagement tracking
+- **One API call = One post with one unique ID**
+- **Multiple networks per post** - Single post can target multiple platforms
+- **Rich response data** - Complete metadata including creator info, platform settings
+- **Unique UUIDs** - For post updates and scheduling operations
+- **Provider status tracking** - Per-network status within single post
 
-### API Layer (What We Use)
+### ❌ **Common Misconceptions**
 
-- Programmatic post creation and scheduling
-- Handles all per-platform OAuth tokens internally
-- Single API for multi-platform distribution
-- Draft creation for human review workflow
+- ~~One post per network~~ → One post for ALL networks
+- ~~Simple response~~ → Rich response with extensive metadata
+- ~~Basic text/media~~ → Platform-specific configurations included
 
-## Supported Platforms
+## Authentication & API Access
 
-| Platform               | Type              | Capabilities                  | Notes            |
-| ---------------------- | ----------------- | ----------------------------- | ---------------- |
-| **Facebook**           | Page, Group       | Full scheduling, media, links | Primary target   |
-| **LinkedIn**           | Company, Personal | Text, links, images           | Business focus   |
-| **X (Twitter)**        | Profile           | Text, images, threads         | Character limits |
-| **Instagram**          | Business only     | Images, carousels, reels      | Visual content   |
-| **TikTok**             | Business API      | Video uploads                 | Beta support     |
-| **Google My Business** | Posts             | Local business posts          | Location-based   |
-| **Pinterest**          | Pins              | Image + link posts            | Visual discovery |
+### Real Configuration
 
-## API Access & Authentication
-
-### Requirements
-
-- **Plan**: Advanced or Custom plan required for API access
-- **Access**: Request API access through Metricool support
-- **Credentials**: API token provided after approval
-
-### API Endpoints
-
-```
-Base URL: https://app.metricool.com/api
-Authentication: X-Mc-Auth header with API token
-Content-Type: application/json
+```env
+METRICOOL_API_TOKEN=your_api_token
+METRICOOL_USER_ID=4189470
+METRICOOL_BLOG_ID=5391813
 ```
 
-**✅ TESTED & VERIFIED** - Connection working as of Oct 2025
-
-| Endpoint      | Method | Purpose                             |
-| ------------- | ------ | ----------------------------------- |
-| `/posts`      | POST   | Create draft or scheduled post      |
-| `/posts`      | GET    | List existing posts                 |
-| `/posts/{id}` | DELETE | Delete specific post                |
-| `/networks`   | GET    | Get connected social accounts       |
-| `/reports`    | GET    | Pull analytics and engagement stats |
-
-## Integration Workflow
-
-### 1. User-Initiated Flow (Primary)
+### API Structure
 
 ```
-Listing Page (/social/listings/42000)
-    ↓ User clicks "Draft to Metricool"
-API Call (socialapi.tonkaintl.com)
-    ↓ Creates draft via Metricool API
-Metricool Planner Opens
-    ↓ Staff uses AI to customize content
-    ↓ Staff schedules or publishes
-Post Goes Live on Platforms
+Base URL: https://app.metricool.com/api/v2
+Authentication: X-Mc-Auth header + query parameters
+Query Params: userToken, userId, blogId (all required)
 ```
 
-### 2. Direct Scheduling Flow (Secondary)
+## Post Creation - Actual API
 
-```
-Listing Page
-    ↓ User clicks "Schedule Now"
-API Call with specific date/time
-    ↓ Creates scheduled post via Metricool API
-Post Automatically Publishes
-    ↓ Status updates via webhook (optional)
-Campaign Status Updated
-```
-
-## Post Creation Process
-
-### Draft Creation (Recommended)
-
-**Purpose**: Create post in Metricool for human review and AI customization
-
-**API Call**:
+### Request Format (Working)
 
 ```json
-POST /posts
+POST /v2/scheduler/posts?userToken={token}&userId={userId}&blogId={blogId}
 {
-  "user_id": "4189470",
-  "network": "facebook",
-  "text": "2020 Kenworth T880 — one-owner, ready to go. #TonkaIntl #HeavyEquipment",
-  "media": [
+  "text": "🚜 HEAVY DUTY POWER! This 2006 John Deere...",
+  "publicationDate": {
+    "dateTime": "2025-12-05T15:30:00",
+    "timezone": "America/Chicago"
+  },
+  "providers": [
     {
-      "url": "https://cdn.tonkaintl.com/listings/42000-1.jpg",
-      "type": "image"
+      "network": "facebook"
     }
   ],
-  "publish_datetime": "2026-01-01T12:00:00Z",  // Far future = draft mode
-  "status": "pending"
+  "media": [
+    "https://example.com/images/car.jpg"
+  ],
+  "autoPublish": false,
+  "draft": true
 }
 ```
 
-**Response**:
+### Response Format (Actual)
 
 ```json
 {
-  "id": "post_12345",
-  "status": "pending",
-  "network": "facebook",
-  "publish_date": "2026-01-01T12:00:00Z",
-  "created_at": "2025-10-14T10:30:00Z"
+  "success": true,
+  "data": {
+    "id": 252904322,
+    "uuid": "8525485292235081787",
+    "text": "🚜 HEAVY DUTY POWER! This 2006 John Deere...",
+    "publicationDate": {
+      "dateTime": "2025-12-05T15:30:00",
+      "timezone": "America/Chicago"
+    },
+    "creationDate": {
+      "dateTime": "2025-10-16T15:13:00",
+      "timezone": "America/Chicago"
+    },
+    "providers": [
+      {
+        "network": "facebook",
+        "status": "PENDING",
+        "detailedStatus": "Pending"
+      }
+    ],
+    "media": ["https://example.com/images/car.jpg"],
+    "mediaAltText": [null],
+    "autoPublish": false,
+    "draft": true,
+    "twitterData": { "type": "POST" },
+    "facebookData": { "type": "POST" },
+    "instagramData": { "autoPublish": false },
+    "linkedinData": { "type": "POST" },
+    "creatorUserMail": "stephen@tonkaintl.com",
+    "creatorUserId": 4189470
+  }
 }
 ```
 
-### Scheduled Creation (Direct Schedule)
+## Data Architecture - What We Built
 
-**Purpose**: Schedule post for specific date/time without human review
-
-**API Call**: Same as draft, but with real target time:
-
-```json
-POST /posts
-{
-  "user_id": "4189470",
-  "network": "facebook",
-  "text": "(same content)",
-  "media": [...],
-  "publish_datetime": "2025-10-14T15:30:00Z", // Real target time
-  "status": "scheduled"
-}
-```
-
-### Converting Draft to Scheduled
-
-**Purpose**: Take existing draft and schedule it for publishing
-
-**API Call**:
-
-```json
-PATCH /posts/{post_id}
-{
-  "publish_datetime": "2025-10-14T15:30:00Z", // Target publish time
-  "status": "scheduled"
-}
-```
-
-**Or to publish immediately**:
-
-```json
-PATCH /posts/{post_id}
-{
-  "publish_datetime": "2025-10-14T10:32:00Z" // 2 minutes from now
-}
-```
-
-## Human-in-the-Loop Workflow
-
-### The "Customize in Metricool" Flow
-
-1. **System Creates Draft**: API creates draft post with normalized content
-2. **User Reviews**: Staff opens Metricool Planner in new tab
-3. **AI Enhancement**: Staff uses Metricool's AI text generator to optimize copy
-4. **Final Review**: Staff previews across platforms
-5. **Schedule/Publish**: Staff sets timing or publishes immediately
-
-### Benefits of This Approach
-
-- ✅ **Speed**: Automated draft creation from normalized data
-- ✅ **Quality**: Human review with AI assistance
-- ✅ **Safety**: No accidental posts without review
-- ✅ **Flexibility**: Platform-specific customization available
-- ✅ **Analytics**: Full tracking in Metricool dashboard
-
-### Post Status Verification
-
-**Purpose**: Check post status and verify scheduling
-
-**API Call**:
-
-```json
-GET /posts?status=scheduled
-GET /posts?status=pending
-GET /posts?status=published
-GET /posts/{post_id}
-```
-
-**Response**:
-
-```json
-{
-  "id": "post_12345",
-  "status": "scheduled",
-  "network": "facebook",
-  "publish_datetime": "2025-10-14T15:30:00Z",
-  "text": "...",
-  "created_at": "2025-10-14T10:30:00Z"
-}
-```
-
-## Platform-Specific Considerations
-
-### Facebook
-
-- **Media**: Images, videos, carousels supported
-- **Links**: Link previews automatically generated
-- **Character Limits**: Flexible, but optimize for engagement
-
-### LinkedIn
-
-- **Focus**: Professional tone and business context
-- **Media**: Images perform well, videos supported
-- **Links**: Link posts get good visibility
-
-### X (Twitter)
-
-- **Character Limits**: 280 characters (system should truncate/optimize)
-- **Threads**: Multiple posts can be chained
-- **Media**: Images, GIFs, videos supported
-
-### Instagram
-
-- **Media Required**: All posts need images or videos
-- **Hashtags**: Up to 30 hashtags, strategic placement important
-- **Stories**: Separate API endpoints available
-
-## Security & Best Practices
-
-### API Security
-
-- **Server-Side Only**: Never expose Metricool tokens to frontend
-- **Proxy Pattern**: Frontend → Your API → Metricool API
-- **Token Management**: Store securely in environment variables
-- **Rate Limiting**: Respect Metricool's API limits
-
-### Content Safety
-
-- **Draft Mode**: Default to drafts for review
-- **UTM Tracking**: Always include proper UTM parameters
-- **Media Validation**: Ensure all media URLs are accessible
-- **Platform Compliance**: Follow each platform's content guidelines
-
-## Error Handling
-
-### Common API Errors
-
-- **401 Unauthorized**: Invalid API token or team_id
-- **400 Bad Request**: Missing required fields or invalid data
-- **429 Rate Limited**: Too many requests, implement backoff
-- **500 Server Error**: Metricool service issues, retry later
-
-### Fallback Strategies
-
-- **Draft Creation Fails**: Show error, allow manual retry
-- **Media Upload Issues**: Validate URLs before API call
-- **Platform Disconnected**: Inform user to reconnect in Metricool
-- **Scheduling Conflicts**: Suggest alternative times
-
-## Status Tracking & Webhooks
-
-### Post Status Lifecycle
-
-**Metricool API Status**:
-
-1. **pending** - Created but not scheduled (draft equivalent)
-2. **scheduled** - Queued for future publishing
-3. **processing** - Currently being published to platforms
-4. **published** - Successfully live on social platforms
-5. **failed** - Publishing attempt failed
-6. **deleted** - Removed from queue
-
-**TKI Campaign Status Mapping**:
+### MetricoolPosts Collection
 
 ```javascript
-const STATUS_MAPPING = {
-  pending: 'draft', // Internal draft state
-  scheduled: 'scheduled', // Approved and queued
-  processing: 'publishing', // In progress
-  published: 'active', // Live and successful
-  failed: 'failed', // Publishing failed
-  deleted: 'cancelled', // Cancelled by user
-};
-```
-
-### Webhook Integration (Optional)
-
-Metricool can send webhooks for status changes:
-
-```json
-POST /webhooks/metricool
 {
-  "post_id": "abc123",
-  "status": "published",
-  "platform": "facebook_page",
-  "published_at": "2025-10-14T15:30:00Z"
+  metricool_id: "252904322",        // Unique post ID
+  uuid: "8525485292235081787",     // For updates
+  stock_number: "171001",          // Links to campaign
+  networks: ["facebook"],         // Can be multiple
+  status: "draft",                // Our status tracking
+  text: "Full post text...",
+  metricool_response: {...},      // Complete API response
+  // ... all other fields
 }
 ```
 
-## Implementation Checklist
+### Key Insights
 
-### Setup Phase
+- **One post → Multiple networks** (not one post per network)
+- **Rich metadata preservation** (creator info, platform settings)
+- **UUID-based updates** (not ID-based)
+- **Provider status tracking** (per-network within single post)
 
-- [ ] Sign up for Metricool Pro/Team plan
-- [ ] Request API access from Metricool support
-- [ ] Connect all target social media accounts
-- [ ] Test API credentials with simple post creation
-- [ ] Configure webhook endpoints (optional)
+## Available Operations
 
-### Development Phase
+### 1. Create Draft Post
 
-- [ ] Implement server-side proxy endpoints
-- [ ] Add draft creation functionality
-- [ ] Build status tracking system
-- [ ] Test error handling scenarios
-- [ ] Implement retry logic for failed posts
+**Endpoint**: `POST /social/campaigns/:campaignId/metricool/draft`
 
-### Production Phase
+**Purpose**: Create draft post for human review
 
-- [ ] Configure production API credentials
-- [ ] Set up monitoring for API health
-- [ ] Train staff on Metricool Planner workflow
-- [ ] Document troubleshooting procedures
-- [ ] Monitor post success rates and performance
+**Business Flow**:
 
-## Measuring Success
+1. API creates draft in Metricool
+2. Staff opens Metricool dashboard
+3. Staff customizes with AI tools
+4. Staff schedules or publishes
 
-### Key Metrics
+### 2. Schedule Post
 
-- **Draft Creation Rate**: How many listings become social posts
-- **Customization Rate**: Percentage of drafts edited before publishing
-- **Publishing Success**: Percentage of scheduled posts that publish successfully
-- **Platform Performance**: Engagement rates per platform
-- **Staff Efficiency**: Time from listing to published post
+**Endpoint**: `PATCH /social/campaigns/:campaignId/metricool/:postId/schedule`
 
-### Analytics Sources
+**Purpose**: Convert draft to scheduled post
 
-- **Metricool Dashboard**: Cross-platform analytics and engagement
-- **Internal Tracking**: Campaign creation and completion rates
-- **Platform Native**: Deep dive analytics from each social platform
-- **UTM Analytics**: Traffic attribution back to inventory pages
+**Rules**: Only draft posts can be scheduled
+
+### 3. Delete Post
+
+**Endpoint**: `DELETE /social/campaigns/:campaignId/metricool/:postId`
+
+**Purpose**: Remove unwanted posts
+
+**Rules**: Only draft and scheduled posts can be deleted
+
+### 4. Refresh Posts
+
+**Endpoint**: `GET /social/campaigns/:campaignId/metricool/refresh`
+
+**Purpose**: Sync with changes made directly in Metricool
+
+**Detects**:
+
+- Posts deleted in Metricool
+- Text/date changes made in dashboard
+- Status changes (draft → scheduled)
+
+## Error Handling - Real Scenarios
+
+### Common Issues
+
+```javascript
+// Duplicate key error (old indexes)
+E11000 duplicate key error: metricoolId_1
+
+// Missing required fields (model mismatch)
+Path `stock_number` is required
+
+// API rate limiting
+429 Too Many Requests
+
+// Post not found
+404 Post does not exist
+```
+
+### Solutions
+
+- **Index cleanup** after model changes
+- **Field mapping** between camelCase (API) and snake_case (DB)
+- **Graceful degradation** for API failures
+- **404 handling** in refresh operations
+
+## Dashboard Integration
+
+### Calendar View Working
+
+✅ Posts appear in Metricool calendar
+✅ Correct dates and times displayed  
+✅ Draft status visible
+✅ Click-through to edit works
+
+### What Staff Can Do
+
+- **AI text enhancement** using Metricool's tools
+- **Platform-specific optimization**
+- **Media management and alt text**
+- **Scheduling and publishing**
+- **Analytics and performance tracking**
+
+## Testing Results
+
+### Successful Test Cases
+
+```
+Campaign 171001 → 2 posts created (different dates/content)
+Campaign 21001  → 2 posts created (different dates/content)
+
+All posts visible in Metricool dashboard
+All posts stored correctly in database
+Proper linking via stock_number
+```
+
+### Data Quality
+
+- ✅ Complete metadata preservation
+- ✅ Platform-specific settings included
+- ✅ Creator information tracked
+- ✅ Media and alt text handling
+- ✅ Timezone handling (America/Chicago)
+
+## Production Deployment
+
+### Environment Variables
+
+```env
+# Required for API access
+METRICOOL_API_TOKEN=your_production_token
+METRICOOL_USER_ID=production_user_id
+METRICOOL_BLOG_ID=production_blog_id
+
+# Database collections
+social_campaigns     # Campaign data
+metricool_posts     # Metricool post tracking
+```
+
+### Database Indexes
+
+```javascript
+// MetricoolPosts indexes
+metricool_id_1; // Unique post identifier
+stock_number_1; // Campaign linking
+status_1; // Status filtering
+publish_date_1; // Date sorting
+created_at_1; // Chronological order
+```
+
+### Monitoring Points
+
+- **API response times** (usually 500-1000ms)
+- **Post creation success rate** (should be >95%)
+- **Dashboard sync accuracy** (refresh operation health)
+- **Database consistency** (metricool_id uniqueness)
+
+## Future Enhancements
+
+### Immediate Opportunities
+
+1. **Webhook integration** for real-time status updates
+2. **Bulk operations** for multiple post management
+3. **Template system** for common post types
+4. **Analytics integration** to track performance
+
+### Advanced Features
+
+1. **Campaign propagation** - Update all posts when campaign changes
+2. **Scheduling suggestions** - AI-powered optimal posting times
+3. **Performance optimization** - A/B testing different content
+4. **Multi-campaign posting** - Cross-promote related inventory
 
 ---
 
-_This integration transforms social media posting from a manual, multi-platform chore into a streamlined, AI-enhanced workflow that scales with inventory volume._
+**Last Updated**: October 16, 2025  
+**API Version**: v2 (scheduler/posts endpoint)  
+**Integration Status**: ✅ Production Ready

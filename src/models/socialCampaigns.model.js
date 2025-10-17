@@ -7,6 +7,7 @@ import {
   MEDIA_TYPE,
   MEDIA_TYPE_VALUES,
 } from '../constants/campaigns.js';
+import { SUPPORTED_PROVIDERS } from '../constants/providers.js';
 
 // ----------------------------------------------------------
 
@@ -33,6 +34,31 @@ var socialCampaignsSchema = new Schema({
       url: { required: true, type: String },
     },
   ], // Portfolio of media objects with metadata
+
+  // Platform-specific content and comments
+  platform_content: [
+    {
+      comment: {
+        type: String, // Optional platform-specific comment/caption
+      },
+      custom_text: {
+        type: String, // Optional platform-specific post text override
+      },
+      enabled: {
+        default: true,
+        type: Boolean, // Whether to post to this platform
+      },
+      platform: {
+        enum: SUPPORTED_PROVIDERS,
+        required: true,
+        type: String,
+      },
+      scheduled_date: {
+        type: Date, // Platform-specific scheduling override
+      },
+    },
+  ],
+
   short_url: { type: String },
   // Status and metadata
   status: {

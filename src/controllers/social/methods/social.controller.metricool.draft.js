@@ -123,6 +123,11 @@ export const createMetricoolDraft = async (req, res, next) => {
 
     const metricoolResponse = await metricoolClient.createPost(draftPayload);
 
+    console.log(
+      '🟢 CREATE RESPONSE STRUCTURE:',
+      JSON.stringify(metricoolResponse, null, 2)
+    );
+
     logger.info('Metricool API response received', {
       campaignId,
       response: metricoolResponse,
@@ -150,34 +155,31 @@ export const createMetricoolDraft = async (req, res, next) => {
     // Extract networks from providers array
     const networks = providers.map(p => p.network);
 
-    // Parse Metricool dates
-    const metricoolCreationDate = new Date(metricoolData.creationDate.dateTime);
-    const metricoolPublicationDate = new Date(
-      metricoolData.publicationDate.dateTime
-    );
-
     // Check if this Metricool post already exists
     let metricoolPost = await MetricoolPosts.findOne({
       metricool_id: metricoolPostId,
     });
 
     if (metricoolPost) {
-      // Update existing post - explicitly set each field
+      // Update existing post - use correct field names from flattened model
       metricoolPost.auto_publish = metricoolData.autoPublish || false;
       metricoolPost.stock_number = campaignId;
       metricoolPost.creator_user_mail = metricoolData.creatorUserMail;
       metricoolPost.creator_user_id = metricoolData.creatorUserId;
-      metricoolPost.is_draft = metricoolData.draft || false;
+      metricoolPost.draft = metricoolData.draft || false;
       metricoolPost.media = metricoolData.media || [];
       metricoolPost.media_alt_text = metricoolData.mediaAltText || [];
-      metricoolPost.metricool_creation_date = metricoolCreationDate;
-      metricoolPost.metricool_publication_date = metricoolPublicationDate;
-      metricoolPost.metricool_response = metricoolData;
-      metricoolPost.networks = networks;
-      metricoolPost.publish_date = new Date(publicationDate.dateTime);
+      metricoolPost.creation_date = metricoolData.creationDate;
+      metricoolPost.publication_date = metricoolData.publicationDate;
+      metricoolPost.providers = metricoolData.providers || [];
       metricoolPost.status = draft ? 'draft' : 'scheduled';
       metricoolPost.text = text;
       metricoolPost.uuid = metricoolData.uuid;
+      metricoolPost.twitter_data = metricoolData.twitterData || {};
+      metricoolPost.facebook_data = metricoolData.facebookData || {};
+      metricoolPost.instagram_data = metricoolData.instagramData || {};
+      metricoolPost.linkedin_data = metricoolData.linkedinData || {};
+      metricoolPost.tiktok_data = metricoolData.tiktokData || {};
 
       await metricoolPost.save();
 
@@ -187,23 +189,26 @@ export const createMetricoolDraft = async (req, res, next) => {
         networks,
       });
     } else {
-      // Create new post - explicitly set each field
+      // Create new post - use correct field names from flattened model
       metricoolPost = new MetricoolPosts({
         auto_publish: metricoolData.autoPublish || false,
+        creation_date: metricoolData.creationDate,
         creator_user_id: metricoolData.creatorUserId,
         creator_user_mail: metricoolData.creatorUserMail,
-        is_draft: metricoolData.draft || false,
+        draft: metricoolData.draft || false,
+        facebook_data: metricoolData.facebookData || {},
+        instagram_data: metricoolData.instagramData || {},
+        linkedin_data: metricoolData.linkedinData || {},
         media: metricoolData.media || [],
         media_alt_text: metricoolData.mediaAltText || [],
-        metricool_creation_date: metricoolCreationDate,
         metricool_id: metricoolPostId,
-        metricool_publication_date: metricoolPublicationDate,
-        metricool_response: metricoolData,
-        networks: networks,
-        publish_date: new Date(publicationDate.dateTime),
+        providers: metricoolData.providers || [],
+        publication_date: metricoolData.publicationDate,
         status: draft ? 'draft' : 'scheduled',
         stock_number: campaignId,
         text: text,
+        tiktok_data: metricoolData.tiktokData || {},
+        twitter_data: metricoolData.twitterData || {},
         uuid: metricoolData.uuid,
       });
 

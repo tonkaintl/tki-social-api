@@ -202,10 +202,116 @@ export class MetricoolClient {
   }
 
   /**
-   * Get existing posts
+   * Get existing posts (using v2 scheduler API)
    */
   async getPosts(filters = {}) {
-    return this.makeRequest('GET', '/posts', filters);
+    const endpoint = `/v2/scheduler/posts?userToken=${this.config.METRICOOL_API_TOKEN}&userId=${this.config.METRICOOL_USER_ID}&blogId=${this.config.METRICOOL_BLOG_ID}`;
+    return this.makeRequest('GET', endpoint, filters);
+  }
+
+  /**
+   * Get all scheduled and draft posts (convenience method)
+   * Returns all posts without date filtering
+   */
+  async getAllScheduledAndDraftPosts() {
+    // Build the complete URL with authentication parameters
+    const authParams = `userToken=${this.config.METRICOOL_API_TOKEN}&userId=${this.config.METRICOOL_USER_ID}&blogId=${this.config.METRICOOL_BLOG_ID}`;
+
+    // Get a wide date range to capture all posts
+    const now = new Date();
+    const past = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000); // 1 year ago
+    const future = new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000); // 1 year ahead
+
+    // Format dates for Metricool API - they expect yyyy-MM-dd'T'HH:mm:ss format
+    const startDate = past.toISOString().slice(0, 19); // YYYY-MM-DDTHH:mm:ss format
+    const endDate = future.toISOString().slice(0, 19); // YYYY-MM-DDTHH:mm:ss format
+
+    const endpoint = `/v2/scheduler/posts?${authParams}&start=${startDate}&end=${endDate}`;
+
+    logger.info('DEBUG: Making Metricool GET request to:', {
+      dateRange: { endDate, startDate },
+      endpoint: endpoint.replace(
+        this.config.METRICOOL_API_TOKEN,
+        'HIDDEN_TOKEN'
+      ),
+      hasCredentials: {
+        blogId: !!this.config.METRICOOL_BLOG_ID,
+        token: !!this.config.METRICOOL_API_TOKEN,
+        userId: !!this.config.METRICOOL_USER_ID,
+      },
+    });
+
+    try {
+      const result = await this.makeRequest('GET', endpoint);
+      logger.info('DEBUG: Metricool API response received:', {
+        dataLength: result?.data?.length || 0,
+        error: result?.error || null,
+        firstPost: result?.data?.[0] || null,
+        success: !!result,
+      });
+
+      return result;
+    } catch (error) {
+      logger.error('DEBUG: Metricool API call failed:', {
+        endpoint: endpoint.replace(
+          this.config.METRICOOL_API_TOKEN,
+          'HIDDEN_TOKEN'
+        ),
+        error: error.message,
+      });
+      throw error;
+    }
+  }
+
+  /**
+   * Get posts by status (draft, scheduled, published, etc.)
+   */
+  async getPostsByStatus(statuses = ['DRAFT', 'PENDING']) {
+    const allPosts = await this.getAllScheduledAndDraftPosts();
+
+    if (!allPosts.success || !allPosts.data) {
+      return allPosts;
+    }
+
+    logger.info('DEBUG: Filtering posts by status', {
+      statuses,
+      totalPosts: allPosts.data.length,
+    });
+
+    // Filter posts by provider status
+    const filteredPosts = allPosts.data.filter(post => {
+      if (!post.providers || !Array.isArray(post.providers)) {
+        logger.warn('DEBUG: Post has no providers', { postId: post.id });
+        return false;
+      }
+
+      // Check if any provider has the desired status
+      const hasDesiredStatus = post.providers.some(provider =>
+        statuses.includes(provider.status)
+      );
+
+      if (!hasDesiredStatus) {
+        logger.info('DEBUG: Post filtered out', {
+          desiredStatuses: statuses,
+          postId: post.id,
+          providerStatuses: post.providers.map(p => p.status),
+        });
+      }
+
+      return hasDesiredStatus;
+    });
+
+    logger.info('DEBUG: Filter results', {
+      filteredCount: filteredPosts.length,
+      statuses,
+      totalPosts: allPosts.data.length,
+    });
+
+    return {
+      ...allPosts,
+      count: filteredPosts.length,
+      data: filteredPosts,
+    };
   }
 
   /**

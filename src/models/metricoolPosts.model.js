@@ -9,61 +9,73 @@ import {
 
 var Schema = mongoose.Schema;
 var metricoolPostsSchema = new Schema({
-  // Status tracking
   auto_publish: { default: false, type: Boolean },
-
-  // Timestamps
   created_at: { default: Date.now, type: Date },
-
-  // Creator info from Metricool
+  // Metricool timestamp objects
+  creation_date: {
+    date_time: { type: String },
+    timezone: { type: String },
+  },
+  // Creator information
   creator_user_id: { type: Number },
   creator_user_mail: { type: String },
 
-  // Publication info
-  is_draft: { default: true, type: Boolean },
+  // Post settings
+  draft: { default: true, type: Boolean },
+  facebook_data: { type: Schema.Types.Mixed },
+  // Additional Metricool fields
+  first_comment_text: { type: String },
 
-  // Media information
-  media: [{ type: String }], // URLs from Metricool response
+  has_not_read_notes: { default: false, type: Boolean },
+  instagram_data: { type: Schema.Types.Mixed },
+
+  linkedin_data: { type: Schema.Types.Mixed },
+
+  // Media
+  media: [{ type: String }],
   media_alt_text: [{ type: String }],
+  // Our business fields
+  metricool_id: { required: true, type: String },
+  // Metricool fields (flattened from API response, snake_case)
+  metricool_numeric_id: { type: Number }, // Metricool's numeric ID (avoid conflict with _id)
 
-  // Metricool timestamps
-  metricool_creation_date: { type: Date },
+  // Provider information
+  providers: [
+    {
+      detailed_status: { type: String },
+      network: { type: String },
+      provider_id: { type: String }, // Optional provider ID
+      status: { type: String },
+    },
+  ],
+  publication_date: {
+    date_time: { type: String },
+    timezone: { type: String },
+  },
 
-  // Metricool post ID - unique identifier from Metricool API
-  metricool_id: { required: true, type: String, unique: true },
-
-  metricool_publication_date: { type: Date },
-
-  // Complete Metricool response data
-  metricool_response: { required: true, type: Schema.Types.Mixed },
-
-  // Networks this post covers (array since one Metricool post can target multiple networks)
-  networks: [{ type: String }], // ['facebook', 'instagram', etc.]
-
-  publish_date: { type: Date },
-
+  save_external_media_files: { default: false, type: Boolean },
+  shortener: { default: false, type: Boolean },
   status: {
     default: CAMPAIGN_STATUS.DRAFT,
     enum: CAMPAIGN_STATUS_VALUES,
     type: String,
   },
+  stock_number: { required: true, type: String }, // Links post to inventory
+  text: { type: String },
 
-  // Campaign reference
-  stock_number: { required: true, type: String }, // Reference to socialCampaigns
-
-  // Extracted key fields for easy querying
-  text: { required: true, type: String },
+  tiktok_data: { type: Schema.Types.Mixed },
+  // Platform-specific data
+  twitter_data: { type: Schema.Types.Mixed },
 
   updated_at: { default: Date.now, type: Date },
-
-  uuid: { required: true, type: String }, // For scheduling updates
+  uuid: { type: String },
 });
 
 // Indexes for performance
 metricoolPostsSchema.index({ metricool_id: 1 }, { unique: true });
 metricoolPostsSchema.index({ stock_number: 1 });
 metricoolPostsSchema.index({ status: 1 });
-metricoolPostsSchema.index({ publish_date: 1 });
+metricoolPostsSchema.index({ 'publication_date.date_time': 1 });
 metricoolPostsSchema.index({ created_at: 1 });
 
 // Update the updated_at field on save
