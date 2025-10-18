@@ -7,6 +7,7 @@ import {
   createMetricoolDraft,
   createSocialCampaign,
   deleteMetricoolPost,
+  deleteProposedPosts,
   fetchCampaigns,
   getCampaignByStockNumber,
   getCampaignPreview,
@@ -52,6 +53,10 @@ router.put('/campaigns/:stockNumber', updateCampaign);
 // PATCH Routes
 // ----------------------------------------------------------------------------
 router.patch('/campaigns/:stockNumber/add-proposed-posts', addProposedPosts);
+router.patch(
+  '/campaigns/:stockNumber/delete-proposed-posts',
+  deleteProposedPosts
+);
 router.patch(
   '/campaigns/:stockNumber/update-proposed-posts',
   updateProposedPosts

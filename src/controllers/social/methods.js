@@ -10,7 +10,8 @@ import {
 } from './methods/social.controller.campaign.media.js';
 import { postItemToSocial as postCampaignToSocial } from './methods/social.controller.campaign.post.js';
 import { getCampaignPreview } from './methods/social.controller.campaign.preview.js';
-import { addProposedPosts } from './methods/social.controller.campaign.proposed.posts.js';
+import { addProposedPosts } from './methods/social.controller.campaign.proposed.posts.add.js';
+import { deleteProposedPosts } from './methods/social.controller.campaign.proposed.posts.delete.js';
 import { updateProposedPosts } from './methods/social.controller.campaign.proposed.posts.update.js';
 import { updateCampaign } from './methods/social.controller.campaign.update.js';
 import { deleteMetricoolPost } from './methods/social.controller.metricool.delete.js';
@@ -27,6 +28,7 @@ export {
   createMetricoolDraft,
   createSocialCampaign,
   deleteMetricoolPost,
+  deleteProposedPosts,
   fetchCampaigns,
   getAllMetricoolPosts,
   getCampaignByStockNumber,

@@ -126,7 +126,7 @@ export const addProposedPosts = async (req, res) => {
       enabled: true,
       media_urls: [], // Will be populated later by staff
       platform,
-      scheduled_date: null, // Will be set later by staff
+      scheduled_date: new Date() + 24 * 60 * 60 * 1000, // Default to 24 hours from now
       text:
         platformContent[platform]?.text || `Generated content for ${platform}`,
     }));
@@ -152,10 +152,12 @@ export const addProposedPosts = async (req, res) => {
       stockNumber,
     });
 
-    // Format response
+    // Format response with proposed_posts at top level for easier frontend access
     const response = {
       campaign: updatedCampaign,
       message: 'Proposed posts generated successfully',
+      proposed_posts: updatedCampaign.proposed_posts, // Make proposed_posts easily accessible
+      stock_number: stockNumber,
     };
 
     res.json(response);
