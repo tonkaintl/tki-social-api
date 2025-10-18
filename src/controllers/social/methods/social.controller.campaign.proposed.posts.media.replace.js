@@ -100,6 +100,11 @@ export const replaceProposedPostMedia = async (req, res) => {
       created_at: new Date(),
     }));
 
+    // Log before update for debugging
+    logger.info(
+      `Before media update - Platform: ${platform}, Stock: ${stockNumber}, Media Count: ${media_urls.length}`
+    );
+
     // Replace all media in the proposed post
     const updatedCampaign = await SocialCampaigns.findOneAndUpdate(
       {
@@ -117,6 +122,12 @@ export const replaceProposedPostMedia = async (req, res) => {
         projection: { proposed_posts: 1, stock_number: 1, title: 1 },
       }
     );
+
+    // Log after update for debugging
+    const platformSummary = updatedCampaign.proposed_posts
+      .map(p => `${p.platform}:${p.media_urls?.length || 0}`)
+      .join(', ');
+    logger.info(`After media update - All platforms: [${platformSummary}]`);
 
     const updatedProposedPost = updatedCampaign.proposed_posts.find(
       post => post.platform === platform

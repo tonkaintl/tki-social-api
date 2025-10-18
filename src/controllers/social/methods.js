@@ -9,8 +9,6 @@ import { postItemToSocial as postCampaignToSocial } from './methods/social.contr
 import { getCampaignPreview } from './methods/social.controller.campaign.preview.js';
 import { addProposedPosts } from './methods/social.controller.campaign.proposed.posts.add.js';
 import { deleteProposedPosts } from './methods/social.controller.campaign.proposed.posts.delete.js';
-import { addProposedPostMedia } from './methods/social.controller.campaign.proposed.posts.media.add.js';
-import { removeProposedPostMedia } from './methods/social.controller.campaign.proposed.posts.media.delete.js';
 import { replaceProposedPostMedia } from './methods/social.controller.campaign.proposed.posts.media.replace.js';
 import { updateProposedPosts } from './methods/social.controller.campaign.proposed.posts.update.js';
 import { updateCampaign } from './methods/social.controller.campaign.update.js';
@@ -24,7 +22,6 @@ import { scheduleMetricoolPost } from './methods/social.controller.metricool.sch
 
 export {
   addCampaignMedia,
-  addProposedPostMedia,
   addProposedPosts,
   createMetricoolDraft,
   createSocialCampaign,
@@ -38,7 +35,6 @@ export {
   postCampaignToSocial,
   refreshMetricoolPosts,
   removeCampaignMedia,
-  removeProposedPostMedia,
   replaceProposedPostMedia,
   scheduleMetricoolPost,
   updateCampaign,

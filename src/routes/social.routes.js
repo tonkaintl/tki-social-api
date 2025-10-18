@@ -3,7 +3,6 @@ import express from 'express';
 import { platformsControllerGetPlatforms } from '../controllers/platforms/methods.js';
 import {
   addCampaignMedia,
-  addProposedPostMedia,
   addProposedPosts,
   createMetricoolDraft,
   createSocialCampaign,
@@ -15,7 +14,6 @@ import {
   getCampaignPreview,
   postCampaignToSocial,
   removeCampaignMedia,
-  removeProposedPostMedia,
   replaceProposedPostMedia,
   scheduleMetricoolPost,
   updateCampaign,
@@ -72,19 +70,10 @@ router.patch(
   '/campaigns/:stockNumber/metricool/:postId/schedule',
   scheduleMetricoolPost
 );
-router.patch(
-  '/campaigns/:stockNumber/proposed-posts/:platform/media',
-  addProposedPostMedia
-);
-
 // ----------------------------------------------------------------------------
 // DELETE Routes
 // ----------------------------------------------------------------------------
 router.delete('/campaigns/:stockNumber/media/:id', removeCampaignMedia);
 router.delete('/campaigns/:stockNumber/metricool/:postId', deleteMetricoolPost);
-router.delete(
-  '/campaigns/:stockNumber/proposed-posts/:platform/media/:mediaIndex',
-  removeProposedPostMedia
-);
 // ----------------------------------------------------------------------------
 export default router;
