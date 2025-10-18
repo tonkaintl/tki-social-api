@@ -9,6 +9,10 @@ import { ApiError, ERROR_CODES } from '../../../constants/errors.js';
 import SocialCampaigns from '../../../models/socialCampaigns.model.js';
 import { logger } from '../../../utils/logger.js';
 
+// !!!! THIS IS FOR DIRECT POSTING TO SOCIAL PLATFORMS USING CAMPAIGN DATA AND DYNAMIC CONTENT GENERATION !!!!
+// ----------------------------------------------------------------------------
+// Supported Providers and Adapters
+// ----------------------------------------------------------------------------
 const SUPPORTED_PROVIDERS = ['meta', 'linkedin', 'x', 'reddit'];
 
 const adapters = {

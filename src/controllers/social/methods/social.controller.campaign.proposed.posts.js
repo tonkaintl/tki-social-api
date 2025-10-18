@@ -37,7 +37,7 @@ const updateProposedPostsBodySchema = z.object({
  * Update Proposed Posts
  * PATCH /campaigns/:stockNumber/proposed-posts
  */
-export const updateProposedPosts = async (req, res) => {
+export const addProposedPosts = async (req, res) => {
   try {
     // Validate parameters and body
     const paramsValidation = updateProposedPostsParamsSchema.safeParse(

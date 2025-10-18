@@ -3,6 +3,7 @@ import express from 'express';
 import { platformsControllerGetPlatforms } from '../controllers/platforms/methods.js';
 import {
   addCampaignMedia,
+  addProposedPosts,
   createMetricoolDraft,
   createSocialCampaign,
   deleteMetricoolPost,
@@ -14,7 +15,6 @@ import {
   removeCampaignMedia,
   scheduleMetricoolPost,
   updateCampaign,
-  updateCampaignText,
   updateProposedPosts,
 } from '../controllers/social/methods.js';
 import { verifyToken } from '../middleware/auth.bearer.js';
@@ -51,8 +51,11 @@ router.put('/campaigns/:stockNumber', updateCampaign);
 // ----------------------------------------------------------------------------
 // PATCH Routes
 // ----------------------------------------------------------------------------
-router.patch('/campaigns/:stockNumber/proposed-posts', updateProposedPosts);
-router.patch('/campaigns/:stockNumber/update-text', updateCampaignText);
+router.patch('/campaigns/:stockNumber/add-proposed-posts', addProposedPosts);
+router.patch(
+  '/campaigns/:stockNumber/update-proposed-posts',
+  updateProposedPosts
+);
 router.patch(
   '/campaigns/:stockNumber/metricool/:postId/schedule',
   scheduleMetricoolPost

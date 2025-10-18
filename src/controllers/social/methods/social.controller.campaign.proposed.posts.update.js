@@ -42,7 +42,7 @@ const updateTextBodySchema = z.object({
  * Update Campaign Text
  * PATCH /campaigns/:stockNumber/update-text
  */
-export const updateCampaignText = async (req, res) => {
+export const updateProposedPosts = async (req, res) => {
   try {
     const { stockNumber } = updateTextParamsSchema.parse(req.params);
     const { base_message, posts } = updateTextBodySchema.parse(req.body);
