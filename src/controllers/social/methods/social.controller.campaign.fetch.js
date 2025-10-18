@@ -12,15 +12,17 @@ import { logger } from '../../../utils/logger.js';
 // Query validation schema
 const fetchCampaignsSchema = z.object({
   createdBy: z.string().optional(),
-  limit: z.coerce.number().int().min(1).max(100).default(10),
+  limit: z.coerce.number().int().min(1).max(100).default(25),
   page: z.coerce.number().int().min(1).default(1),
+  search: z.string().optional(), // Multi-field search for stock number, title, description
   sortBy: z
-    .enum(['created_at', 'updated_at', 'stock_number', 'title'])
-    .default('created_at'),
+    .enum(['created_at', 'updated_at', 'stock_number', 'title', 'status'])
+    .default('updated_at'),
   sortOrder: z.enum(['asc', 'desc']).default('desc'),
   status: z
     .enum(['pending', 'draft', 'scheduled', 'published', 'failed'])
     .optional(),
+  // Keep legacy stockNumber parameter for backward compatibility
   stockNumber: z.string().optional(),
 });
 
@@ -48,14 +50,23 @@ export const fetchCampaigns = async (req, res, next) => {
       });
     }
 
-    const { createdBy, limit, page, sortBy, sortOrder, status, stockNumber } =
-      validationResult.data;
+    const {
+      createdBy,
+      limit,
+      page,
+      search,
+      sortBy,
+      sortOrder,
+      status,
+      stockNumber,
+    } = validationResult.data;
 
     logger.info('Fetching social campaigns', {
       createdBy,
       limit,
       page,
       requestId: req.id,
+      search,
       sortBy,
       sortOrder,
       status,
@@ -64,10 +75,26 @@ export const fetchCampaigns = async (req, res, next) => {
 
     // Build query filter
     const filter = {};
+
+    // Status filter
     if (status) filter.status = status;
-    if (stockNumber)
-      filter.stock_number = { $options: 'i', $regex: stockNumber };
+
+    // Created by filter
     if (createdBy) filter.created_by = createdBy;
+
+    // Enhanced search - supports both new 'search' and legacy 'stockNumber' parameters
+    if (search) {
+      // Multi-field search across stock number, title, and description
+      const searchRegex = new RegExp(search, 'i');
+      filter.$or = [
+        { stock_number: searchRegex },
+        { title: searchRegex },
+        { description: searchRegex },
+      ];
+    } else if (stockNumber) {
+      // Legacy single field search for backward compatibility
+      filter.stock_number = { $options: 'i', $regex: stockNumber };
+    }
 
     // Calculate skip for pagination
     const skip = (page - 1) * limit;
@@ -78,7 +105,20 @@ export const fetchCampaigns = async (req, res, next) => {
 
     // Execute query with pagination
     const [campaigns, totalCount] = await Promise.all([
-      SocialCampaigns.find(filter).sort(sort).skip(skip).limit(limit).lean(),
+      SocialCampaigns.find(filter)
+        .sort(sort)
+        .skip(skip)
+        .limit(limit)
+        .select({
+          created_at: 1,
+          created_by: 1,
+          description: 1, // Include for search and response
+          status: 1,
+          stock_number: 1,
+          title: 1, // Include for search and response
+          updated_at: 1,
+        })
+        .lean(),
       SocialCampaigns.countDocuments(filter),
     ]);
 

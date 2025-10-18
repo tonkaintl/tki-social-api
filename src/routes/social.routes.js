@@ -11,7 +11,6 @@ import {
   fetchCampaigns,
   getCampaignByStockNumber,
   getCampaignPreview,
-  getCampaignsList,
   postCampaignToSocial,
   removeCampaignMedia,
   scheduleMetricoolPost,
@@ -41,7 +40,6 @@ router.post('/campaigns/post-to-social', postCampaignToSocial);
 router.get('/campaigns', fetchCampaigns);
 router.get('/platforms', platformsControllerGetPlatforms);
 router.get('/campaigns/:stockNumber/detail', getCampaignByStockNumber);
-router.get('/campaigns/list', getCampaignsList);
 router.get('/campaigns/:stockNumber/preview/:provider', getCampaignPreview);
 
 // ----------------------------------------------------------------------------

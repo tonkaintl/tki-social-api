@@ -2,7 +2,6 @@
 import { createSocialCampaign } from './methods/social.controller.campaign.create.js';
 import { getCampaignByStockNumber } from './methods/social.controller.campaign.detail.js';
 import { fetchCampaigns } from './methods/social.controller.campaign.fetch.js';
-import { getCampaignsList } from './methods/social.controller.campaign.list.js';
 import {
   addCampaignMedia,
   getCampaignMedia,
@@ -34,7 +33,6 @@ export {
   getCampaignByStockNumber,
   getCampaignMedia,
   getCampaignPreview,
-  getCampaignsList,
   postCampaignToSocial,
   refreshMetricoolPosts,
   removeCampaignMedia,
