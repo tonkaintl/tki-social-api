@@ -7,11 +7,17 @@ import {
   MEDIA_TYPE,
   MEDIA_TYPE_VALUES,
 } from '../constants/campaigns.js';
+import { SUPPORTED_PROVIDERS } from '../constants/providers.js';
 
 // ----------------------------------------------------------
 
 var Schema = mongoose.Schema;
 var socialCampaignsSchema = new Schema({
+  // Base message used as foundation for all platform posts
+  base_message: {
+    default: '', // Will be auto-populated from item title during campaign creation
+    type: String,
+  },
   created_at: { default: Date.now, type: Date },
   created_by: { required: true, type: String },
   description: { type: String },
@@ -33,6 +39,43 @@ var socialCampaignsSchema = new Schema({
       url: { required: true, type: String },
     },
   ], // Portfolio of media objects with metadata
+
+  // Proposed posts for each platform (staging area before Metricool)
+  proposed_posts: [
+    {
+      enabled: {
+        default: true,
+        type: Boolean, // Whether to post to this platform
+      },
+      media_urls: [
+        {
+          alt: { type: String },
+          description: { type: String },
+          filename: { type: String },
+          media_type: {
+            default: MEDIA_TYPE.IMAGE,
+            enum: MEDIA_TYPE_VALUES,
+            type: String,
+          },
+          size: { type: Number },
+          tags: [{ type: String }],
+          url: { required: true, type: String },
+        },
+      ], // Platform-specific media (in addition to campaign media_urls)
+      platform: {
+        enum: SUPPORTED_PROVIDERS,
+        required: true,
+        type: String,
+      },
+      scheduled_date: {
+        type: Date, // Platform-specific scheduling
+      },
+      text: {
+        type: String, // Platform-specific post content
+      },
+    },
+  ],
+
   short_url: { type: String },
   // Status and metadata
   status: {

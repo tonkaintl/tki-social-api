@@ -1,18 +1,21 @@
 import express from 'express';
 
+import { platformsControllerGetPlatforms } from '../controllers/platforms/methods.js';
 import {
   addCampaignMedia,
+  addProposedPosts,
+  createMetricoolDraft,
   createSocialCampaign,
-  createSocialComment,
-  createSocialPost,
-  fetchSocialPosts,
+  deleteMetricoolPost,
+  deleteProposedPosts,
+  fetchCampaigns,
   getCampaignByStockNumber,
-  getCampaignMedia,
   getCampaignPreview,
-  getCampaignsList,
-  postItemToSocial,
+  postCampaignToSocial,
   removeCampaignMedia,
+  scheduleMetricoolPost,
   updateCampaign,
+  updateProposedPosts,
 } from '../controllers/social/methods.js';
 import { verifyToken } from '../middleware/auth.bearer.js';
 
@@ -26,19 +29,18 @@ router.use(verifyToken);
 // ----------------------------------------------------------------------------
 // POST Routes
 // ----------------------------------------------------------------------------
-router.post('/post', createSocialPost);
 router.post('/campaigns', createSocialCampaign);
-router.post('/post-item', postItemToSocial);
-router.post('/comment', createSocialComment);
+router.post('/campaigns/:stockNumber/metricool/draft', createMetricoolDraft);
+router.post('/campaigns/:stockNumber/media', addCampaignMedia);
+router.post('/campaigns/post-to-social', postCampaignToSocial);
 
 // ----------------------------------------------------------------------------
 // GET Routes
 // ----------------------------------------------------------------------------
-router.get('/fetch', fetchSocialPosts);
-router.get('/campaigns', getCampaignsList); // Campaign listing with pagination
-router.get('/campaigns/:stockNumber/preview/:provider', getCampaignPreview); // Campaign preview for specific platform
-router.get('/campaigns/:stockNumber', getCampaignByStockNumber);
-router.get('/campaigns/:stockNumber/media', getCampaignMedia); // Get campaign media portfolio
+router.get('/campaigns', fetchCampaigns);
+router.get('/platforms', platformsControllerGetPlatforms);
+router.get('/campaigns/:stockNumber/detail', getCampaignByStockNumber);
+router.get('/campaigns/:stockNumber/preview/:provider', getCampaignPreview);
 
 // ----------------------------------------------------------------------------
 // PUT Routes
@@ -46,14 +48,26 @@ router.get('/campaigns/:stockNumber/media', getCampaignMedia); // Get campaign m
 router.put('/campaigns/:stockNumber', updateCampaign);
 
 // ----------------------------------------------------------------------------
-// POST Routes (Media Portfolio)
+// PATCH Routes
 // ----------------------------------------------------------------------------
-router.post('/campaigns/:stockNumber/media', addCampaignMedia); // Add media to campaign portfolio
+router.patch('/campaigns/:stockNumber/add-proposed-posts', addProposedPosts);
+router.patch(
+  '/campaigns/:stockNumber/delete-proposed-posts',
+  deleteProposedPosts
+);
+router.patch(
+  '/campaigns/:stockNumber/update-proposed-posts',
+  updateProposedPosts
+);
+router.patch(
+  '/campaigns/:stockNumber/metricool/:postId/schedule',
+  scheduleMetricoolPost
+);
 
 // ----------------------------------------------------------------------------
 // DELETE Routes
 // ----------------------------------------------------------------------------
-router.delete('/campaigns/:stockNumber/media/:mediaIndex', removeCampaignMedia); // Remove media from portfolio
-
+router.delete('/campaigns/:stockNumber/media/:mediaIndex', removeCampaignMedia);
+router.delete('/campaigns/:stockNumber/metricool/:postId', deleteMetricoolPost);
 // ----------------------------------------------------------------------------
 export default router;

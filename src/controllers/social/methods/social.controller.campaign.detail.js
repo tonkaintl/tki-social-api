@@ -90,20 +90,7 @@ export const getCampaignByStockNumber = async (req, res, next) => {
 
     // Step 4: Build response
     const response = {
-      campaign: {
-        _id: campaign._id,
-        created_at: campaign.created_at,
-        created_by: campaign.created_by,
-        description: campaign.description,
-        media_storage: campaign.media_storage,
-        media_urls: campaign.media_urls,
-        short_url: campaign.short_url,
-        status: campaign.status,
-        stock_number: campaign.stock_number,
-        title: campaign.title,
-        updated_at: campaign.updated_at,
-        url: campaign.url,
-      },
+      campaign, // Return complete campaign object including proposed_posts
       item, // Fresh Binder data
       platformContent, // Dynamically formatted content
       requestId: req.id,

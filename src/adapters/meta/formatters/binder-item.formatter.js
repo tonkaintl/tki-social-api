@@ -1,17 +1,20 @@
 /**
- * Format a Binder   }
-
-  if (!item.location) {nventory item for Facebook/Meta posting
+ * Format a Binder inventory item for Facebook/Meta posting
  * Optimized for Facebook's format with emojis and clear structure
  */
-export function formatBinderItemForMeta(item) {
+export function formatBinderItemForMeta(item, baseMessage = '') {
   const lines = [];
 
-  // Title with tractor emoji
-  if (item.year && item.make && item.model) {
-    lines.push(`🚜 ${item.year} ${item.make} ${item.model}`);
-  } else if (item.make && item.model) {
-    lines.push(`🚜 ${item.make} ${item.model}`);
+  // Use baseMessage if provided, otherwise construct from item data
+  if (baseMessage) {
+    lines.push(`🚜 ${baseMessage}`);
+  } else {
+    // Fallback to constructing from item data
+    if (item.year && item.make && item.model) {
+      lines.push(`🚜 ${item.year} ${item.make} ${item.model}`);
+    } else if (item.make && item.model) {
+      lines.push(`🚜 ${item.make} ${item.model}`);
+    }
   }
 
   lines.push('');
