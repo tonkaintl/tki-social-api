@@ -17,11 +17,11 @@ import { logger } from '../../../utils/logger.js';
  */
 export const deleteMetricoolPost = async (req, res, next) => {
   try {
-    const { campaignId, postId } = req.params;
+    const { postId, stockNumber } = req.params;
 
     // Check if campaign exists
     const campaign = await SocialCampaigns.findOne({
-      stock_number: campaignId,
+      stock_number: stockNumber,
     });
     if (!campaign) {
       throw new ApiError(
@@ -34,7 +34,7 @@ export const deleteMetricoolPost = async (req, res, next) => {
     // Find the Metricool post
     const metricoolPost = await MetricoolPosts.findOne({
       metricool_id: postId,
-      stock_number: campaignId,
+      stock_number: stockNumber,
     });
     if (!metricoolPost) {
       throw new ApiError(
@@ -60,7 +60,7 @@ export const deleteMetricoolPost = async (req, res, next) => {
     const metricoolClient = new MetricoolClient(config);
 
     logger.info('Deleting Metricool post', {
-      campaignId,
+      campaignId: stockNumber,
       metricoolPostId: postId,
       postUuid: metricoolPost.uuid,
       status: metricoolPost.status,
@@ -71,7 +71,7 @@ export const deleteMetricoolPost = async (req, res, next) => {
       await metricoolClient.deletePost(postId);
 
       logger.info('Successfully deleted post from Metricool', {
-        campaignId,
+        campaignId: stockNumber,
         metricoolPostId: postId,
       });
     } catch (metricoolError) {
@@ -83,14 +83,14 @@ export const deleteMetricoolPost = async (req, res, next) => {
         logger.warn(
           'Post not found in Metricool, continuing with database cleanup',
           {
-            campaignId,
+            campaignId: stockNumber,
             metricoolPostId: postId,
           }
         );
       } else {
         // For other Metricool errors, provide detailed error information
         const errorDetails = {
-          campaignId,
+          campaignId: stockNumber,
           errorData: metricoolError.data || metricoolError.response?.data,
           errorMessage: metricoolError.message || 'Unknown Metricool API error',
           metricoolPostId: postId,
@@ -110,7 +110,7 @@ export const deleteMetricoolPost = async (req, res, next) => {
           ERROR_CODES.EXTERNAL_API_ERROR,
           errorDetails.statusCode || 500,
           {
-            campaignId,
+            campaignId: stockNumber,
             metricoolError: metricoolError.message,
             metricoolPostId: postId,
           }
@@ -121,18 +121,18 @@ export const deleteMetricoolPost = async (req, res, next) => {
     // Remove from our database
     await MetricoolPosts.deleteOne({
       metricool_id: postId,
-      stock_number: campaignId,
+      stock_number: stockNumber,
     });
 
     logger.info('Metricool post deleted successfully', {
-      campaignId,
+      campaignId: stockNumber,
       metricoolPostId: postId,
     });
 
     // Return success response
     res.status(200).json({
       data: {
-        campaignId,
+        campaignId: stockNumber,
         deletedPostId: postId,
         status: metricoolPost.status,
       },

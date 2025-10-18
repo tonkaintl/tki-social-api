@@ -8,11 +8,11 @@ import {
   getCampaignMedia,
   removeCampaignMedia,
 } from './methods/social.controller.campaign.media.js';
-import { updatePlatformContent } from './methods/social.controller.campaign.platform.content.js';
 import { postItemToSocial as postCampaignToSocial } from './methods/social.controller.campaign.post.js';
 import { getCampaignPreview } from './methods/social.controller.campaign.preview.js';
+import { updateProposedPosts } from './methods/social.controller.campaign.proposed.posts.js';
 import { updateCampaign } from './methods/social.controller.campaign.update.js';
-import { createSocialComment } from './methods/social.controller.comment.create.js';
+import { updateCampaignText } from './methods/social.controller.campaign.update.text.js';
 import { deleteMetricoolPost } from './methods/social.controller.metricool.delete.js';
 import { createMetricoolDraft } from './methods/social.controller.metricool.draft.js';
 import { getAllMetricoolPosts } from './methods/social.controller.metricool.list.js';
@@ -25,7 +25,6 @@ export {
   addCampaignMedia,
   createMetricoolDraft,
   createSocialCampaign,
-  createSocialComment,
   deleteMetricoolPost,
   fetchCampaigns,
   getAllMetricoolPosts,
@@ -38,5 +37,6 @@ export {
   removeCampaignMedia,
   scheduleMetricoolPost,
   updateCampaign,
-  updatePlatformContent,
+  updateCampaignText,
+  updateProposedPosts,
 };

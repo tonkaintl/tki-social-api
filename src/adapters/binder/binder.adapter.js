@@ -83,6 +83,7 @@ export class BinderAdapter {
 
       // Step 3: Create campaign data structure
       const campaignData = {
+        base_message: normalizedItem.title, // Auto-populate from item title
         created_by: createdBy,
         description: normalizedItem.description,
         media_urls: normalizedItem.media

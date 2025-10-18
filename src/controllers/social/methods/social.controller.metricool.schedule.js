@@ -30,7 +30,7 @@ const scheduleMetricoolPostSchema = z.object({
  */
 export const scheduleMetricoolPost = async (req, res, next) => {
   try {
-    const { campaignId, postId } = req.params;
+    const { postId, stockNumber } = req.params;
 
     // Validate request body
     const validationResult = scheduleMetricoolPostSchema.safeParse(req.body);
@@ -40,7 +40,7 @@ export const scheduleMetricoolPost = async (req, res, next) => {
         .join(', ');
 
       logger.warn('Metricool schedule validation failed', {
-        campaignId,
+        campaignId: stockNumber,
         errors: validationResult.error.errors,
         postId,
       });
@@ -56,7 +56,7 @@ export const scheduleMetricoolPost = async (req, res, next) => {
 
     // Check if campaign exists
     const campaign = await SocialCampaigns.findOne({
-      stock_number: campaignId,
+      stock_number: stockNumber,
     });
     if (!campaign) {
       throw new ApiError(
@@ -69,7 +69,7 @@ export const scheduleMetricoolPost = async (req, res, next) => {
     // Find the Metricool post
     const metricoolPost = await MetricoolPosts.findOne({
       metricool_id: postId,
-      stock_number: campaignId,
+      stock_number: stockNumber,
     });
     if (!metricoolPost) {
       throw new ApiError(
@@ -92,7 +92,7 @@ export const scheduleMetricoolPost = async (req, res, next) => {
     const metricoolClient = new MetricoolClient(config);
 
     logger.info('Scheduling Metricool post', {
-      campaignId,
+      campaignId: stockNumber,
       postId,
       publishDate: publish_datetime,
     });
@@ -121,7 +121,7 @@ export const scheduleMetricoolPost = async (req, res, next) => {
     }
 
     logger.info('Metricool post scheduled successfully', {
-      campaignId,
+      campaignId: stockNumber,
       postId,
       publishDate: publish_datetime,
     });
@@ -129,7 +129,7 @@ export const scheduleMetricoolPost = async (req, res, next) => {
     // Return success response
     res.status(200).json({
       data: {
-        campaignId,
+        campaignId: stockNumber,
         metricoolDashboardUrl: `https://app.metricool.com/evolution/web?blogId=${config.METRICOOL_BLOG_ID}&userId=${config.METRICOOL_USER_ID}`,
         metricoolPost: {
           id: postId,

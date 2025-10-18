@@ -5,7 +5,6 @@ import {
   addCampaignMedia,
   createMetricoolDraft,
   createSocialCampaign,
-  createSocialComment,
   deleteMetricoolPost,
   fetchCampaigns,
   getCampaignByStockNumber,
@@ -15,7 +14,8 @@ import {
   removeCampaignMedia,
   scheduleMetricoolPost,
   updateCampaign,
-  updatePlatformContent,
+  updateCampaignText,
+  updateProposedPosts,
 } from '../controllers/social/methods.js';
 import { verifyToken } from '../middleware/auth.bearer.js';
 
@@ -30,10 +30,9 @@ router.use(verifyToken);
 // POST Routes
 // ----------------------------------------------------------------------------
 router.post('/campaigns', createSocialCampaign);
-router.post('/campaigns/:campaignId/metricool/draft', createMetricoolDraft);
-router.post('/campaigns/:stockNumber/media', addCampaignMedia); // Add media to campaign portfolio
+router.post('/campaigns/:stockNumber/metricool/draft', createMetricoolDraft);
+router.post('/campaigns/:stockNumber/media', addCampaignMedia);
 router.post('/campaigns/post-to-social', postCampaignToSocial);
-router.post('/comment', createSocialComment);
 
 // ----------------------------------------------------------------------------
 // GET Routes
@@ -50,19 +49,19 @@ router.get('/campaigns/:stockNumber/preview/:provider', getCampaignPreview);
 router.put('/campaigns/:stockNumber', updateCampaign);
 
 // ----------------------------------------------------------------------------
-// PATCH Routes (Metricool)
+// PATCH Routes
 // ----------------------------------------------------------------------------
-router.patch('/campaigns/:campaignId/platform-content', updatePlatformContent); // Update platform-specific content and comments
+router.patch('/campaigns/:stockNumber/proposed-posts', updateProposedPosts);
+router.patch('/campaigns/:stockNumber/update-text', updateCampaignText);
 router.patch(
-  '/campaigns/:campaignId/metricool/:postId/schedule',
+  '/campaigns/:stockNumber/metricool/:postId/schedule',
   scheduleMetricoolPost
 );
 
 // ----------------------------------------------------------------------------
 // DELETE Routes
 // ----------------------------------------------------------------------------
-router.delete('/campaigns/:stockNumber/media/:mediaIndex', removeCampaignMedia); // Remove media from portfolio
-router.delete('/campaigns/:campaignId/metricool/:postId', deleteMetricoolPost); // Delete Metricool post
-
+router.delete('/campaigns/:stockNumber/media/:mediaIndex', removeCampaignMedia);
+router.delete('/campaigns/:stockNumber/metricool/:postId', deleteMetricoolPost);
 // ----------------------------------------------------------------------------
 export default router;

@@ -1,35 +1,32 @@
 /**
- * Social Campaign Update Controller
- * Updates campaign with fresh Binder data, preserving user-added content like media portfolio
+ * Social Campaign Proposed Posts Controller
+ * Manage proposed posts for each platform before sending to Metricool
  */
 
 import { z } from 'zod';
 
-import { BinderAdapter } from '../../../adapters/binder/binder.adapter.js';
-import { config } from '../../../config/env.js';
 import {
   ApiError,
   ERROR_CODES,
   ERROR_MESSAGES,
 } from '../../../constants/errors.js';
 import SocialCampaigns from '../../../models/socialCampaigns.model.js';
+import {
+  generateMultiPlatformContent,
+  SUPPORTED_PROVIDERS,
+} from '../../../utils/contentGeneration.js';
 import { logger } from '../../../utils/logger.js';
 
 // ----------------------------------------------------------------------------
 // Validation Schemas
 // ----------------------------------------------------------------------------
 
-const updateCampaignParamsSchema = z.object({
+const updateProposedPostsParamsSchema = z.object({
   stockNumber: z.string().min(1, 'Stock number is required'),
 });
 
-const updateCampaignBodySchema = z.object({
-  // Force refresh from Binder data
-  refreshFromBinder: z.boolean().optional().default(true),
-  // Allow status override
-  status: z
-    .enum(['pending', 'draft', 'scheduled', 'published', 'failed'])
-    .optional(),
+const updateProposedPostsBodySchema = z.object({
+  platforms: z.array(z.enum(SUPPORTED_PROVIDERS)),
 });
 
 // ----------------------------------------------------------------------------
@@ -37,17 +34,19 @@ const updateCampaignBodySchema = z.object({
 // ----------------------------------------------------------------------------
 
 /**
- * Update Campaign
- * PUT /social/campaigns/:stockNumber
+ * Update Proposed Posts
+ * PATCH /campaigns/:stockNumber/proposed-posts
  */
-export const updateCampaign = async (req, res) => {
+export const updateProposedPosts = async (req, res) => {
   try {
     // Validate parameters and body
-    const paramsValidation = updateCampaignParamsSchema.safeParse(req.params);
-    const bodyValidation = updateCampaignBodySchema.safeParse(req.body);
+    const paramsValidation = updateProposedPostsParamsSchema.safeParse(
+      req.params
+    );
+    const bodyValidation = updateProposedPostsBodySchema.safeParse(req.body);
 
     if (!paramsValidation.success) {
-      logger.warn('Invalid campaign update parameters', {
+      logger.warn('Invalid proposed posts update parameters', {
         errors: paramsValidation.error.errors,
         params: req.params,
         requestId: req.requestId,
@@ -66,7 +65,7 @@ export const updateCampaign = async (req, res) => {
     }
 
     if (!bodyValidation.success) {
-      logger.warn('Invalid campaign update body', {
+      logger.warn('Invalid proposed posts update body', {
         body: req.body,
         errors: bodyValidation.error.errors,
         requestId: req.requestId,
@@ -85,12 +84,12 @@ export const updateCampaign = async (req, res) => {
     }
 
     const { stockNumber } = paramsValidation.data;
-    const updateData = bodyValidation.data;
+    const { platforms } = bodyValidation.data;
 
-    logger.info('Updating campaign with fresh Binder data', {
-      refreshFromBinder: updateData.refreshFromBinder,
+    logger.info('Generating proposed posts', {
+      platformCount: platforms.length,
+      platforms,
       requestId: req.requestId,
-      statusOverride: updateData.status,
       stockNumber,
     });
 
@@ -100,7 +99,7 @@ export const updateCampaign = async (req, res) => {
     });
 
     if (!existingCampaign) {
-      logger.warn('Campaign not found for update', {
+      logger.warn('Campaign not found for proposed posts update', {
         requestId: req.requestId,
         stockNumber,
       });
@@ -115,72 +114,53 @@ export const updateCampaign = async (req, res) => {
       });
     }
 
-    // Step 2: Fetch fresh data from Binder if requested
-    let updateObject = {
-      updated_at: new Date(),
-    };
+    // Step 2: Generate content for all requested platforms
+    const { platformContent } = await generateMultiPlatformContent(
+      stockNumber,
+      platforms,
+      existingCampaign.base_message
+    );
 
-    if (updateData.refreshFromBinder) {
-      try {
-        const binderAdapter = new BinderAdapter(config);
-        const freshItem = await binderAdapter.getItem(stockNumber);
+    // Step 3: Create proposed_posts array from generated content
+    const proposed_posts = platforms.map(platform => ({
+      enabled: true,
+      media_urls: [], // Will be populated later by staff
+      platform,
+      scheduled_date: null, // Will be set later by staff
+      text:
+        platformContent[platform]?.text || `Generated content for ${platform}`,
+    }));
 
-        // Update fields that may have changed in Binder
-        updateObject = {
-          ...updateObject,
-          base_message: freshItem.title, // Update base message from fresh item title
-          description: freshItem.description,
-          title: freshItem.title,
-          url: freshItem.url,
-          // Preserve user-added fields like media_urls and status
-        };
-
-        logger.info('Updated campaign with fresh Binder data', {
-          requestId: req.requestId,
-          stockNumber,
-        });
-      } catch (binderError) {
-        logger.warn(
-          'Failed to fetch fresh Binder data, proceeding with status-only update',
-          {
-            binderError: binderError.message,
-            requestId: req.requestId,
-            stockNumber,
-          }
-        );
-      }
-    }
-
-    // Step 3: Apply status override if provided
-    if (updateData.status) {
-      updateObject.status = updateData.status;
-    }
-
-    // Step 4: Update campaign
+    // Step 4: Update campaign with proposed posts
     const updatedCampaign = await SocialCampaigns.findOneAndUpdate(
       { stock_number: stockNumber },
-      { $set: updateObject },
+      {
+        $set: {
+          proposed_posts: proposed_posts,
+          updated_at: new Date(),
+        },
+      },
       {
         new: true,
       }
     );
 
-    logger.info('Campaign updated successfully', {
+    logger.info('Proposed posts generated and saved successfully', {
+      platformCount: proposed_posts.length,
+      platforms,
       requestId: req.requestId,
-      status: updatedCampaign.status,
       stockNumber,
     });
 
     // Format response
     const response = {
-      campaign: updatedCampaign, // Return complete campaign object including base_message
-      message: 'Campaign updated with fresh Binder data',
-      refreshedFromBinder: updateData.refreshFromBinder,
+      campaign: updatedCampaign,
+      message: 'Proposed posts generated successfully',
     };
 
     res.json(response);
   } catch (error) {
-    logger.error('Error updating campaign', {
+    logger.error('Error updating proposed posts', {
       error: error.message,
       requestId: req.requestId,
       stack: error.stack,
@@ -194,7 +174,7 @@ export const updateCampaign = async (req, res) => {
     res.status(apiError.statusCode).json({
       code: apiError.code,
       error: apiError.message,
-      message: 'Failed to update campaign',
+      message: 'Failed to update proposed posts',
     });
   }
 };

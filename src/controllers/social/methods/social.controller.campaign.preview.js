@@ -5,27 +5,13 @@
 
 import { z } from 'zod';
 
-import { BinderAdapter } from '../../../adapters/binder/binder.adapter.js';
-import { formatBinderItemForLinkedIn } from '../../../adapters/linkedin/formatters/binder-item.formatter.js';
-import { formatBinderItemForMeta } from '../../../adapters/meta/formatters/binder-item.formatter.js';
-import { formatBinderItemForReddit } from '../../../adapters/reddit/formatters/binder-item.formatter.js';
-import { formatBinderItemForX } from '../../../adapters/x/formatters/binder-item.formatter.js';
-import { config } from '../../../config/env.js';
 import { ApiError, ERROR_CODES } from '../../../constants/errors.js';
+import SocialCampaigns from '../../../models/socialCampaigns.model.js';
+import {
+  generatePlatformContent,
+  SUPPORTED_PROVIDERS,
+} from '../../../utils/contentGeneration.js';
 import { logger } from '../../../utils/logger.js';
-
-// ----------------------------------------------------------------------------
-// Constants
-// ----------------------------------------------------------------------------
-
-const SUPPORTED_PROVIDERS = ['meta', 'linkedin', 'x', 'reddit'];
-
-const formatters = {
-  linkedin: formatBinderItemForLinkedIn,
-  meta: formatBinderItemForMeta,
-  reddit: formatBinderItemForReddit,
-  x: formatBinderItemForX,
-};
 
 // ----------------------------------------------------------------------------
 // Validation Schemas
@@ -60,13 +46,17 @@ export const getCampaignPreview = async (req, res, next) => {
       stockNumber,
     });
 
-    // Fetch item from Binder
-    const binderAdapter = new BinderAdapter(config);
-    const item = await binderAdapter.getItem(stockNumber);
+    // Fetch campaign to get base_message
+    const campaign = await SocialCampaigns.findOne({
+      stock_number: stockNumber,
+    });
 
-    // Format for the requested provider
-    const formatter = formatters[provider];
-    const formattedContent = formatter(item);
+    // Generate content for the requested platform using campaign's base_message
+    const { formattedContent, item } = await generatePlatformContent(
+      stockNumber,
+      provider,
+      campaign?.base_message
+    );
 
     logger.info('Campaign preview generated', {
       provider,
