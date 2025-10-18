@@ -80,7 +80,7 @@ router.patch(
 // ----------------------------------------------------------------------------
 // DELETE Routes
 // ----------------------------------------------------------------------------
-router.delete('/campaigns/:stockNumber/media/:mediaIndex', removeCampaignMedia);
+router.delete('/campaigns/:stockNumber/media/:id', removeCampaignMedia);
 router.delete('/campaigns/:stockNumber/metricool/:postId', deleteMetricoolPost);
 router.delete(
   '/campaigns/:stockNumber/proposed-posts/:platform/media/:mediaIndex',

@@ -22,7 +22,7 @@ const mediaParamsSchema = z.object({
 });
 
 const removeMediaParamsSchema = z.object({
-  mediaIndex: z.string().transform(val => parseInt(val, 10)),
+  id: z.string().min(1, 'Media ID is required'),
   stockNumber: z.string().min(1, 'Stock number is required'),
 });
 
@@ -32,15 +32,15 @@ const removeMediaParamsSchema = z.object({
 
 /**
  * Remove Media from Campaign Portfolio
- * DELETE /campaigns/:stockNumber/media/:mediaIndex
+ * DELETE /campaigns/:stockNumber/media/:id
  */
 export const removeCampaignMedia = async (req, res) => {
   try {
     const { stockNumber } = mediaParamsSchema.parse(req.params);
-    const { mediaIndex } = removeMediaParamsSchema.parse(req.params);
+    const { id } = removeMediaParamsSchema.parse(req.params);
 
     logger.info('Removing media from campaign portfolio', {
-      mediaIndex,
+      mediaId: id,
       requestId: req.requestId,
       stockNumber,
     });
@@ -63,28 +63,41 @@ export const removeCampaignMedia = async (req, res) => {
       });
     }
 
-    if (
-      !campaign.media_urls ||
-      mediaIndex >= campaign.media_urls.length ||
-      mediaIndex < 0
-    ) {
+    if (!campaign.media_urls || campaign.media_urls.length === 0) {
       const error = new ApiError(
-        ERROR_CODES.VALIDATION_ERROR,
-        'Invalid media index'
+        ERROR_CODES.RESOURCE_NOT_FOUND,
+        'No media found in campaign portfolio'
       );
       return res.status(error.statusCode).json({
         code: error.code,
         error: error.message,
-        media_index: mediaIndex,
-        portfolio_size: campaign.media_urls?.length || 0,
+        stock_number: stockNumber,
+      });
+    }
+
+    // Find the media item by ID
+    const mediaIndex = campaign.media_urls.findIndex(
+      media => media._id.toString() === id
+    );
+
+    if (mediaIndex === -1) {
+      const error = new ApiError(
+        ERROR_CODES.RESOURCE_NOT_FOUND,
+        'Media not found in portfolio'
+      );
+      return res.status(error.statusCode).json({
+        code: error.code,
+        error: error.message,
+        media_id: id,
+        portfolio_size: campaign.media_urls.length,
       });
     }
 
     const removedMediaUrl = campaign.media_urls[mediaIndex];
 
-    // Remove the media URL at the specified index
+    // Remove the media URL with the specified ID
     const updatedMediaUrls = campaign.media_urls.filter(
-      (_, index) => index !== mediaIndex
+      media => media._id.toString() !== id
     );
 
     const updatedCampaign = await SocialCampaigns.findOneAndUpdate(
@@ -109,6 +122,7 @@ export const removeCampaignMedia = async (req, res) => {
     logger.info('Media removed from portfolio successfully', {
       portfolioCount: updatedCampaign.media_urls.length,
       removedMedia: removedMediaUrl,
+      removedMediaId: id,
       requestId: req.requestId,
       stockNumber,
     });
