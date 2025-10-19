@@ -9,6 +9,7 @@ import {
   deleteMetricoolPost,
   deleteProposedPosts,
   fetchCampaigns,
+  generateRssFeed,
   getCampaignByStockNumber,
   getCampaignMedia,
   getCampaignPreview,
@@ -25,7 +26,10 @@ import { verifyToken } from '../middleware/auth.bearer.js';
 const router = express.Router();
 // ----------------------------------------------------------------------------
 
-// Apply Bearer token authentication to all social routes
+// Public routes (no authentication required)
+router.get('/rss', generateRssFeed);
+
+// Apply Bearer token authentication to all other social routes
 router.use(verifyToken);
 
 // ----------------------------------------------------------------------------

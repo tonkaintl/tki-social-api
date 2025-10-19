@@ -17,6 +17,7 @@ import { createMetricoolDraft } from './methods/social.controller.metricool.draf
 import { getAllMetricoolPosts } from './methods/social.controller.metricool.list.js';
 import { refreshMetricoolPosts } from './methods/social.controller.metricool.refresh.js';
 import { scheduleMetricoolPost } from './methods/social.controller.metricool.schedule.js';
+import { generateRssFeed } from './methods/social.controller.rss.feed.js';
 
 // ----------------------------------------------------------------------------
 
@@ -28,6 +29,7 @@ export {
   deleteMetricoolPost,
   deleteProposedPosts,
   fetchCampaigns,
+  generateRssFeed,
   getAllMetricoolPosts,
   getCampaignByStockNumber,
   getCampaignMedia,
