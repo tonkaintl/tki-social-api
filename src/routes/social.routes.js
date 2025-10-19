@@ -9,10 +9,13 @@ import {
   deleteMetricoolPost,
   deleteProposedPosts,
   fetchCampaigns,
+  generateRssFeed,
   getCampaignByStockNumber,
+  getCampaignMedia,
   getCampaignPreview,
   postCampaignToSocial,
   removeCampaignMedia,
+  replaceProposedPostMedia,
   scheduleMetricoolPost,
   updateCampaign,
   updateProposedPosts,
@@ -23,7 +26,10 @@ import { verifyToken } from '../middleware/auth.bearer.js';
 const router = express.Router();
 // ----------------------------------------------------------------------------
 
-// Apply Bearer token authentication to all social routes
+// Public routes (no authentication required)
+router.get('/rss', generateRssFeed);
+
+// Apply Bearer token authentication to all other social routes
 router.use(verifyToken);
 
 // ----------------------------------------------------------------------------
@@ -40,12 +46,17 @@ router.post('/campaigns/post-to-social', postCampaignToSocial);
 router.get('/campaigns', fetchCampaigns);
 router.get('/platforms', platformsControllerGetPlatforms);
 router.get('/campaigns/:stockNumber/detail', getCampaignByStockNumber);
+router.get('/campaigns/:stockNumber/media', getCampaignMedia);
 router.get('/campaigns/:stockNumber/preview/:provider', getCampaignPreview);
 
 // ----------------------------------------------------------------------------
 // PUT Routes
 // ----------------------------------------------------------------------------
 router.put('/campaigns/:stockNumber', updateCampaign);
+router.put(
+  '/campaigns/:stockNumber/proposed-posts/:platform/media',
+  replaceProposedPostMedia
+);
 
 // ----------------------------------------------------------------------------
 // PATCH Routes
@@ -63,11 +74,10 @@ router.patch(
   '/campaigns/:stockNumber/metricool/:postId/schedule',
   scheduleMetricoolPost
 );
-
 // ----------------------------------------------------------------------------
 // DELETE Routes
 // ----------------------------------------------------------------------------
-router.delete('/campaigns/:stockNumber/media/:mediaIndex', removeCampaignMedia);
+router.delete('/campaigns/:stockNumber/media/:id', removeCampaignMedia);
 router.delete('/campaigns/:stockNumber/metricool/:postId', deleteMetricoolPost);
 // ----------------------------------------------------------------------------
 export default router;
