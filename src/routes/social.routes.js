@@ -6,11 +6,13 @@ import {
   addProposedPosts,
   createMetricoolDraft,
   createSocialCampaign,
+  createSocialCampaignInternal,
   deleteMetricoolPost,
   deleteProposedPosts,
   fetchCampaigns,
   generateRssFeed,
   getCampaignByStockNumber,
+  getCampaignByStockNumberInternal,
   getCampaignMedia,
   getCampaignPreview,
   postCampaignToSocial,
@@ -21,6 +23,7 @@ import {
   updateProposedPosts,
 } from '../controllers/social/methods.js';
 import { verifyToken } from '../middleware/auth.bearer.js';
+import { verifyInternalSecret } from '../middleware/auth.internal.js';
 
 // ----------------------------------------------------------------------------
 const router = express.Router();
@@ -28,6 +31,18 @@ const router = express.Router();
 
 // Public routes (no authentication required)
 router.get('/rss', generateRssFeed);
+
+// Internal service routes (x-internal-secret authentication)
+router.post(
+  '/campaigns/internal',
+  verifyInternalSecret,
+  createSocialCampaignInternal
+);
+router.get(
+  '/campaigns/internal/:stockNumber',
+  verifyInternalSecret,
+  getCampaignByStockNumberInternal
+);
 
 // Apply Bearer token authentication to all other social routes
 router.use(verifyToken);

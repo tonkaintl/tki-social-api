@@ -43,7 +43,7 @@ export const rateLimiter = createRateLimiter(
 // Strict rate limiter for posting - 40 requests per hour (doubled for dev)
 export const postRateLimiter = createRateLimiter(
   60 * 60 * 1000, // 1 hour
-  40,
+  4000,
   'Too many post requests, please try again later'
 );
 
