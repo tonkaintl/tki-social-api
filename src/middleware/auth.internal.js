@@ -1,0 +1,73 @@
+import { config } from '../config/env.js';
+import { ApiError, ERROR_CODES } from '../constants/errors.js';
+import { logger } from '../utils/logger.js';
+
+/**
+ * Middleware to verify x-internal-secret header for internal service calls
+ * Used for service-to-service authentication
+ */
+export const verifyInternalSecret = (req, res, next) => {
+  try {
+    const internalSecret = req.headers['x-internal-secret'];
+
+    if (!internalSecret) {
+      logger.warn('Missing x-internal-secret header', {
+        ip: req.ip,
+        requestId: req.id,
+        userAgent: req.get('User-Agent'),
+      });
+
+      const error = new ApiError(
+        ERROR_CODES.AUTHENTICATION_FAILED,
+        'Internal secret header required',
+        401
+      );
+      return res.status(error.statusCode).json({
+        code: error.code,
+        error: null,
+        message: error.message,
+      });
+    }
+
+    if (internalSecret !== config.BINDER_INTERNAL_SECRET) {
+      logger.warn('Invalid x-internal-secret header', {
+        ip: req.ip,
+        requestId: req.id,
+        userAgent: req.get('User-Agent'),
+      });
+
+      const error = new ApiError(
+        ERROR_CODES.AUTHENTICATION_FAILED,
+        'Invalid internal secret',
+        401
+      );
+      return res.status(error.statusCode).json({
+        code: error.code,
+        error: null,
+        message: error.message,
+      });
+    }
+
+    logger.debug('Internal secret verified successfully', {
+      requestId: req.id,
+    });
+
+    next();
+  } catch (error) {
+    logger.error('Error verifying internal secret', {
+      error: error.message,
+      requestId: req.id,
+    });
+
+    const apiError = new ApiError(
+      ERROR_CODES.INTERNAL_SERVER_ERROR,
+      'Internal server error during authentication',
+      500
+    );
+    return res.status(apiError.statusCode).json({
+      code: apiError.code,
+      error: null,
+      message: apiError.message,
+    });
+  }
+};

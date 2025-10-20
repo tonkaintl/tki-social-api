@@ -1,7 +1,9 @@
+import { createSocialCampaignInternal } from './methods/social.controller.campaign.create.internal.js';
 // Methods index for social controllers
 import { createSocialCampaign } from './methods/social.controller.campaign.create.js';
 import { getCampaignByStockNumber } from './methods/social.controller.campaign.detail.js';
 import { fetchCampaigns } from './methods/social.controller.campaign.fetch.js';
+import { getCampaignByStockNumberInternal } from './methods/social.controller.campaign.get.internal.js';
 import { addCampaignMedia } from './methods/social.controller.campaign.media.add.js';
 import { removeCampaignMedia } from './methods/social.controller.campaign.media.delete.js';
 import { getCampaignMedia } from './methods/social.controller.campaign.media.get.js';
@@ -26,12 +28,14 @@ export {
   addProposedPosts,
   createMetricoolDraft,
   createSocialCampaign,
+  createSocialCampaignInternal,
   deleteMetricoolPost,
   deleteProposedPosts,
   fetchCampaigns,
   generateRssFeed,
   getAllMetricoolPosts,
   getCampaignByStockNumber,
+  getCampaignByStockNumberInternal,
   getCampaignMedia,
   getCampaignPreview,
   postCampaignToSocial,
