@@ -52,8 +52,14 @@ export class MetricoolClient {
         logger.warn('Metricool API error response', {
           data: responseData,
           endpoint,
+          requestBody: data,
+          requestHeaders: options.headers,
           status: response.status,
           statusText: response.statusText,
+          url: url.replace(
+            this.config.METRICOOL_API_TOKEN || '',
+            'HIDDEN_TOKEN'
+          ),
         });
 
         // Handle rate limiting

@@ -18,7 +18,6 @@ import { deleteMetricoolPost } from './methods/social.controller.metricool.delet
 import { createMetricoolDraft } from './methods/social.controller.metricool.draft.js';
 import { getAllMetricoolPosts } from './methods/social.controller.metricool.list.js';
 import { refreshMetricoolPosts } from './methods/social.controller.metricool.refresh.js';
-import { scheduleMetricoolPost } from './methods/social.controller.metricool.schedule.js';
 import { generateRssFeed } from './methods/social.controller.rss.feed.js';
 
 // ----------------------------------------------------------------------------
@@ -42,7 +41,6 @@ export {
   refreshMetricoolPosts,
   removeCampaignMedia,
   replaceProposedPostMedia,
-  scheduleMetricoolPost,
   updateCampaign,
   updateProposedPosts,
 };

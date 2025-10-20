@@ -18,7 +18,6 @@ import {
   postCampaignToSocial,
   removeCampaignMedia,
   replaceProposedPostMedia,
-  scheduleMetricoolPost,
   updateCampaign,
   updateProposedPosts,
 } from '../controllers/social/methods.js';
@@ -52,6 +51,7 @@ router.use(verifyToken);
 // ----------------------------------------------------------------------------
 router.post('/campaigns', createSocialCampaign);
 router.post('/campaigns/:stockNumber/metricool/draft', createMetricoolDraft);
+router.post('/campaigns/:stockNumber/bulk-draft', createMetricoolDraft); // Frontend alias
 router.post('/campaigns/:stockNumber/media', addCampaignMedia);
 router.post('/campaigns/post-to-social', postCampaignToSocial);
 
@@ -85,10 +85,7 @@ router.patch(
   '/campaigns/:stockNumber/update-proposed-posts',
   updateProposedPosts
 );
-router.patch(
-  '/campaigns/:stockNumber/metricool/:postId/schedule',
-  scheduleMetricoolPost
-);
+
 // ----------------------------------------------------------------------------
 // DELETE Routes
 // ----------------------------------------------------------------------------

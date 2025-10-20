@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------
-// POST /social/campaigns/:campaignId/metricool/draft
+// POST /social/campaigns/:stockNumber/metricool/draft
 // Create a draft post in Metricool from campaign data
 // ----------------------------------------------------------------------------
 
@@ -44,11 +44,11 @@ const PLATFORM_TO_NETWORK_MAP = {
 
 /**
  * Create draft posts in Metricool from campaign's proposed_posts
- * POST /social/campaigns/:campaignId/metricool/draft
+ * POST /social/campaigns/:stockNumber/metricool/draft
  */
 export const createMetricoolDraft = async (req, res, next) => {
   try {
-    const { campaignId } = req.params;
+    const { stockNumber } = req.params;
 
     // Validate request body
     const validationResult = createMetricoolDraftSchema.safeParse(req.body);
@@ -58,8 +58,8 @@ export const createMetricoolDraft = async (req, res, next) => {
         .join(', ');
 
       logger.warn('Metricool draft creation validation failed', {
-        campaignId,
         errors: validationResult.error.errors,
+        stockNumber,
       });
 
       throw new ApiError(
@@ -73,7 +73,7 @@ export const createMetricoolDraft = async (req, res, next) => {
 
     // Check if campaign exists and has proposed_posts
     const campaign = await SocialCampaigns.findOne({
-      stock_number: campaignId,
+      stock_number: stockNumber,
     });
     if (!campaign) {
       throw new ApiError(
@@ -117,9 +117,9 @@ export const createMetricoolDraft = async (req, res, next) => {
     const errors = [];
 
     logger.info('Creating Metricool draft posts', {
-      campaignId,
       platforms: postsToProcess.map(p => p.platform),
       postCount: postsToProcess.length,
+      stockNumber,
     });
 
     for (const proposedPost of postsToProcess) {
@@ -128,8 +128,8 @@ export const createMetricoolDraft = async (req, res, next) => {
         const network = PLATFORM_TO_NETWORK_MAP[proposedPost.platform];
         if (!network) {
           logger.warn('Unsupported platform for Metricool', {
-            campaignId,
             platform: proposedPost.platform,
+            stockNumber,
           });
           errors.push({
             error: `Platform '${proposedPost.platform}' not supported by Metricool`,
@@ -139,10 +139,15 @@ export const createMetricoolDraft = async (req, res, next) => {
         }
 
         // Build Metricool payload for this specific post
+        // Transform media URLs to match Metricool's expected format
+        const mediaUrls = (proposedPost.media_urls || []).map(
+          media => media.url
+        );
+
         const draftPayload = {
           autoPublish: false, // Always false for drafts
           draft: draft,
-          media: proposedPost.media_urls || [], // Use post-specific media or empty array
+          media: mediaUrls, // Use only the URL strings, not the full media objects
           providers: [{ network }], // Single provider per post
           publicationDate: {
             dateTime: proposedPost.scheduled_date
@@ -154,9 +159,17 @@ export const createMetricoolDraft = async (req, res, next) => {
         };
 
         logger.info('Creating individual Metricool draft', {
-          campaignId,
+          network,
+          payload: draftPayload,
+          platform: proposedPost.platform,
+          stockNumber,
+          textPreview: proposedPost.text.substring(0, 100),
+        });
+
+        logger.info('Creating individual Metricool draft', {
           network,
           platform: proposedPost.platform,
+          stockNumber,
           textPreview: proposedPost.text.substring(0, 100),
         });
 
@@ -164,9 +177,9 @@ export const createMetricoolDraft = async (req, res, next) => {
           await metricoolClient.createPost(draftPayload);
 
         logger.info('Metricool API response received', {
-          campaignId,
           platform: proposedPost.platform,
           responseId: metricoolResponse?.data?.id,
+          stockNumber,
         });
 
         // Check if we got a valid response with an ID
@@ -195,7 +208,7 @@ export const createMetricoolDraft = async (req, res, next) => {
         if (metricoolPost) {
           // Update existing post
           metricoolPost.auto_publish = metricoolData.autoPublish || false;
-          metricoolPost.stock_number = campaignId;
+          metricoolPost.stock_number = stockNumber;
           metricoolPost.creator_user_mail = metricoolData.creatorUserMail;
           metricoolPost.creator_user_id = metricoolData.creatorUserId;
           metricoolPost.draft = metricoolData.draft || false;
@@ -216,9 +229,9 @@ export const createMetricoolDraft = async (req, res, next) => {
           await metricoolPost.save();
 
           logger.info('Updated existing Metricool post', {
-            campaignId,
             metricoolPostId,
             platform: proposedPost.platform,
+            stockNumber,
           });
         } else {
           // Create new post
@@ -237,7 +250,7 @@ export const createMetricoolDraft = async (req, res, next) => {
             providers: metricoolData.providers || [],
             publication_date: metricoolData.publicationDate,
             status: draft ? 'draft' : 'scheduled',
-            stock_number: campaignId,
+            stock_number: stockNumber,
             text: proposedPost.text,
             tiktok_data: metricoolData.tiktokData || {},
             twitter_data: metricoolData.twitterData || {},
@@ -247,9 +260,9 @@ export const createMetricoolDraft = async (req, res, next) => {
           await metricoolPost.save();
 
           logger.info('Created new Metricool post', {
-            campaignId,
             metricoolPostId,
             platform: proposedPost.platform,
+            stockNumber,
           });
         }
 
@@ -265,14 +278,16 @@ export const createMetricoolDraft = async (req, res, next) => {
         });
       } catch (postError) {
         logger.error('Failed to create Metricool post for platform', {
-          campaignId,
           error: postError.message,
+          errorDetails: postError.details || null,
           platform: proposedPost.platform,
+          stockNumber,
         });
 
         errors.push({
           error: postError.message,
           platform: proposedPost.platform,
+          statusCode: postError.statusCode || null,
         });
       }
     }
@@ -286,19 +301,19 @@ export const createMetricoolDraft = async (req, res, next) => {
     }
 
     logger.info('Metricool draft posts processing completed', {
-      campaignId,
       errorCount: errors.length,
+      stockNumber,
       successCount: metricoolResults.length,
     });
 
     // Return response with both successes and errors
     const response = {
       data: {
-        campaignId,
         errors: errors,
         metricoolDashboardUrl: `https://app.metricool.com/evolution/web?blogId=${config.METRICOOL_BLOG_ID}&userId=${config.METRICOOL_USER_ID}`,
         metricoolPosts: metricoolResults,
         processedCount: metricoolResults.length,
+        stockNumber,
         totalRequested: postsToProcess.length,
       },
       message:
@@ -311,9 +326,9 @@ export const createMetricoolDraft = async (req, res, next) => {
     res.status(statusCode).json(response);
   } catch (error) {
     logger.error('Failed to create Metricool drafts', {
-      campaignId: req.params.campaignId,
       error: error.message,
       stack: error.stack,
+      stockNumber: req.params.stockNumber,
     });
 
     // Pass to error handler
