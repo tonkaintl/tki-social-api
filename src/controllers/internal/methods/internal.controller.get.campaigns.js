@@ -5,7 +5,6 @@
 
 import { z } from 'zod';
 
-import { ApiError, ERROR_CODES } from '../../../constants/errors.js';
 import SocialCampaigns from '../../../models/socialCampaigns.model.js';
 import { logger } from '../../../utils/logger.js';
 
@@ -26,7 +25,7 @@ const getCampaignInternalParamsSchema = z.object({
  * GET /internal/campaigns/:stockNumber
  *
  * Authentication: x-internal-secret header required
- * Response: Campaign object or 404 if not found
+ * Response: Campaign object or null if not found
  */
 export const getCampaign = async (req, res, next) => {
   try {
@@ -43,21 +42,12 @@ export const getCampaign = async (req, res, next) => {
     }).lean();
 
     if (!campaign) {
-      logger.warn('Campaign not found (internal)', {
+      logger.info('Campaign not found (internal)', {
         requestId: req.id,
         stockNumber,
       });
 
-      const error = new ApiError(
-        ERROR_CODES.RESOURCE_NOT_FOUND,
-        'Campaign not found',
-        404
-      );
-      return res.status(error.statusCode).json({
-        code: error.code,
-        error: null,
-        message: error.message,
-      });
+      return res.status(200).json(null);
     }
 
     logger.info('Campaign retrieved successfully (internal)', {
@@ -69,38 +59,17 @@ export const getCampaign = async (req, res, next) => {
     return res.status(200).json(campaign);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      logger.warn('Campaign retrieval validation failed (internal)', {
-        errors: error.errors,
-        requestId: req.id,
-      });
-
-      const apiError = new ApiError(
-        ERROR_CODES.VALIDATION_ERROR,
-        'Request validation failed',
-        400,
-        error.errors
-      );
-      return res.status(apiError.statusCode).json({
-        code: apiError.code,
-        error: apiError.details,
-        message: apiError.message,
+      return res.status(400).json({
+        error: error.errors,
+        message: 'Invalid stock number',
       });
     }
 
     logger.error('Error fetching campaign (internal)', {
       error: error.message,
       requestId: req.id,
-      stack: error.stack,
       stockNumber: req.params.stockNumber,
     });
-
-    if (error instanceof ApiError) {
-      return res.status(error.statusCode).json({
-        code: error.code,
-        error: error.details || null,
-        message: error.message,
-      });
-    }
 
     next(error);
   }
