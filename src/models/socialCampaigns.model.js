@@ -62,6 +62,21 @@ var socialCampaignsSchema = new Schema({
           url: { required: true, type: String },
         },
       ], // Platform-specific media (in addition to campaign media_urls)
+      // Metricool integration tracking
+      metricool_created_at: {
+        type: Date, // When post was created in Metricool
+      },
+      metricool_id: {
+        type: String, // Metricool post ID when sent to Metricool
+      },
+      metricool_scheduled_date: {
+        type: Date, // Actual scheduled date from Metricool (may differ from scheduled_date)
+      },
+      metricool_status: {
+        enum: CAMPAIGN_STATUS_VALUES, // Reuse existing status constants
+        type: String,
+        // null = not sent to Metricool yet
+      },
       platform: {
         enum: SUPPORTED_PROVIDERS,
         required: true,

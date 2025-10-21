@@ -13,9 +13,11 @@ import configurePassport from './middleware/passport.js';
 import { rateLimiter } from './middleware/rateLimit.js';
 import { requestId } from './middleware/requestId.js';
 import {
+  campaignRoutes,
   healthRoutes,
+  internalRoutes,
+  metricoolRoutes,
   platformsRoutes,
-  socialRoutes,
   webhooksRoutes,
 } from './routes/index.js';
 import { logger } from './utils/logger.js';
@@ -61,9 +63,11 @@ app.get('/about', (req, res) => {
 });
 
 // Application routes
+app.use('/api/campaigns', campaignRoutes);
 app.use('/api/health', healthRoutes);
+app.use('/api/internal', internalRoutes);
+app.use('/api/metricool', metricoolRoutes);
 app.use('/api/platforms', platformsRoutes);
-app.use('/api/social', socialRoutes);
 app.use('/api/webhooks', webhooksRoutes);
 
 // 404 handler
