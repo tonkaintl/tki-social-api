@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------
-// POST /social/campaigns/:stockNumber/metricool/draft
+// POST /metricool/drafts
 // Create a draft post in Metricool from campaign data
 // ----------------------------------------------------------------------------
 
@@ -7,8 +7,8 @@ import { z } from 'zod';
 
 import { MetricoolClient } from '../../../adapters/metricool/metricool.client.js';
 import { config } from '../../../config/env.js';
+import { CAMPAIGN_STATUS } from '../../../constants/campaigns.js';
 import { ApiError, ERROR_CODES } from '../../../constants/errors.js';
-import MetricoolPosts from '../../../models/metricoolPosts.model.js';
 import SocialCampaigns from '../../../models/socialCampaigns.model.js';
 import { logger } from '../../../utils/logger.js';
 
@@ -32,24 +32,22 @@ const createMetricoolDraftSchema = z.object({
       }
       return new Date(date).toISOString().slice(0, 19);
     }),
+  stockNumber: z.string().min(1, 'Stock number is required'), // Campaign/stock number
 });
 
 // Platform mapping from internal names to Metricool network names
 const PLATFORM_TO_NETWORK_MAP = {
   linkedin: 'linkedin',
   meta: 'facebook',
-  reddit: 'reddit', // Assuming Metricool supports reddit
   x: 'twitter',
 };
 
 /**
  * Create draft posts in Metricool from campaign's proposed_posts
- * POST /social/campaigns/:stockNumber/metricool/draft
+ * POST /metricool/drafts
  */
 export const createMetricoolDraft = async (req, res, next) => {
   try {
-    const { stockNumber } = req.params;
-
     // Validate request body
     const validationResult = createMetricoolDraftSchema.safeParse(req.body);
     if (!validationResult.success) {
@@ -58,8 +56,8 @@ export const createMetricoolDraft = async (req, res, next) => {
         .join(', ');
 
       logger.warn('Metricool draft creation validation failed', {
+        body: req.body,
         errors: validationResult.error.errors,
-        stockNumber,
       });
 
       throw new ApiError(
@@ -69,7 +67,8 @@ export const createMetricoolDraft = async (req, res, next) => {
       );
     }
 
-    const { draft, platforms, scheduledDate } = validationResult.data;
+    const { draft, platforms, scheduledDate, stockNumber } =
+      validationResult.data;
 
     // Check if campaign exists and has proposed_posts
     const campaign = await SocialCampaigns.findOne({
@@ -160,14 +159,6 @@ export const createMetricoolDraft = async (req, res, next) => {
 
         logger.info('Creating individual Metricool draft', {
           network,
-          payload: draftPayload,
-          platform: proposedPost.platform,
-          stockNumber,
-          textPreview: proposedPost.text.substring(0, 100),
-        });
-
-        logger.info('Creating individual Metricool draft', {
-          network,
           platform: proposedPost.platform,
           stockNumber,
           textPreview: proposedPost.text.substring(0, 100),
@@ -196,82 +187,52 @@ export const createMetricoolDraft = async (req, res, next) => {
           continue;
         }
 
-        // Store Metricool post in dedicated collection
+        // Store Metricool post info back to the campaign's proposed post
         const metricoolPostId = metricoolResponse.data.id.toString();
         const metricoolData = metricoolResponse.data;
 
-        // Check if this Metricool post already exists
-        let metricoolPost = await MetricoolPosts.findOne({
-          metricool_id: metricoolPostId,
-        });
+        // Update the proposed post with Metricool tracking info
+        const updateResult = await SocialCampaigns.updateOne(
+          {
+            'proposed_posts.platform': proposedPost.platform,
+            stock_number: stockNumber,
+          },
+          {
+            $set: {
+              'proposed_posts.$.metricool_created_at': new Date(),
+              'proposed_posts.$.metricool_id': metricoolPostId,
+              'proposed_posts.$.metricool_scheduled_date': metricoolData
+                .publicationDate?.dateTime
+                ? new Date(metricoolData.publicationDate.dateTime)
+                : null,
+              'proposed_posts.$.metricool_status': draft
+                ? CAMPAIGN_STATUS.DRAFT
+                : CAMPAIGN_STATUS.SCHEDULED,
+            },
+          }
+        );
 
-        if (metricoolPost) {
-          // Update existing post
-          metricoolPost.auto_publish = metricoolData.autoPublish || false;
-          metricoolPost.stock_number = stockNumber;
-          metricoolPost.creator_user_mail = metricoolData.creatorUserMail;
-          metricoolPost.creator_user_id = metricoolData.creatorUserId;
-          metricoolPost.draft = metricoolData.draft || false;
-          metricoolPost.media = metricoolData.media || [];
-          metricoolPost.media_alt_text = metricoolData.mediaAltText || [];
-          metricoolPost.creation_date = metricoolData.creationDate;
-          metricoolPost.publication_date = metricoolData.publicationDate;
-          metricoolPost.providers = metricoolData.providers || [];
-          metricoolPost.status = draft ? 'draft' : 'scheduled';
-          metricoolPost.text = proposedPost.text;
-          metricoolPost.uuid = metricoolData.uuid;
-          metricoolPost.twitter_data = metricoolData.twitterData || {};
-          metricoolPost.facebook_data = metricoolData.facebookData || {};
-          metricoolPost.instagram_data = metricoolData.instagramData || {};
-          metricoolPost.linkedin_data = metricoolData.linkedinData || {};
-          metricoolPost.tiktok_data = metricoolData.tiktokData || {};
-
-          await metricoolPost.save();
-
-          logger.info('Updated existing Metricool post', {
+        if (updateResult.modifiedCount === 0) {
+          logger.warn('Failed to update proposed post with Metricool info', {
             metricoolPostId,
             platform: proposedPost.platform,
             stockNumber,
           });
         } else {
-          // Create new post
-          metricoolPost = new MetricoolPosts({
-            auto_publish: metricoolData.autoPublish || false,
-            creation_date: metricoolData.creationDate,
-            creator_user_id: metricoolData.creatorUserId,
-            creator_user_mail: metricoolData.creatorUserMail,
-            draft: metricoolData.draft || false,
-            facebook_data: metricoolData.facebookData || {},
-            instagram_data: metricoolData.instagramData || {},
-            linkedin_data: metricoolData.linkedinData || {},
-            media: metricoolData.media || [],
-            media_alt_text: metricoolData.mediaAltText || [],
-            metricool_id: metricoolPostId,
-            providers: metricoolData.providers || [],
-            publication_date: metricoolData.publicationDate,
-            status: draft ? 'draft' : 'scheduled',
-            stock_number: stockNumber,
-            text: proposedPost.text,
-            tiktok_data: metricoolData.tiktokData || {},
-            twitter_data: metricoolData.twitterData || {},
-            uuid: metricoolData.uuid,
-          });
-
-          await metricoolPost.save();
-
-          logger.info('Created new Metricool post', {
+          logger.info('Updated proposed post with Metricool info', {
             metricoolPostId,
             platform: proposedPost.platform,
+            status: draft ? CAMPAIGN_STATUS.DRAFT : CAMPAIGN_STATUS.SCHEDULED,
             stockNumber,
           });
         }
 
         // Add to successful results
         metricoolResults.push({
+          draft: draft,
           metricoolPostId: metricoolPostId,
           network: network,
           platform: proposedPost.platform,
-          status: draft ? 'draft' : 'scheduled',
           text:
             proposedPost.text.substring(0, 200) +
             (proposedPost.text.length > 200 ? '...' : ''),
@@ -328,7 +289,6 @@ export const createMetricoolDraft = async (req, res, next) => {
     logger.error('Failed to create Metricool drafts', {
       error: error.message,
       stack: error.stack,
-      stockNumber: req.params.stockNumber,
     });
 
     // Pass to error handler

@@ -1,18 +1,13 @@
 import express from 'express';
 
-import { platformsControllerGetPlatforms } from '../controllers/platforms/methods.js';
 import {
   addCampaignMedia,
   addProposedPosts,
-  createMetricoolDraft,
   createSocialCampaign,
-  createSocialCampaignInternal,
-  deleteMetricoolPost,
   deleteProposedPosts,
   fetchCampaigns,
   generateRssFeed,
   getCampaignByStockNumber,
-  getCampaignByStockNumberInternal,
   getCampaignMedia,
   getCampaignPreview,
   postCampaignToSocial,
@@ -20,9 +15,9 @@ import {
   replaceProposedPostMedia,
   updateCampaign,
   updateProposedPosts,
-} from '../controllers/social/methods.js';
+} from '../controllers/campaigns/methods.js';
+import { platformsControllerGetPlatforms } from '../controllers/platforms/methods.js';
 import { verifyToken } from '../middleware/auth.bearer.js';
-import { verifyInternalSecret } from '../middleware/auth.internal.js';
 
 // ----------------------------------------------------------------------------
 const router = express.Router();
@@ -31,65 +26,44 @@ const router = express.Router();
 // Public routes (no authentication required)
 router.get('/rss', generateRssFeed);
 
-// Internal service routes (x-internal-secret authentication)
-router.post(
-  '/campaigns/internal',
-  verifyInternalSecret,
-  createSocialCampaignInternal
-);
-router.get(
-  '/campaigns/internal/:stockNumber',
-  verifyInternalSecret,
-  getCampaignByStockNumberInternal
-);
-
-// Apply Bearer token authentication to all other social routes
+// Apply Bearer token authentication to all other campaign routes
 router.use(verifyToken);
 
 // ----------------------------------------------------------------------------
 // POST Routes
 // ----------------------------------------------------------------------------
-router.post('/campaigns', createSocialCampaign);
-router.post('/campaigns/:stockNumber/metricool/draft', createMetricoolDraft);
-router.post('/campaigns/:stockNumber/bulk-draft', createMetricoolDraft); // Frontend alias
-router.post('/campaigns/:stockNumber/media', addCampaignMedia);
-router.post('/campaigns/post-to-social', postCampaignToSocial);
+router.post('/', createSocialCampaign);
+router.post('/:stockNumber/media', addCampaignMedia);
+router.post('/post-to-social', postCampaignToSocial);
 
 // ----------------------------------------------------------------------------
 // GET Routes
 // ----------------------------------------------------------------------------
-router.get('/campaigns', fetchCampaigns);
+router.get('', fetchCampaigns);
 router.get('/platforms', platformsControllerGetPlatforms);
-router.get('/campaigns/:stockNumber/detail', getCampaignByStockNumber);
-router.get('/campaigns/:stockNumber/media', getCampaignMedia);
-router.get('/campaigns/:stockNumber/preview/:provider', getCampaignPreview);
+router.get('/:stockNumber/detail', getCampaignByStockNumber);
+router.get('/:stockNumber/media', getCampaignMedia);
+router.get('/:stockNumber/preview/:provider', getCampaignPreview);
 
 // ----------------------------------------------------------------------------
 // PUT Routes
 // ----------------------------------------------------------------------------
-router.put('/campaigns/:stockNumber', updateCampaign);
+router.put('/:stockNumber', updateCampaign);
 router.put(
-  '/campaigns/:stockNumber/proposed-posts/:platform/media',
+  '/:stockNumber/proposed-posts/:platform/media',
   replaceProposedPostMedia
 );
 
 // ----------------------------------------------------------------------------
 // PATCH Routes
 // ----------------------------------------------------------------------------
-router.patch('/campaigns/:stockNumber/add-proposed-posts', addProposedPosts);
-router.patch(
-  '/campaigns/:stockNumber/delete-proposed-posts',
-  deleteProposedPosts
-);
-router.patch(
-  '/campaigns/:stockNumber/update-proposed-posts',
-  updateProposedPosts
-);
+router.patch('/:stockNumber/add-proposed-posts', addProposedPosts);
+router.patch('/:stockNumber/delete-proposed-posts', deleteProposedPosts);
+router.patch('/:stockNumber/update-proposed-posts', updateProposedPosts);
 
 // ----------------------------------------------------------------------------
 // DELETE Routes
 // ----------------------------------------------------------------------------
-router.delete('/campaigns/:stockNumber/media/:id', removeCampaignMedia);
-router.delete('/campaigns/:stockNumber/metricool/:postId', deleteMetricoolPost);
+router.delete('/:stockNumber/media/:id', removeCampaignMedia);
 // ----------------------------------------------------------------------------
 export default router;

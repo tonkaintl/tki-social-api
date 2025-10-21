@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------
-// GET /social/campaigns/internal/:stockNumber
+// GET /internal/campaigns/:stockNumber
 // Get a social media campaign by stock number (internal service call)
 // ----------------------------------------------------------------------------
 
@@ -23,12 +23,12 @@ const getCampaignInternalParamsSchema = z.object({
 
 /**
  * Get Campaign by Stock Number (internal service call)
- * GET /social/campaigns/internal/:stockNumber
+ * GET /internal/campaigns/:stockNumber
  *
  * Authentication: x-internal-secret header required
  * Response: Campaign object or 404 if not found
  */
-export const getCampaignByStockNumberInternal = async (req, res, next) => {
+export const getCampaign = async (req, res, next) => {
   try {
     const { stockNumber } = getCampaignInternalParamsSchema.parse(req.params);
 

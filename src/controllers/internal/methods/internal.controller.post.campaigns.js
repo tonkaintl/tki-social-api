@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------
-// POST /social/campaigns/internal
+// POST /internal/campaigns
 // Create a social media campaign from TKI Binder API (internal service call)
 // ----------------------------------------------------------------------------
 
@@ -18,13 +18,13 @@ const createCampaignInternalSchema = z.object({
 
 /**
  * Create social media campaign from TKI Binder API (internal service call)
- * POST /social/campaigns/internal
+ * POST /internal/campaigns
  *
  * Authentication: x-internal-secret header required
  * Request: { stock_number: string, user_name: string }
  * Response: { _id: string, status: string }
  */
-export const createSocialCampaignInternal = async (req, res, next) => {
+export const createCampaign = async (req, res, next) => {
   try {
     logger.info('Received internal campaign creation request:', req.body);
     // Validate request body
