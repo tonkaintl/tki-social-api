@@ -146,7 +146,6 @@ export class BinderAdapter {
             }))
           : [],
         short_url: normalizedItem.shortUrl,
-        status: 'pending',
         stock_number: normalizedItem.stockNumber,
         title: normalizedItem.title,
         url: itemUrl,
@@ -174,73 +173,6 @@ export class BinderAdapter {
       throw new ApiError(
         ERROR_CODES.DATABASE_ERROR,
         `Failed to upsert campaign: ${error.message}`,
-        500
-      );
-    }
-  }
-
-  /**
-   * Create social campaign from binder item
-   * This is the BINDER → NORMALIZE → STORE pipeline
-   * @param {string} stockNumber
-   * @param {string} createdBy - User who created the campaign
-   * @returns {Promise<Object>} Created campaign
-   */
-  async createCampaign(stockNumber, createdBy) {
-    try {
-      logger.info('Creating social campaign from binder item', {
-        createdBy,
-        stockNumber,
-      });
-
-      // Step 1: Fetch and normalize item from binder
-      const normalizedItem = await this.getItem(stockNumber);
-
-      // Step 2: Generate URL for the item (assuming main site pattern)
-      const itemUrl = `https://tonkaintl.com/inventory/${stockNumber}`;
-
-      // Step 3: Create campaign data structure
-      const campaignData = {
-        base_message: normalizedItem.title, // Auto-populate from item title
-        created_by: createdBy,
-        description: normalizedItem.description,
-        media_urls: normalizedItem.media
-          ? normalizedItem.media.map(m => m.url)
-          : [],
-        short_url: normalizedItem.shortUrl,
-
-        // Set initial status
-        status: 'pending',
-
-        stock_number: normalizedItem.stockNumber,
-        title: normalizedItem.title,
-        url: itemUrl,
-      };
-
-      // Step 3: Save to database
-      const campaign = await SocialCampaigns.create(campaignData);
-
-      logger.info('Social campaign created successfully', {
-        campaignId: campaign._id,
-        status: campaign.status,
-        stockNumber,
-      });
-
-      return campaign;
-    } catch (error) {
-      if (error instanceof ApiError) {
-        throw error;
-      }
-
-      logger.error('Failed to create social campaign', {
-        createdBy,
-        error: error.message,
-        stockNumber,
-      });
-
-      throw new ApiError(
-        ERROR_CODES.DATABASE_ERROR,
-        `Failed to create campaign: ${error.message}`,
         500
       );
     }

@@ -5,6 +5,9 @@
 
 import { z } from 'zod';
 
+import { MetricoolClient } from '../../../adapters/metricool/metricool.client.js';
+import { config } from '../../../config/env.js';
+import { METRICOOL_STATUS } from '../../../constants/campaigns.js';
 import {
   ApiError,
   ERROR_CODES,
@@ -79,14 +82,12 @@ export const deleteProposedPosts = async (req, res) => {
       });
     }
 
-    // Filter out the specified platforms from proposed_posts
-    const originalCount = existingCampaign.proposed_posts.length;
-    const updatedProposedPosts = existingCampaign.proposed_posts.filter(
-      post => !platforms.includes(post.platform)
+    // Identify posts to delete and check if they need Metricool deletion
+    const postsToDelete = existingCampaign.proposed_posts.filter(post =>
+      platforms.includes(post.platform)
     );
-    const deletedCount = originalCount - updatedProposedPosts.length;
 
-    if (deletedCount === 0) {
+    if (postsToDelete.length === 0) {
       logger.warn('No matching platforms found to delete', {
         existingPlatforms: existingCampaign.proposed_posts.map(p => p.platform),
         platforms,
@@ -105,6 +106,80 @@ export const deleteProposedPosts = async (req, res) => {
       });
     }
 
+    // Attempt to delete from Metricool if posts have metricool_id and are draft/scheduled
+    const metricoolClient = new MetricoolClient(config);
+    const metricoolDeletionResults = [];
+
+    for (const post of postsToDelete) {
+      // Only delete from Metricool if:
+      // 1. Post has a metricool_id
+      // 2. Post status is PENDING (Metricool uses PENDING for drafts/scheduled)
+      if (
+        post.metricool_id &&
+        post.metricool_status === METRICOOL_STATUS.PENDING
+      ) {
+        try {
+          logger.info('Attempting to delete post from Metricool', {
+            metricoolId: post.metricool_id,
+            platform: post.platform,
+            requestId: req.requestId,
+            status: post.metricool_status,
+            stockNumber,
+          });
+
+          await metricoolClient.deletePost(post.metricool_id);
+
+          metricoolDeletionResults.push({
+            metricool_id: post.metricool_id,
+            platform: post.platform,
+            success: true,
+          });
+
+          logger.info('Successfully deleted post from Metricool', {
+            metricoolId: post.metricool_id,
+            platform: post.platform,
+            requestId: req.requestId,
+            stockNumber,
+          });
+        } catch (error) {
+          // Log error but don't fail the entire operation
+          // Post may already be deleted or not exist in Metricool
+          logger.warn('Failed to delete post from Metricool (non-fatal)', {
+            error: error.message,
+            metricoolId: post.metricool_id,
+            platform: post.platform,
+            requestId: req.requestId,
+            stockNumber,
+          });
+
+          metricoolDeletionResults.push({
+            error: error.message,
+            metricool_id: post.metricool_id,
+            platform: post.platform,
+            success: false,
+          });
+        }
+      } else {
+        logger.info('Skipping Metricool deletion for post', {
+          hasMetricoolId: !!post.metricool_id,
+          metricoolStatus: post.metricool_status,
+          platform: post.platform,
+          reason: !post.metricool_id
+            ? 'No metricool_id'
+            : 'Status not draft/scheduled',
+          requestId: req.requestId,
+          stockNumber,
+        });
+      }
+    }
+
+    // Filter out the specified platforms from proposed_posts
+    const originalCount = existingCampaign.proposed_posts.length;
+    const updatedProposedPosts = existingCampaign.proposed_posts.filter(
+      post => !platforms.includes(post.platform)
+    );
+    const deletedCount = originalCount - updatedProposedPosts.length;
+
     // Update campaign with filtered proposed posts
     const updatedCampaign = await SocialCampaigns.findOneAndUpdate(
       { stock_number: stockNumber },
@@ -117,9 +192,18 @@ export const deleteProposedPosts = async (req, res) => {
       { new: true }
     );
 
+    const metricoolDeletedCount = metricoolDeletionResults.filter(
+      r => r.success
+    ).length;
+    const metricoolFailedCount = metricoolDeletionResults.filter(
+      r => !r.success
+    ).length;
+
     logger.info('Proposed posts deleted successfully', {
       deletedCount,
       deletedPlatforms: platforms,
+      metricoolDeletedCount,
+      metricoolFailedCount,
       remainingCount: updatedProposedPosts.length,
       requestId: req.requestId,
       stockNumber,
@@ -131,6 +215,12 @@ export const deleteProposedPosts = async (req, res) => {
       deleted_count: deletedCount,
       deleted_platforms: platforms,
       message: `${deletedCount} proposed post(s) deleted successfully`,
+      metricool_deletion: {
+        attempted: metricoolDeletionResults.length,
+        failed: metricoolFailedCount,
+        results: metricoolDeletionResults,
+        successful: metricoolDeletedCount,
+      },
       proposed_posts: updatedCampaign.proposed_posts, // Direct access to remaining posts
       remaining_count: updatedProposedPosts.length,
       stock_number: stockNumber,

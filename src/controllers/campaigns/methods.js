@@ -7,7 +7,6 @@ import { addProposedPosts } from './methods/campaigns.controller.patch.proposed.
 import { deleteProposedPosts } from './methods/campaigns.controller.patch.proposed.posts.delete.js';
 // Methods index for campaign controllers
 import { createSocialCampaign } from './methods/campaigns.controller.post.create.js';
-import { postItemToSocial as postCampaignToSocial } from './methods/campaigns.controller.post.js';
 import { addCampaignMedia } from './methods/campaigns.controller.post.media.add.js';
 import { replaceProposedPostMedia } from './methods/campaigns.controller.post.proposed.posts.media.replace.js';
 import { updateProposedPosts } from './methods/campaigns.controller.post.proposed.posts.update.js';
@@ -26,7 +25,6 @@ export {
   getCampaignByStockNumber,
   getCampaignMedia,
   getCampaignPreview,
-  postCampaignToSocial,
   removeCampaignMedia,
   replaceProposedPostMedia,
   updateCampaign,

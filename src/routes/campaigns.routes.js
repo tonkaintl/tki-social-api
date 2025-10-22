@@ -10,7 +10,6 @@ import {
   getCampaignByStockNumber,
   getCampaignMedia,
   getCampaignPreview,
-  postCampaignToSocial,
   removeCampaignMedia,
   replaceProposedPostMedia,
   updateCampaign,
@@ -34,7 +33,6 @@ router.use(verifyToken);
 // ----------------------------------------------------------------------------
 router.post('/', createSocialCampaign);
 router.post('/:stockNumber/media', addCampaignMedia);
-router.post('/post-to-social', postCampaignToSocial);
 
 // ----------------------------------------------------------------------------
 // GET Routes

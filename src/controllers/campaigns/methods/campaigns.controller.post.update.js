@@ -167,7 +167,6 @@ export const updateCampaign = async (req, res) => {
 
     logger.info('Campaign updated successfully', {
       requestId: req.requestId,
-      status: updatedCampaign.status,
       stockNumber,
     });
 

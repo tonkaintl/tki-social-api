@@ -1,13 +1,28 @@
-// Campaign status constants
-export const CAMPAIGN_STATUS = {
-  DRAFT: 'draft',
-  FAILED: 'failed',
-  PENDING: 'pending',
-  PUBLISHED: 'published',
-  SCHEDULED: 'scheduled',
+// Metricool API status values (from provider.status field in their API)
+// Note: Metricool uses post.draft boolean (true/false) to distinguish drafts from scheduled
+// The provider.status field shows the publishing status, not draft status
+export const METRICOOL_STATUS = {
+  ERROR: 'ERROR', // Post failed to publish
+  PENDING: 'PENDING', // Post is scheduled/waiting to publish (or draft with schedule)
+  PUBLISHED: 'PUBLISHED', // Post has been published
+  PUBLISHING: 'PUBLISHING', // Post is currently being published
 };
 
-export const CAMPAIGN_STATUS_VALUES = Object.values(CAMPAIGN_STATUS);
+export const METRICOOL_STATUS_VALUES = Object.values(METRICOOL_STATUS);
+
+// Business rules: Which Metricool statuses allow operations
+export const METRICOOL_OPERATIONS = {
+  // Posts with these statuses can be deleted from Metricool
+  CAN_DELETE: [METRICOOL_STATUS.PENDING],
+  // Posts with these statuses can be updated in Metricool
+  CAN_UPDATE: [METRICOOL_STATUS.PENDING],
+  // Posts with these statuses cannot be modified in Metricool
+  IMMUTABLE: [
+    METRICOOL_STATUS.PUBLISHED,
+    METRICOOL_STATUS.ERROR,
+    METRICOOL_STATUS.PUBLISHING,
+  ],
+};
 
 // Media storage constants
 export const MEDIA_STORAGE = {
@@ -28,7 +43,6 @@ export const MEDIA_TYPE_VALUES = Object.values(MEDIA_TYPE);
 // Default values
 export const CAMPAIGN_DEFAULTS = {
   MEDIA_STORAGE: MEDIA_STORAGE.AZURE,
-  STATUS: CAMPAIGN_STATUS.PENDING,
 };
 
 // Schema field names (for consistent referencing)

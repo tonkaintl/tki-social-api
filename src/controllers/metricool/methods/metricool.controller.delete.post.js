@@ -5,7 +5,7 @@
 
 import { MetricoolClient } from '../../../adapters/metricool/metricool.client.js';
 import { config } from '../../../config/env.js';
-import { CAMPAIGN_STATUS } from '../../../constants/campaigns.js';
+import { METRICOOL_STATUS } from '../../../constants/campaigns.js';
 import { ApiError, ERROR_CODES } from '../../../constants/errors.js';
 import SocialCampaigns from '../../../models/socialCampaigns.model.js';
 import { logger } from '../../../utils/logger.js';
@@ -49,13 +49,11 @@ export const deleteMetricoolPost = async (req, res, next) => {
       );
     }
 
-    // Only allow deletion of draft or scheduled posts
-    if (
-      proposedPost.metricool_status !== CAMPAIGN_STATUS.DRAFT &&
-      proposedPost.metricool_status !== CAMPAIGN_STATUS.SCHEDULED
-    ) {
+    // Only allow deletion of posts with PENDING status
+    // (Metricool uses PENDING for both drafts and scheduled posts)
+    if (proposedPost.metricool_status !== METRICOOL_STATUS.PENDING) {
       throw new ApiError(
-        `Cannot delete post with status '${proposedPost.metricool_status}'. Only draft and scheduled posts can be deleted.`,
+        `Cannot delete post with status '${proposedPost.metricool_status}'. Only posts with PENDING status can be deleted.`,
         ERROR_CODES.VALIDATION_ERROR,
         400
       );
