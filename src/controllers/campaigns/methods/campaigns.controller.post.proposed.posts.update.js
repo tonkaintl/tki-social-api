@@ -70,33 +70,66 @@ export const updateProposedPosts = async (req, res) => {
       updated_at: new Date(),
     };
 
-    // Update proposed posts text
-    const updatedProposedPosts = existingCampaign.proposed_posts.map(
-      existingPost => {
-        const updatedPost = posts.find(
-          p => p.platform === existingPost.platform
-        );
-        if (updatedPost) {
-          return {
-            ...existingPost.toObject(),
-            enabled: updatedPost.enabled ?? existingPost.enabled,
-            scheduled_date: updatedPost.scheduled_date
-              ? new Date(updatedPost.scheduled_date)
-              : existingPost.scheduled_date,
-            text: updatedPost.text,
-          };
-        }
-        return existingPost.toObject();
+    // Update each proposed post explicitly using MongoDB update operations
+    // This avoids spread operators and ensures only specified fields are modified
+    for (const postUpdate of posts) {
+      const existingPost = existingCampaign.proposed_posts.find(
+        p => p.platform === postUpdate.platform
+      );
+
+      if (!existingPost) {
+        logger.warn('Platform not found in proposed posts, skipping', {
+          platform: postUpdate.platform,
+          stockNumber,
+        });
+        continue;
       }
-    );
 
-    updateObject.proposed_posts = updatedProposedPosts;
+      // Build update object with only the fields we want to change
+      const postUpdateFields = {
+        'proposed_posts.$.text': postUpdate.text,
+      };
 
-    const updatedCampaign = await SocialCampaigns.findOneAndUpdate(
+      // Only update enabled if explicitly provided
+      if (postUpdate.enabled !== undefined) {
+        postUpdateFields['proposed_posts.$.enabled'] = postUpdate.enabled;
+      }
+
+      // Only update scheduled_date if provided
+      if (postUpdate.scheduled_date) {
+        postUpdateFields['proposed_posts.$.scheduled_date'] = new Date(
+          postUpdate.scheduled_date
+        );
+      }
+
+      // Update this specific proposed post
+      await SocialCampaigns.updateOne(
+        {
+          'proposed_posts.platform': postUpdate.platform,
+          stock_number: stockNumber,
+        },
+        {
+          $set: postUpdateFields,
+        }
+      );
+
+      logger.debug('Updated proposed post', {
+        fieldsUpdated: Object.keys(postUpdateFields),
+        platform: postUpdate.platform,
+        stockNumber,
+      });
+    }
+
+    // Update base message
+    await SocialCampaigns.updateOne(
       { stock_number: stockNumber },
-      { $set: updateObject },
-      { new: true }
+      { $set: updateObject }
     );
+
+    // Fetch the updated campaign to return
+    const updatedCampaign = await SocialCampaigns.findOne({
+      stock_number: stockNumber,
+    });
 
     logger.info('Campaign text updated', { stockNumber });
 

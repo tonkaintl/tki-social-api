@@ -4,7 +4,7 @@
 
 import { MetricoolClient } from '../adapters/metricool/metricool.client.js';
 import { config } from '../config/env.js';
-import { CAMPAIGN_STATUS } from '../constants/campaigns.js';
+import { METRICOOL_STATUS } from '../constants/campaigns.js';
 import { ApiError, ERROR_CODES } from '../constants/errors.js';
 import SocialCampaigns from '../models/socialCampaigns.model.js';
 import { logger } from '../utils/logger.js';
@@ -79,8 +79,8 @@ export const syncMetricoolPosts = async (options = {}) => {
         const metricoolData = metricoolPostsMap.get(proposedPost.metricool_id);
 
         if (!metricoolData) {
-          // Post no longer exists in Metricool - mark as failed
-          proposedPost.metricool_status = CAMPAIGN_STATUS.FAILED;
+          // Post no longer exists in Metricool - mark as ERROR
+          proposedPost.metricool_status = METRICOOL_STATUS.ERROR;
           campaignUpdated = true;
           syncResults.postsDeleted++;
 
@@ -92,7 +92,7 @@ export const syncMetricoolPosts = async (options = {}) => {
             stock_number: campaign.stock_number,
           });
 
-          logger.debug('Marked proposed post as failed', {
+          logger.debug('Marked proposed post as ERROR (not found)', {
             metricool_id: proposedPost.metricool_id,
             platform: proposedPost.platform,
             stock_number: campaign.stock_number,
@@ -100,12 +100,17 @@ export const syncMetricoolPosts = async (options = {}) => {
           continue;
         }
 
-        // Determine current status from Metricool data
-        let currentStatus = CAMPAIGN_STATUS.DRAFT;
-        if (metricoolData.published) {
-          currentStatus = CAMPAIGN_STATUS.PUBLISHED;
-        } else if (metricoolData.scheduled && !metricoolData.draft) {
-          currentStatus = CAMPAIGN_STATUS.SCHEDULED;
+        // Get the actual status from the provider (metricoolData.providers[0].status)
+        // This will be 'PENDING', 'PUBLISHED', 'ERROR', or 'PUBLISHING'
+        const currentStatus =
+          metricoolData.providers?.[0]?.status || METRICOOL_STATUS.PENDING;
+
+        // Update draft flag from Metricool
+        if (metricoolData.draft !== undefined) {
+          if (proposedPost.draft !== metricoolData.draft) {
+            proposedPost.draft = metricoolData.draft;
+            campaignUpdated = true;
+          }
         }
 
         // Check if status changed
@@ -116,6 +121,7 @@ export const syncMetricoolPosts = async (options = {}) => {
 
           syncResults.details.push({
             action: 'updated',
+            draft: metricoolData.draft,
             metricool_id: proposedPost.metricool_id,
             newStatus: currentStatus,
             oldStatus: proposedPost.metricool_status,
@@ -124,6 +130,7 @@ export const syncMetricoolPosts = async (options = {}) => {
           });
 
           logger.debug('Updated proposed post status', {
+            draft: metricoolData.draft,
             metricool_id: proposedPost.metricool_id,
             newStatus: currentStatus,
             platform: proposedPost.platform,

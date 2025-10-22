@@ -2,10 +2,10 @@ import mongoose from 'mongoose';
 
 import {
   CAMPAIGN_DEFAULTS,
-  CAMPAIGN_STATUS_VALUES,
   MEDIA_STORAGE,
   MEDIA_TYPE,
   MEDIA_TYPE_VALUES,
+  METRICOOL_STATUS_VALUES,
 } from '../constants/campaigns.js';
 import { SUPPORTED_PROVIDERS } from '../constants/providers.js';
 
@@ -43,6 +43,11 @@ var socialCampaignsSchema = new Schema({
   // Proposed posts for each platform (staging area before Metricool)
   proposed_posts: [
     {
+      // Metricool integration tracking
+      draft: {
+        default: true,
+        type: Boolean, // Whether this is a draft (true) or scheduled for publishing (false)
+      },
       enabled: {
         default: true,
         type: Boolean, // Whether to post to this platform
@@ -62,7 +67,6 @@ var socialCampaignsSchema = new Schema({
           url: { required: true, type: String },
         },
       ], // Platform-specific media (in addition to campaign media_urls)
-      // Metricool integration tracking
       metricool_created_at: {
         type: Date, // When post was created in Metricool
       },
@@ -73,7 +77,7 @@ var socialCampaignsSchema = new Schema({
         type: Date, // Actual scheduled date from Metricool (may differ from scheduled_date)
       },
       metricool_status: {
-        enum: CAMPAIGN_STATUS_VALUES, // Reuse existing status constants
+        enum: METRICOOL_STATUS_VALUES, // Metricool API status values (PENDING, PUBLISHED, ERROR, PUBLISHING)
         type: String,
         // null = not sent to Metricool yet
       },
@@ -95,7 +99,7 @@ var socialCampaignsSchema = new Schema({
   // Status and metadata
   status: {
     default: CAMPAIGN_DEFAULTS.STATUS,
-    enum: CAMPAIGN_STATUS_VALUES,
+    enum: METRICOOL_STATUS_VALUES,
     type: String,
   },
   stock_number: { required: true, type: String, unique: true },

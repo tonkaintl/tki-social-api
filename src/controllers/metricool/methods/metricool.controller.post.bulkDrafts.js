@@ -7,7 +7,7 @@ import { z } from 'zod';
 
 import { MetricoolClient } from '../../../adapters/metricool/metricool.client.js';
 import { config } from '../../../config/env.js';
-import { CAMPAIGN_STATUS } from '../../../constants/campaigns.js';
+import { METRICOOL_STATUS } from '../../../constants/campaigns.js';
 import { ApiError, ERROR_CODES } from '../../../constants/errors.js';
 import SocialCampaigns from '../../../models/socialCampaigns.model.js';
 import { logger } from '../../../utils/logger.js';
@@ -204,15 +204,15 @@ export const createMetricoolBulkDraft = async (req, res, next) => {
           },
           {
             $set: {
+              'proposed_posts.$.draft': draft,
               'proposed_posts.$.metricool_created_at': new Date(),
               'proposed_posts.$.metricool_id': metricoolPostId,
               'proposed_posts.$.metricool_scheduled_date': metricoolData
                 .publicationDate?.dateTime
                 ? new Date(metricoolData.publicationDate.dateTime)
                 : null,
-              'proposed_posts.$.metricool_status': draft
-                ? CAMPAIGN_STATUS.DRAFT
-                : CAMPAIGN_STATUS.SCHEDULED,
+              'proposed_posts.$.metricool_status':
+                metricoolData.providers?.[0]?.status || 'PENDING',
             },
           }
         );
@@ -225,9 +225,10 @@ export const createMetricoolBulkDraft = async (req, res, next) => {
           });
         } else {
           logger.info('Updated proposed post with Metricool info', {
+            draft: draft,
             metricoolPostId,
+            metricoolStatus: metricoolData.providers?.[0]?.status || 'PENDING',
             platform: proposedPost.platform,
-            status: draft ? CAMPAIGN_STATUS.DRAFT : CAMPAIGN_STATUS.SCHEDULED,
             stockNumber,
           });
         }
@@ -260,10 +261,9 @@ export const createMetricoolBulkDraft = async (req, res, next) => {
 
     // Update campaign status if we created any posts
     if (metricoolResults.length > 0) {
-      if (campaign.status === 'pending') {
-        campaign.status = draft ? 'draft' : 'scheduled';
-        await campaign.save();
-      }
+      // Campaign status stays as PENDING until posts are published
+      campaign.status = METRICOOL_STATUS.PENDING;
+      await campaign.save();
     }
 
     logger.info('Metricool draft posts processing completed', {

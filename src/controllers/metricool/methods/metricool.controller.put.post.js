@@ -7,7 +7,7 @@ import { z } from 'zod';
 
 import { MetricoolClient } from '../../../adapters/metricool/metricool.client.js';
 import { config } from '../../../config/env.js';
-import { CAMPAIGN_STATUS } from '../../../constants/campaigns.js';
+import { METRICOOL_STATUS } from '../../../constants/campaigns.js';
 import { ApiError, ERROR_CODES } from '../../../constants/errors.js';
 import SocialCampaigns from '../../../models/socialCampaigns.model.js';
 import { logger } from '../../../utils/logger.js';
@@ -107,12 +107,10 @@ export const updateMetricoolPost = async (req, res, next) => {
       });
     }
 
-    // Only allow updates to draft or scheduled posts
-    if (
-      proposedPost.metricool_status !== CAMPAIGN_STATUS.DRAFT &&
-      proposedPost.metricool_status !== CAMPAIGN_STATUS.SCHEDULED
-    ) {
-      logger.warn('Cannot update published post', {
+    // Only allow updates to posts with PENDING status
+    // (Metricool uses PENDING for both drafts and scheduled posts)
+    if (proposedPost.metricool_status !== METRICOOL_STATUS.PENDING) {
+      logger.warn('Cannot update post that is not PENDING', {
         metricoolStatus: proposedPost.metricool_status,
         postId,
         stockNumber: campaign.stock_number,
@@ -120,7 +118,7 @@ export const updateMetricoolPost = async (req, res, next) => {
 
       const error = new ApiError(
         ERROR_CODES.VALIDATION_ERROR,
-        `Cannot update post with status '${proposedPost.metricool_status}'. Only draft and scheduled posts can be updated.`,
+        `Cannot update post with status '${proposedPost.metricool_status}'. Only posts with PENDING status can be updated.`,
         400
       );
       return res.status(error.statusCode).json({
@@ -291,14 +289,20 @@ export const updateMetricoolPost = async (req, res, next) => {
         dbUpdate['proposed_posts.$.scheduled_date'] = new Date(scheduledDate);
       }
       if (draft !== undefined) {
-        dbUpdate['proposed_posts.$.metricool_status'] = draft
-          ? CAMPAIGN_STATUS.DRAFT
-          : CAMPAIGN_STATUS.SCHEDULED;
+        dbUpdate['proposed_posts.$.draft'] = draft;
       }
 
-      // Update Metricool tracking info from new post
+      // Update Metricool tracking info from new post response
       if (metricoolResponse?.data) {
         const metricoolData = metricoolResponse.data;
+
+        // Update status from Metricool provider
+        if (metricoolData.providers?.[0]?.status) {
+          dbUpdate['proposed_posts.$.metricool_status'] =
+            metricoolData.providers[0].status;
+        }
+
+        // Update scheduled date
         if (metricoolData.publicationDate?.dateTime) {
           dbUpdate['proposed_posts.$.metricool_scheduled_date'] = new Date(
             metricoolData.publicationDate.dateTime

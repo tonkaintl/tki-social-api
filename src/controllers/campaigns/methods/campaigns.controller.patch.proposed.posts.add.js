@@ -122,11 +122,17 @@ export const addProposedPosts = async (req, res) => {
     );
 
     // Step 3: Create proposed_posts array from generated content
+    // Explicitly set all schema fields for clarity
     const proposed_posts = platforms.map(platform => ({
-      enabled: true,
+      draft: true, // New posts start as drafts until sent to Metricool
+      enabled: true, // Posts are enabled by default
       media_urls: [], // Will be populated later by staff
-      platform,
-      scheduled_date: new Date() + 24 * 60 * 60 * 1000, // Default to 24 hours from now
+      metricool_created_at: null, // Not sent to Metricool yet
+      metricool_id: null, // Not sent to Metricool yet
+      metricool_scheduled_date: null, // Not sent to Metricool yet
+      metricool_status: null, // Not sent to Metricool yet
+      platform, // Platform identifier (meta, linkedin, x, reddit)
+      scheduled_date: new Date(Date.now() + 24 * 60 * 60 * 1000), // Default to 24 hours from now
       text: platformContent[platform] || `Generated content for ${platform}`,
     }));
 
