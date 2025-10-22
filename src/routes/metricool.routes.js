@@ -1,10 +1,11 @@
 import express from 'express';
 
 import {
-  createMetricoolDraft,
+  createMetricoolBulkDraft,
   deleteMetricoolPost,
   getAllMetricoolPosts,
   refreshMetricoolPosts,
+  updateMetricoolPost,
 } from '../controllers/metricool/methods.js';
 import { verifyToken } from '../middleware/auth.bearer.js';
 
@@ -18,7 +19,7 @@ router.use(verifyToken);
 // ----------------------------------------------------------------------------
 // POST Routes
 // ----------------------------------------------------------------------------
-router.post('/drafts', createMetricoolDraft);
+router.post('/bulk-drafts', createMetricoolBulkDraft);
 
 // ----------------------------------------------------------------------------
 // GET Routes
@@ -30,6 +31,11 @@ router.get('/refresh/:stockNumber', refreshMetricoolPosts);
 // DELETE Routes
 // ----------------------------------------------------------------------------
 router.delete('/posts/:postId', deleteMetricoolPost);
+
+// ----------------------------------------------------------------------------
+// PUT Routes
+// ----------------------------------------------------------------------------
+router.put('/posts/:postId', updateMetricoolPost);
 
 // ----------------------------------------------------------------------------
 export default router;
