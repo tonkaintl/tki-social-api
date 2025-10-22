@@ -43,7 +43,6 @@ export const MEDIA_TYPE_VALUES = Object.values(MEDIA_TYPE);
 // Default values
 export const CAMPAIGN_DEFAULTS = {
   MEDIA_STORAGE: MEDIA_STORAGE.AZURE,
-  STATUS: METRICOOL_STATUS.PENDING,
 };
 
 // Schema field names (for consistent referencing)

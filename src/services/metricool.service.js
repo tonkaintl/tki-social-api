@@ -37,6 +37,14 @@ export const syncMetricoolPosts = async (options = {}) => {
     );
   }
 
+  console.log('\n>>> ALL METRICOOL POSTS FROM API <<<');
+  console.log(`Total posts returned: ${allMetricoolPosts.data.length}`);
+  allMetricoolPosts.data.forEach(post => {
+    console.log(
+      `  - ID: ${post.id}, Draft: ${post.draft}, Status: ${post.providers?.[0]?.status}, Platform: ${post.providers?.[0]?.provider}`
+    );
+  });
+
   // Create a map of Metricool posts by ID for efficient lookup
   const metricoolPostsMap = new Map();
   allMetricoolPosts.data.forEach(post => {
@@ -58,6 +66,7 @@ export const syncMetricoolPosts = async (options = {}) => {
     details: [],
     errors: 0,
     postsDeleted: 0,
+    postsRemapped: 0,
     postsUpdated: 0,
   };
 
@@ -79,26 +88,123 @@ export const syncMetricoolPosts = async (options = {}) => {
         const metricoolData = metricoolPostsMap.get(proposedPost.metricool_id);
 
         if (!metricoolData) {
-          // Post no longer exists in Metricool - mark as ERROR
-          proposedPost.metricool_status = METRICOOL_STATUS.ERROR;
-          campaignUpdated = true;
-          syncResults.postsDeleted++;
+          // Post no longer exists in Metricool
+          // Try to find a replacement by searching for stock number in text
+          console.log(
+            `\n⚠️  Post ${proposedPost.metricool_id} not found in Metricool. Searching for replacement...`
+          );
 
-          syncResults.details.push({
-            action: 'deleted',
-            metricool_id: proposedPost.metricool_id,
-            platform: proposedPost.platform,
-            reason: 'Post not found in Metricool',
-            stock_number: campaign.stock_number,
-          });
+          const stockNumberPattern = new RegExp(campaign.stock_number, 'i');
+          let foundReplacement = false;
 
-          logger.debug('Marked proposed post as ERROR (not found)', {
-            metricool_id: proposedPost.metricool_id,
-            platform: proposedPost.platform,
-            stock_number: campaign.stock_number,
-          });
+          for (const [newId, newPost] of metricoolPostsMap) {
+            // Skip if already matched to another post
+            if (
+              campaign.proposed_posts.some(
+                p => p.metricool_id === newId && p !== proposedPost
+              )
+            ) {
+              continue;
+            }
+
+            // Check if text contains stock number and matches platform
+            if (newPost.text && stockNumberPattern.test(newPost.text)) {
+              // Try to match platform if possible
+              const newPlatform =
+                newPost.providers?.[0]?.provider?.toLowerCase();
+              const matchesPlatform =
+                !newPlatform || newPlatform === proposedPost.platform;
+
+              if (matchesPlatform) {
+                console.log(`    ✅ FOUND REPLACEMENT:`);
+                console.log(`       Old ID: ${proposedPost.metricool_id}`);
+                console.log(`       New ID: ${newId}`);
+                console.log(`       Platform: ${proposedPost.platform}`);
+                console.log(`       Stock #: ${campaign.stock_number}`);
+
+                // Update to new Metricool ID and sync all fields
+                const oldId = proposedPost.metricool_id;
+                proposedPost.metricool_id = newId;
+                proposedPost.metricool_status =
+                  newPost.providers?.[0]?.status || METRICOOL_STATUS.PENDING;
+                proposedPost.draft = newPost.draft;
+                proposedPost.text = newPost.text;
+
+                if (newPost.publicationDate?.dateTime) {
+                  // Metricool returns dates in Central Time without timezone indicator
+                  proposedPost.metricool_scheduled_date = new Date(
+                    newPost.publicationDate.dateTime + '-05:00'
+                  );
+                }
+
+                // DO NOT sync media_urls - those are managed separately and should never be overwritten
+
+                campaignUpdated = true;
+                syncResults.postsRemapped++;
+                foundReplacement = true;
+
+                syncResults.details.push({
+                  action: 'remapped',
+                  new_metricool_id: newId,
+                  old_metricool_id: oldId,
+                  platform: proposedPost.platform,
+                  reason: 'Found replacement post with matching stock number',
+                  stock_number: campaign.stock_number,
+                });
+
+                console.log(
+                  `       Text updated: ${newPost.text?.substring(0, 50)}...`
+                );
+                console.log(
+                  `       Date updated: ${proposedPost.metricool_scheduled_date?.toISOString()}`
+                );
+                console.log(
+                  `       Media count: ${proposedPost.media_urls?.length || 0}`
+                );
+
+                // Remove from map so it's not checked again
+                metricoolPostsMap.delete(newId);
+                break;
+              }
+            }
+          }
+
+          if (!foundReplacement) {
+            // No replacement found - mark as ERROR
+            proposedPost.metricool_status = METRICOOL_STATUS.ERROR;
+            campaignUpdated = true;
+            syncResults.postsDeleted++;
+
+            console.log(`    ❌ NO REPLACEMENT FOUND - marking as ERROR`);
+
+            syncResults.details.push({
+              action: 'deleted',
+              metricool_id: proposedPost.metricool_id,
+              platform: proposedPost.platform,
+              reason: 'Post not found in Metricool and no replacement found',
+              stock_number: campaign.stock_number,
+            });
+
+            logger.debug('Marked proposed post as ERROR (not found)', {
+              metricool_id: proposedPost.metricool_id,
+              platform: proposedPost.platform,
+              stock_number: campaign.stock_number,
+            });
+          }
           continue;
         }
+
+        // Log raw Metricool data for debugging
+        console.log(
+          `\n>>> RAW METRICOOL DATA for ${proposedPost.platform} (ID: ${proposedPost.metricool_id})`
+        );
+        console.log(`    Draft: ${metricoolData.draft}`);
+        console.log(`    Status: ${metricoolData.providers?.[0]?.status}`);
+        console.log(
+          `    Publication Date: ${metricoolData.publicationDate?.dateTime}`
+        );
+        console.log(`    Text: ${metricoolData.text?.substring(0, 100)}...`);
+        console.log(`    Media Count: ${metricoolData.media?.length || 0}`);
 
         // Get the actual status from the provider (metricoolData.providers[0].status)
         // This will be 'PENDING', 'PUBLISHED', 'ERROR', or 'PUBLISHING'
@@ -108,6 +214,9 @@ export const syncMetricoolPosts = async (options = {}) => {
         // Update draft flag from Metricool
         if (metricoolData.draft !== undefined) {
           if (proposedPost.draft !== metricoolData.draft) {
+            console.log(
+              `    ✏️  DRAFT CHANGED: ${proposedPost.draft} → ${metricoolData.draft}`
+            );
             proposedPost.draft = metricoolData.draft;
             campaignUpdated = true;
           }
@@ -115,6 +224,9 @@ export const syncMetricoolPosts = async (options = {}) => {
 
         // Check if status changed
         if (proposedPost.metricool_status !== currentStatus) {
+          console.log(
+            `    ✏️  STATUS CHANGED: ${proposedPost.metricool_status} → ${currentStatus}`
+          );
           proposedPost.metricool_status = currentStatus;
           campaignUpdated = true;
           syncResults.postsUpdated++;
@@ -128,50 +240,87 @@ export const syncMetricoolPosts = async (options = {}) => {
             platform: proposedPost.platform,
             stock_number: campaign.stock_number,
           });
-
-          logger.debug('Updated proposed post status', {
-            draft: metricoolData.draft,
-            metricool_id: proposedPost.metricool_id,
-            newStatus: currentStatus,
-            platform: proposedPost.platform,
-            stock_number: campaign.stock_number,
-          });
         }
 
-        // Update scheduled date if different
+        // Update scheduled dates if different
         if (metricoolData.publicationDate?.dateTime) {
+          // Metricool returns dates in Central Time without timezone indicator
+          // Append timezone to ensure correct parsing
           const metricoolDate = new Date(
-            metricoolData.publicationDate.dateTime
+            metricoolData.publicationDate.dateTime + '-05:00'
           );
+
+          console.log(`    📅 DATE COMPARISON:`);
+          console.log(
+            `        Raw from API: ${metricoolData.publicationDate.dateTime}`
+          );
+          console.log(
+            `        Parsed as Central: ${metricoolDate.toISOString()}`
+          );
+          console.log(
+            `        DB has: ${proposedPost.metricool_scheduled_date?.toISOString() || 'null'}`
+          );
+
           if (
             !proposedPost.metricool_scheduled_date ||
             proposedPost.metricool_scheduled_date.getTime() !==
               metricoolDate.getTime()
           ) {
+            console.log(`    ✏️  SCHEDULED DATE CHANGED - UPDATING!`);
             proposedPost.metricool_scheduled_date = metricoolDate;
             campaignUpdated = true;
           }
+        }
+
+        // Compare text content
+        if (metricoolData.text !== proposedPost.text) {
+          console.log(`    ⚠️  TEXT DIFFERS:`);
+          console.log(`        DB: ${proposedPost.text?.substring(0, 80)}...`);
+          console.log(
+            `        Metricool: ${metricoolData.text?.substring(0, 80)}...`
+          );
+        }
+
+        // Compare media URLs
+        const dbMediaCount = proposedPost.media_urls?.length || 0;
+        const metricoolMediaCount = metricoolData.media?.length || 0;
+        if (dbMediaCount !== metricoolMediaCount) {
+          console.log(
+            `    ⚠️  MEDIA COUNT DIFFERS: DB has ${dbMediaCount}, Metricool has ${metricoolMediaCount}`
+          );
         }
       }
 
       // Save campaign if any proposed posts were updated
       if (campaignUpdated) {
         campaign.updated_at = new Date();
+        // Mark the proposed_posts array as modified so Mongoose knows to save it
+        campaign.markModified('proposed_posts');
         await campaign.save();
         syncResults.campaignsProcessed++;
+
+        console.log(`    ✅ CAMPAIGN SAVED: ${campaign.stock_number}`);
       }
     } catch (error) {
       syncResults.errors++;
       syncResults.details.push({
         action: 'error',
         error: error.message,
+        stack: error.stack,
         stock_number: campaign.stock_number,
       });
 
       logger.error('Failed to sync campaign', {
         error: error.message,
+        stack: error.stack,
         stock_number: campaign.stock_number,
       });
+
+      // Log full error details to console for debugging
+      console.error('\n❌ SYNC ERROR DETAILS:');
+      console.error(`   Stock: ${campaign.stock_number}`);
+      console.error(`   Error: ${error.message}`);
+      console.error(`   Stack: ${error.stack}`);
     }
   }
 

@@ -16,12 +16,9 @@ const fetchCampaignsSchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   search: z.string().optional(), // Multi-field search for stock number, title, description
   sortBy: z
-    .enum(['created_at', 'updated_at', 'stock_number', 'title', 'status'])
+    .enum(['created_at', 'updated_at', 'stock_number', 'title'])
     .default('updated_at'),
   sortOrder: z.enum(['asc', 'desc']).default('desc'),
-  status: z
-    .enum(['pending', 'draft', 'scheduled', 'published', 'failed'])
-    .optional(),
   // Keep legacy stockNumber parameter for backward compatibility
   stockNumber: z.string().optional(),
 });
@@ -50,16 +47,8 @@ export const fetchCampaigns = async (req, res, next) => {
       });
     }
 
-    const {
-      createdBy,
-      limit,
-      page,
-      search,
-      sortBy,
-      sortOrder,
-      status,
-      stockNumber,
-    } = validationResult.data;
+    const { createdBy, limit, page, search, sortBy, sortOrder, stockNumber } =
+      validationResult.data;
 
     logger.info('Fetching social campaigns', {
       createdBy,
@@ -69,15 +58,11 @@ export const fetchCampaigns = async (req, res, next) => {
       search,
       sortBy,
       sortOrder,
-      status,
       stockNumber,
     });
 
     // Build query filter
     const filter = {};
-
-    // Status filter
-    if (status) filter.status = status;
 
     // Created by filter
     if (createdBy) filter.created_by = createdBy;
@@ -110,17 +95,28 @@ export const fetchCampaigns = async (req, res, next) => {
         .skip(skip)
         .limit(limit)
         .select({
+          _id: 1,
           created_at: 1,
           created_by: 1,
-          description: 1, // Include for search and response
-          status: 1,
+          proposed_posts: 1, // Include to extract platform names
           stock_number: 1,
-          title: 1, // Include for search and response
-          updated_at: 1,
+          title: 1,
         })
         .lean(),
       SocialCampaigns.countDocuments(filter),
     ]);
+
+    // Transform campaigns to include only required fields with platforms array
+    const campaignsWithPlatforms = campaigns.map(campaign => ({
+      _id: campaign._id,
+      created_at: campaign.created_at,
+      created_by: campaign.created_by,
+      platforms: campaign.proposed_posts
+        ? campaign.proposed_posts.map(post => post.platform)
+        : [],
+      stock_number: campaign.stock_number,
+      title: campaign.title,
+    }));
 
     // Calculate pagination metadata
     const totalPages = Math.ceil(totalCount / limit);
@@ -136,7 +132,7 @@ export const fetchCampaigns = async (req, res, next) => {
     });
 
     return res.json({
-      campaigns,
+      campaigns: campaignsWithPlatforms,
       pagination: {
         currentPage: page,
         hasNextPage,

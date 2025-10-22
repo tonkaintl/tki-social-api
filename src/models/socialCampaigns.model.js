@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 
 import {
-  CAMPAIGN_DEFAULTS,
   MEDIA_STORAGE,
   MEDIA_TYPE,
   MEDIA_TYPE_VALUES,
@@ -74,7 +73,7 @@ var socialCampaignsSchema = new Schema({
         type: String, // Metricool post ID when sent to Metricool
       },
       metricool_scheduled_date: {
-        type: Date, // Actual scheduled date from Metricool (may differ from scheduled_date)
+        type: Date, // Scheduled date from Metricool - this is the single source of truth for scheduling
       },
       metricool_status: {
         enum: METRICOOL_STATUS_VALUES, // Metricool API status values (PENDING, PUBLISHED, ERROR, PUBLISHING)
@@ -86,9 +85,6 @@ var socialCampaignsSchema = new Schema({
         required: true,
         type: String,
       },
-      scheduled_date: {
-        type: Date, // Platform-specific scheduling
-      },
       text: {
         type: String, // Platform-specific post content
       },
@@ -96,22 +92,13 @@ var socialCampaignsSchema = new Schema({
   ],
 
   short_url: { type: String },
-  // Status and metadata
-  status: {
-    default: CAMPAIGN_DEFAULTS.STATUS,
-    enum: METRICOOL_STATUS_VALUES,
-    type: String,
-  },
+
   stock_number: { required: true, type: String, unique: true },
 
   title: { required: true, type: String },
   updated_at: { default: Date.now, type: Date },
 
   url: { required: true, type: String },
-});
-
-socialCampaignsSchema.index({
-  status: 1,
 });
 
 socialCampaignsSchema.index({

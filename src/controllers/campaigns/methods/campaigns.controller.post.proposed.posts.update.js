@@ -27,8 +27,17 @@ const updateTextBodySchema = z.object({
   posts: z.array(
     z.object({
       enabled: z.boolean().optional(),
+      metricool_scheduled_date: z
+        .string()
+        .datetime()
+        .optional()
+        .nullable()
+        .transform(val => {
+          // Ensure dates are converted to proper Date objects
+          // Frontend MUST send ISO 8601 strings with timezone info
+          return val ? new Date(val) : null;
+        }),
       platform: z.enum(SUPPORTED_PROVIDERS),
-      scheduled_date: z.string().datetime().optional().nullable(),
       text: z.string().min(1, 'Post text is required'),
     })
   ),
@@ -95,11 +104,11 @@ export const updateProposedPosts = async (req, res) => {
         postUpdateFields['proposed_posts.$.enabled'] = postUpdate.enabled;
       }
 
-      // Only update scheduled_date if provided
-      if (postUpdate.scheduled_date) {
-        postUpdateFields['proposed_posts.$.scheduled_date'] = new Date(
-          postUpdate.scheduled_date
-        );
+      // Only update metricool_scheduled_date if provided
+      // Note: metricool_scheduled_date is already a Date object from the schema transform
+      if (postUpdate.metricool_scheduled_date) {
+        postUpdateFields['proposed_posts.$.metricool_scheduled_date'] =
+          postUpdate.metricool_scheduled_date;
       }
 
       // Update this specific proposed post

@@ -199,13 +199,13 @@ export const updateMetricoolPost = async (req, res, next) => {
           dateTime: existingPost.publicationDate.dateTime,
           timezone: 'UTC', // ⚠️ OVERRIDE to UTC, do NOT copy existing timezone
         };
-      } else if (proposedPost.scheduled_date) {
+      } else if (proposedPost.metricool_scheduled_date) {
         // Fallback to database scheduled date
         publicationDate = {
-          dateTime: new Date(proposedPost.scheduled_date)
+          dateTime: new Date(proposedPost.metricool_scheduled_date)
             .toISOString()
             .slice(0, 19),
-          timezone: 'UTC', // ⚠️ MUST be UTC
+          timezone: 'America/Chicago', // Central Time
         };
       } else {
         // Default to 1 hour from now
@@ -286,7 +286,11 @@ export const updateMetricoolPost = async (req, res, next) => {
         dbUpdate['proposed_posts.$.text'] = text;
       }
       if (scheduledDate !== undefined) {
-        dbUpdate['proposed_posts.$.scheduled_date'] = new Date(scheduledDate);
+        // scheduledDate from schema is already formatted for Metricool (YYYY-MM-DDTHH:mm:ss)
+        // Re-parse with timezone for database storage
+        dbUpdate['proposed_posts.$.metricool_scheduled_date'] = new Date(
+          scheduledDate + '-05:00'
+        );
       }
       if (draft !== undefined) {
         dbUpdate['proposed_posts.$.draft'] = draft;
@@ -302,10 +306,11 @@ export const updateMetricoolPost = async (req, res, next) => {
             metricoolData.providers[0].status;
         }
 
-        // Update scheduled date
+        // Update scheduled date from Metricool
+        // Metricool returns dates in Central Time without timezone indicator
         if (metricoolData.publicationDate?.dateTime) {
           dbUpdate['proposed_posts.$.metricool_scheduled_date'] = new Date(
-            metricoolData.publicationDate.dateTime
+            metricoolData.publicationDate.dateTime + '-05:00'
           );
         }
       }

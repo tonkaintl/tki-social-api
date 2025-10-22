@@ -5,6 +5,7 @@
 
 import { z } from 'zod';
 
+import { METRICOOL_STATUS } from '../../../constants/campaigns.js';
 import {
   ApiError,
   ERROR_CODES,
@@ -129,10 +130,9 @@ export const addProposedPosts = async (req, res) => {
       media_urls: [], // Will be populated later by staff
       metricool_created_at: null, // Not sent to Metricool yet
       metricool_id: null, // Not sent to Metricool yet
-      metricool_scheduled_date: null, // Not sent to Metricool yet
-      metricool_status: null, // Not sent to Metricool yet
+      metricool_scheduled_date: new Date(Date.now() + 24 * 60 * 60 * 1000), // Default to 24 hours from now
+      metricool_status: METRICOOL_STATUS.PENDING, // Posts start in PENDING status
       platform, // Platform identifier (meta, linkedin, x, reddit)
-      scheduled_date: new Date(Date.now() + 24 * 60 * 60 * 1000), // Default to 24 hours from now
       text: platformContent[platform] || `Generated content for ${platform}`,
     }));
 
