@@ -127,8 +127,7 @@ export const addProposedPosts = async (req, res) => {
       media_urls: [], // Will be populated later by staff
       platform,
       scheduled_date: new Date() + 24 * 60 * 60 * 1000, // Default to 24 hours from now
-      text:
-        platformContent[platform]?.text || `Generated content for ${platform}`,
+      text: platformContent[platform] || `Generated content for ${platform}`,
     }));
 
     // Step 4: Update campaign with proposed posts

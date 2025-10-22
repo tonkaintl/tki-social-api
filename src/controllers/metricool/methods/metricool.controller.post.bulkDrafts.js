@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
-// POST /metricool/drafts
-// Create a draft post in Metricool from campaign data
+// POST /metricool/bulk-drafts
+// Create draft posts for all platforms in Metricool from campaign data
 // ----------------------------------------------------------------------------
 
 import { z } from 'zod';
@@ -43,10 +43,10 @@ const PLATFORM_TO_NETWORK_MAP = {
 };
 
 /**
- * Create draft posts in Metricool from campaign's proposed_posts
- * POST /metricool/drafts
+ * Create draft posts for all platforms in Metricool from campaign's proposed_posts
+ * POST /metricool/bulk-drafts
  */
-export const createMetricoolDraft = async (req, res, next) => {
+export const createMetricoolBulkDraft = async (req, res, next) => {
   try {
     // Validate request body
     const validationResult = createMetricoolDraftSchema.safeParse(req.body);
@@ -167,7 +167,12 @@ export const createMetricoolDraft = async (req, res, next) => {
         const metricoolResponse =
           await metricoolClient.createPost(draftPayload);
 
+        console.error('=== METRICOOL RESPONSE ===');
+        console.error(JSON.stringify(metricoolResponse, null, 2));
+        console.error('=========================');
+
         logger.info('Metricool API response received', {
+          metricoolResponse: JSON.stringify(metricoolResponse),
           platform: proposedPost.platform,
           responseId: metricoolResponse?.data?.id,
           stockNumber,

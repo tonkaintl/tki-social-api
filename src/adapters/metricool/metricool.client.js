@@ -18,7 +18,10 @@ export class MetricoolClient {
     const options = {
       headers: {
         'Content-Type': 'application/json',
-        'X-Mc-Auth': this.config.METRICOOL_API_TOKEN,
+        // Only set X-Mc-Auth header if endpoint doesn't already have userToken query param
+        ...(endpoint.includes('userToken=')
+          ? {}
+          : { 'X-Mc-Auth': this.config.METRICOOL_API_TOKEN }),
       },
       method,
     };
@@ -27,6 +30,7 @@ export class MetricoolClient {
       options.body = JSON.stringify(data);
     }
 
+    let finalUrl = url;
     if (method === 'GET' && data) {
       // Add query parameters for GET requests
       const urlObj = new URL(url);
@@ -35,17 +39,17 @@ export class MetricoolClient {
           urlObj.searchParams.set(key, value);
         }
       });
-      options.url = urlObj.toString();
+      finalUrl = urlObj.toString();
     }
 
     try {
-      logger.debug(`Making ${method} request to Metricool: ${url}`, {
+      logger.debug(`Making ${method} request to Metricool: ${finalUrl}`, {
         endpoint,
         hasData: !!data,
         retryCount,
       });
 
-      const response = await fetch(url, options);
+      const response = await fetch(finalUrl, options);
       const responseData = await response.json();
 
       if (!response.ok) {
@@ -61,6 +65,11 @@ export class MetricoolClient {
             'HIDDEN_TOKEN'
           ),
         });
+
+        // LOG THE EXACT ERROR RESPONSE FROM METRICOOL
+        logger.error(
+          `METRICOOL ERROR DETAILS: STATUS=${response.status} RESPONSE=${JSON.stringify(responseData)}`
+        );
 
         // Handle rate limiting
         if (response.status === 429) {
@@ -321,17 +330,50 @@ export class MetricoolClient {
   }
 
   /**
+   * Get a specific post by ID
+   */
+  async getPost(postId) {
+    const endpoint = `/v2/scheduler/posts/${postId}?userToken=${this.config.METRICOOL_API_TOKEN}&userId=${this.config.METRICOOL_USER_ID}&blogId=${this.config.METRICOOL_BLOG_ID}`;
+    return this.makeRequest('GET', endpoint);
+  }
+
+  /**
    * Update a specific post
    */
-  async updatePost(postId, updateData) {
-    return this.makeRequest('PATCH', `/posts/${postId}`, updateData);
+  async updatePost(postId, updateData, fieldsToUpdate = []) {
+    // Metricool API requires PATCH method and fields query parameter
+    // Determine which fields are being updated if not explicitly provided
+    if (fieldsToUpdate.length === 0 && updateData) {
+      fieldsToUpdate = Object.keys(updateData);
+    }
+
+    // Try v1 API with PATCH as suggested by external sources
+    // No fields parameter needed for v1
+    const endpoint = `/v1/posts/${postId}?userId=${this.config.METRICOOL_USER_ID}&blogId=${this.config.METRICOOL_BLOG_ID}`;
+
+    logger.error(
+      `METRICOOL UPDATE: METHOD=PATCH ENDPOINT=${endpoint} PAYLOAD=${JSON.stringify(updateData)}`
+    );
+
+    return this.makeRequest('PATCH', endpoint, updateData);
   }
 
   /**
    * Delete a specific post
    */
   async deletePost(postId) {
-    return this.makeRequest('DELETE', `/v1/posts/${postId}`);
+    // Use v2 API for consistency with other operations
+    const endpoint = `/v2/scheduler/posts/${postId}?userToken=${this.config.METRICOOL_API_TOKEN}&userId=${this.config.METRICOOL_USER_ID}&blogId=${this.config.METRICOOL_BLOG_ID}`;
+
+    logger.info('METRICOOL DELETE:', {
+      endpoint: endpoint.replace(
+        this.config.METRICOOL_API_TOKEN,
+        'HIDDEN_TOKEN'
+      ),
+      postId,
+    });
+
+    return this.makeRequest('DELETE', endpoint);
   }
 
   /**
