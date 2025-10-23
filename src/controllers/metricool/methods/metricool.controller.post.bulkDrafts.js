@@ -147,20 +147,14 @@ export const createMetricoolBulkDraft = async (req, res, next) => {
         let dateTimeToSend;
         if (proposedPost.metricool_scheduled_date) {
           const utcDate = new Date(proposedPost.metricool_scheduled_date);
-          console.log('\n📅 DATE CONVERSION FOR METRICOOL:');
-          console.log('  DB UTC Value:', utcDate.toISOString());
 
           // Convert UTC to Central Time by subtracting 5 hours from UTC timestamp
           // Example: 17:30 UTC (5:30 PM) - 5 hours = 12:30 Central
           const centralOffset = 5 * 60 * 60 * 1000; // 5 hours in milliseconds
           const centralDate = new Date(utcDate.getTime() - centralOffset);
           dateTimeToSend = centralDate.toISOString().slice(0, 19);
-
-          console.log('  Converted to Central:', dateTimeToSend);
-          console.log('  Sending with timezone: America/Chicago');
         } else {
           dateTimeToSend = scheduledDate;
-          console.log('\n📅 Using default scheduled date:', dateTimeToSend);
         }
 
         const draftPayload = {

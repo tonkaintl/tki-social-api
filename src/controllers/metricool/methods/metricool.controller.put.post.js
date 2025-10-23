@@ -183,66 +183,32 @@ export const updateMetricoolPost = async (req, res, next) => {
 
       // Step 2: Build new post payload using the working POST format
       // Determine publication date - format: yyyy-MM-dd'T'HH:mm:ss (no milliseconds)
-      console.log('\n📅 PUT ENDPOINT - DETERMINING DATE SOURCE:');
-      console.log('  scheduledDate from request:', scheduledDate);
-      console.log(
-        '  existingPost?.publicationDate:',
-        existingPost?.publicationDate
-      );
-      console.log(
-        '  proposedPost.metricool_scheduled_date:',
-        proposedPost.metricool_scheduled_date
-      );
-
       let publicationDate;
       if (scheduledDate) {
-        console.log('  ✓ Using scheduledDate from request');
-        console.log('    Portal sent (UTC):', scheduledDate);
-
         // Portal sends dates in UTC format, but Metricool needs Central Time
         // Convert from UTC to Central by subtracting 5 hours
         const utcDate = new Date(scheduledDate + 'Z'); // Add Z to ensure it's parsed as UTC
         const centralDate = new Date(utcDate.getTime() - 5 * 60 * 60 * 1000);
         const centralDateTime = centralDate.toISOString().slice(0, 19);
 
-        console.log('    Converted to Central:', centralDateTime);
-
         publicationDate = {
           dateTime: centralDateTime,
           timezone: 'America/Chicago', // Tell Metricool it's Central Time
         };
       } else if (existingPost?.publicationDate) {
-        console.log('  ✓ Using existingPost.publicationDate from Metricool');
-        console.log(
-          '    Existing dateTime:',
-          existingPost.publicationDate.dateTime
-        );
-        console.log(
-          '    Existing timezone:',
-          existingPost.publicationDate.timezone
-        );
         // Keep the SAME timezone that Metricool already has
         // Don't override to UTC - use what Metricool stored
         publicationDate = {
           dateTime: existingPost.publicationDate.dateTime,
           timezone: existingPost.publicationDate.timezone || 'America/Chicago', // Keep original timezone
         };
-        console.log(
-          '    Sending back with same timezone:',
-          publicationDate.timezone
-        );
       } else if (proposedPost.metricool_scheduled_date) {
         // Fallback to database scheduled date (stored as UTC, convert to Central)
         const utcDate = new Date(proposedPost.metricool_scheduled_date);
-        console.log('\n📅 PUT DATE CONVERSION FOR METRICOOL:');
-        console.log('  DB UTC Value:', utcDate.toISOString());
 
         // Convert UTC to Central Time by subtracting 5 hours
         const centralDate = new Date(utcDate.getTime() - 5 * 60 * 60 * 1000);
         const dateTimeForMetricool = centralDate.toISOString().slice(0, 19);
-
-        console.log('  Converted to Central:', dateTimeForMetricool);
-        console.log('  Sending with timezone: America/Chicago');
 
         publicationDate = {
           dateTime: dateTimeForMetricool,
