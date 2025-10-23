@@ -45,10 +45,15 @@ export const syncMetricoolPosts = async (options = {}) => {
 
   // Get campaigns with proposed posts that have Metricool IDs
   const filter = {
-    'proposed_posts.metricool_id': { $exists: true, $ne: null },
+    proposed_posts: {
+      $elemMatch: {
+        metricool_id: { $exists: true, $nin: [null, ''] },
+      },
+    },
   };
   if (stockNumber) {
-    filter.stock_number = stockNumber;
+    // Keep stock_number as string - it's defined as String in the schema
+    filter.stock_number = String(stockNumber);
   }
 
   const campaigns = await SocialCampaigns.find(filter);
@@ -218,7 +223,9 @@ export const syncMetricoolPosts = async (options = {}) => {
         campaign.updated_at = new Date();
         // Mark the proposed_posts array as modified so Mongoose knows to save it
         campaign.markModified('proposed_posts');
+
         await campaign.save();
+
         syncResults.campaignsProcessed++;
       }
     } catch (error) {
