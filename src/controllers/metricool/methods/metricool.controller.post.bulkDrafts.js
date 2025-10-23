@@ -142,18 +142,35 @@ export const createMetricoolBulkDraft = async (req, res, next) => {
           media => media.url
         );
 
+        // Portal sends dates in Central Time, DB stores as UTC
+        // When sending to Metricool, convert UTC back to Central Time
+        let dateTimeToSend;
+        if (proposedPost.metricool_scheduled_date) {
+          const utcDate = new Date(proposedPost.metricool_scheduled_date);
+          console.log('\n📅 DATE CONVERSION FOR METRICOOL:');
+          console.log('  DB UTC Value:', utcDate.toISOString());
+
+          // Convert UTC to Central Time by subtracting 5 hours from UTC timestamp
+          // Example: 17:30 UTC (5:30 PM) - 5 hours = 12:30 Central
+          const centralOffset = 5 * 60 * 60 * 1000; // 5 hours in milliseconds
+          const centralDate = new Date(utcDate.getTime() - centralOffset);
+          dateTimeToSend = centralDate.toISOString().slice(0, 19);
+
+          console.log('  Converted to Central:', dateTimeToSend);
+          console.log('  Sending with timezone: America/Chicago');
+        } else {
+          dateTimeToSend = scheduledDate;
+          console.log('\n📅 Using default scheduled date:', dateTimeToSend);
+        }
+
         const draftPayload = {
           autoPublish: false, // Always false for drafts
           draft: draft,
           media: mediaUrls, // Use only the URL strings, not the full media objects
           providers: [{ network }], // Single provider per post
           publicationDate: {
-            dateTime: proposedPost.metricool_scheduled_date
-              ? new Date(proposedPost.metricool_scheduled_date)
-                  .toISOString()
-                  .slice(0, 19)
-              : scheduledDate,
-            timezone: 'America/Chicago', // Central Time
+            dateTime: dateTimeToSend,
+            timezone: 'America/Chicago', // Tell Metricool it's Central Time
           },
           text: proposedPost.text,
         };
