@@ -15,6 +15,7 @@ export const refreshMetricoolPosts = async (req, res, next) => {
     const campaign = await SocialCampaigns.findOne({
       stock_number: stockNumber,
     });
+
     if (!campaign) {
       throw new ApiError(
         'Campaign not found',
