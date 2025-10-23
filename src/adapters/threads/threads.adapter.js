@@ -46,22 +46,13 @@ export class ThreadsAdapter extends SocialAdapter {
     }
   }
 
-  async createPost(input) {
+  async createPost(_input) {
     try {
-      const {
-        _linkUrl,
-        _mediaUrls = [],
-        _pageIdOrHandle,
-        _utm,
-        message,
-      } = input;
-
       logger.info('Creating Threads post', {
         provider: 'threads',
       });
 
       // TODO: Implement Threads posting logic
-      logger.debug('Threads post data', { message });
 
       return {
         externalPostId: null,
@@ -90,7 +81,7 @@ export class ThreadsAdapter extends SocialAdapter {
 
   async createComment(input) {
     try {
-      const { _message, threadIdOrPostId } = input;
+      const { threadIdOrPostId } = input;
 
       // TODO: Implement Threads comment creation
       logger.info('Creating Threads comment', {
@@ -235,10 +226,8 @@ export class ThreadsAdapter extends SocialAdapter {
     return content;
   }
 
-  async fetchPosts(input) {
+  async fetchPosts(_input) {
     try {
-      const { _limit = 25, _pageIdOrHandle, _since } = input;
-
       logger.info('Fetching Threads posts', {
         provider: 'threads',
       });
