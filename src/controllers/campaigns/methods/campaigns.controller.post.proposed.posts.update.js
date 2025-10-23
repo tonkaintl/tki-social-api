@@ -10,8 +10,8 @@ import {
   ERROR_CODES,
   ERROR_MESSAGES,
 } from '../../../constants/errors.js';
+import { SUPPORTED_PROVIDERS } from '../../../constants/providers.js';
 import SocialCampaigns from '../../../models/socialCampaigns.model.js';
-import { SUPPORTED_PROVIDERS } from '../../../utils/contentGeneration.js';
 import { logger } from '../../../utils/logger.js';
 
 // ----------------------------------------------------------------------------

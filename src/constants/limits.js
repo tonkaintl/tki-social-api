@@ -10,10 +10,15 @@ export const RATE_LIMITS = {
 
   // Provider-specific limits (requests per hour)
   PROVIDER_LIMITS: {
+    instagram: 200,
     linkedin: 100,
     meta: 200,
     reddit: 60,
+    threads: 200,
+    tiktok_business: 100,
+    tiktok_personal: 100,
     x: 300,
+    youtube: 100,
   },
   WEBHOOK_MAX_REQUESTS: 1000,
 

@@ -1,9 +1,14 @@
 import { describe, expect, it } from 'vitest';
 
+import { formatBinderItemForInstagram } from '../adapters/instagram/formatters/binder-item.formatter.js';
 import { formatBinderItemForLinkedIn } from '../adapters/linkedin/formatters/binder-item.formatter.js';
 import { formatBinderItemForMeta } from '../adapters/meta/formatters/binder-item.formatter.js';
 import { formatBinderItemForReddit } from '../adapters/reddit/formatters/binder-item.formatter.js';
+import { formatBinderItemForThreads } from '../adapters/threads/formatters/binder-item.formatter.js';
+import { formatBinderItemForTikTokBusiness } from '../adapters/tiktok_business/formatters/binder-item.formatter.js';
+import { formatBinderItemForTikTokPersonal } from '../adapters/tiktok_personal/formatters/binder-item.formatter.js';
 import { formatBinderItemForX } from '../adapters/x/formatters/binder-item.formatter.js';
+import { formatBinderItemForYouTube } from '../adapters/youtube/formatters/binder-item.formatter.js';
 
 describe('Binder Item Formatters', () => {
   const mockItem = {
@@ -150,6 +155,136 @@ describe('Binder Item Formatters', () => {
 
       const bulletCount = (result.match(/\*/g) || []).length;
       expect(bulletCount).toBeGreaterThan(10); // Multiple bullets for formatting
+    });
+  });
+
+  describe('formatBinderItemForInstagram', () => {
+    it('should format item for Instagram with emojis', () => {
+      const result = formatBinderItemForInstagram(mockItem);
+
+      expect(result).toContain('🚜 2020 John Deere 8345R');
+      expect(result).toContain('Stock #TEST-001');
+      expect(result).toContain('📍 Des Moines, IA');
+      expect(result).toContain('💰 $185,000.00');
+    });
+
+    it('should include Instagram hashtags', () => {
+      const result = formatBinderItemForInstagram(mockItem);
+
+      expect(result).toContain('#HeavyEquipment');
+      expect(result).toContain('#JohnDeere');
+      expect(result).toContain('#TonkinIntl');
+    });
+
+    it('should include description if present', () => {
+      const result = formatBinderItemForInstagram(mockItem);
+
+      expect(result).toContain('Premium tractor with all features');
+    });
+  });
+
+  describe('formatBinderItemForThreads', () => {
+    it('should format item for Threads conversationally', () => {
+      const result = formatBinderItemForThreads(mockItem);
+
+      expect(result).toContain('2020 John Deere 8345R');
+      expect(result).toContain('Stock #TEST-001');
+      expect(result).toContain('Des Moines, IA');
+      expect(result).toContain('$185,000.00');
+    });
+
+    it('should include Threads-style hashtags', () => {
+      const result = formatBinderItemForThreads(mockItem);
+
+      expect(result).toContain('#HeavyEquipment');
+      expect(result).toContain('#JohnDeere');
+    });
+
+    it('should have conversational tone', () => {
+      const result = formatBinderItemForThreads(mockItem);
+
+      expect(result).toBeTruthy();
+      expect(result.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe('formatBinderItemForTikTokPersonal', () => {
+    it('should format item for TikTok Personal with engaging style', () => {
+      const result = formatBinderItemForTikTokPersonal(mockItem);
+
+      expect(result).toContain('2020 John Deere 8345R');
+      expect(result).toContain('Stock #TEST-001');
+      expect(result).toContain('$185,000.00');
+    });
+
+    it('should include TikTok hashtags', () => {
+      const result = formatBinderItemForTikTokPersonal(mockItem);
+
+      expect(result).toContain('#HeavyEquipment');
+      expect(result).toContain('#JohnDeere');
+      expect(result).toContain('#TikTok');
+    });
+
+    it('should be concise for video caption', () => {
+      const result = formatBinderItemForTikTokPersonal(mockItem);
+
+      expect(result.length).toBeLessThan(500);
+    });
+  });
+
+  describe('formatBinderItemForTikTokBusiness', () => {
+    it('should format item for TikTok Business professionally', () => {
+      const result = formatBinderItemForTikTokBusiness(mockItem);
+
+      expect(result).toContain('2020 John Deere 8345R');
+      expect(result).toContain('Stock #TEST-001');
+      expect(result).toContain('$185,000.00');
+    });
+
+    it('should include business-focused hashtags', () => {
+      const result = formatBinderItemForTikTokBusiness(mockItem);
+
+      expect(result).toContain('#Business');
+      expect(result).toContain('#HeavyEquipment');
+    });
+
+    it('should be suitable for business account', () => {
+      const result = formatBinderItemForTikTokBusiness(mockItem);
+
+      expect(result).toBeTruthy();
+      expect(result.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe('formatBinderItemForYouTube', () => {
+    it('should format item for YouTube description', () => {
+      const result = formatBinderItemForYouTube(mockItem);
+
+      expect(result).toContain('2020 John Deere 8345R');
+      expect(result).toContain('Stock #TEST-001');
+      expect(result).toContain('Des Moines, IA');
+      expect(result).toContain('$185,000.00');
+    });
+
+    it('should include YouTube-style details', () => {
+      const result = formatBinderItemForYouTube(mockItem);
+
+      expect(result).toContain('tonkaintl.com');
+      expect(result).toContain('Premium tractor with all features');
+    });
+
+    it('should include hashtags for YouTube', () => {
+      const result = formatBinderItemForYouTube(mockItem);
+
+      expect(result).toContain('#HeavyEquipment');
+      expect(result).toContain('#JohnDeere');
+    });
+
+    it('should support longer content for video descriptions', () => {
+      const result = formatBinderItemForYouTube(mockItem);
+
+      expect(result).toBeTruthy();
+      expect(result.length).toBeGreaterThan(100);
     });
   });
 });

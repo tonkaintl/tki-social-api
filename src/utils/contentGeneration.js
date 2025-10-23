@@ -4,23 +4,32 @@
  */
 
 import { BinderAdapter } from '../adapters/binder/binder.adapter.js';
+import { formatBinderItemForInstagram } from '../adapters/instagram/formatters/binder-item.formatter.js';
 import { formatBinderItemForLinkedIn } from '../adapters/linkedin/formatters/binder-item.formatter.js';
 import { formatBinderItemForMeta } from '../adapters/meta/formatters/binder-item.formatter.js';
 import { formatBinderItemForReddit } from '../adapters/reddit/formatters/binder-item.formatter.js';
+import { formatBinderItemForThreads } from '../adapters/threads/formatters/binder-item.formatter.js';
+import { formatBinderItemForTikTokBusiness } from '../adapters/tiktok_business/formatters/binder-item.formatter.js';
+import { formatBinderItemForTikTokPersonal } from '../adapters/tiktok_personal/formatters/binder-item.formatter.js';
 import { formatBinderItemForX } from '../adapters/x/formatters/binder-item.formatter.js';
+import { formatBinderItemForYouTube } from '../adapters/youtube/formatters/binder-item.formatter.js';
 import { config } from '../config/env.js';
+import { PROVIDERS } from '../constants/providers.js';
 
 // ----------------------------------------------------------------------------
 // Constants
 // ----------------------------------------------------------------------------
 
-export const SUPPORTED_PROVIDERS = ['meta', 'linkedin', 'x', 'reddit'];
-
 export const formatters = {
-  linkedin: formatBinderItemForLinkedIn,
-  meta: formatBinderItemForMeta,
-  reddit: formatBinderItemForReddit,
-  x: formatBinderItemForX,
+  [PROVIDERS.INSTAGRAM]: formatBinderItemForInstagram,
+  [PROVIDERS.LINKEDIN]: formatBinderItemForLinkedIn,
+  [PROVIDERS.META]: formatBinderItemForMeta,
+  [PROVIDERS.REDDIT]: formatBinderItemForReddit,
+  [PROVIDERS.THREADS]: formatBinderItemForThreads,
+  [PROVIDERS.TIKTOK_BUSINESS]: formatBinderItemForTikTokBusiness,
+  [PROVIDERS.TIKTOK_PERSONAL]: formatBinderItemForTikTokPersonal,
+  [PROVIDERS.X]: formatBinderItemForX,
+  [PROVIDERS.YOUTUBE]: formatBinderItemForYouTube,
 };
 
 // ----------------------------------------------------------------------------

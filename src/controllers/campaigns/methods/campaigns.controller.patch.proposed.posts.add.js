@@ -11,11 +11,9 @@ import {
   ERROR_CODES,
   ERROR_MESSAGES,
 } from '../../../constants/errors.js';
+import { SUPPORTED_PROVIDERS } from '../../../constants/providers.js';
 import SocialCampaigns from '../../../models/socialCampaigns.model.js';
-import {
-  generateMultiPlatformContent,
-  SUPPORTED_PROVIDERS,
-} from '../../../utils/contentGeneration.js';
+import { generateMultiPlatformContent } from '../../../utils/contentGeneration.js';
 import { logger } from '../../../utils/logger.js';
 
 // ----------------------------------------------------------------------------
@@ -132,7 +130,7 @@ export const addProposedPosts = async (req, res) => {
       metricool_id: null, // Not sent to Metricool yet
       metricool_scheduled_date: new Date(Date.now() + 24 * 60 * 60 * 1000), // Default to 24 hours from now
       metricool_status: METRICOOL_STATUS.PENDING, // Posts start in PENDING status
-      platform, // Platform identifier (meta, linkedin, x, reddit)
+      platform, // Platform identifier
       text: platformContent[platform] || `Generated content for ${platform}`,
     }));
 

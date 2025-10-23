@@ -40,53 +40,10 @@ export const refreshMetricoolPosts = async (req, res, next) => {
       });
     }
 
-    console.log('\n=== REFRESH STARTED ===');
-    console.log(`Stock Number: ${stockNumber}`);
-    console.log(`Total Posts with Metricool IDs: ${metricoolPosts.length}`);
-
-    // Log current state before sync
-    console.log('\n--- CURRENT STATE (Before Sync) ---');
-    metricoolPosts.forEach((post, index) => {
-      console.log(`\nPost ${index + 1}/${metricoolPosts.length}:`);
-      console.log(`  Platform: ${post.platform}`);
-      console.log(`  Metricool ID: ${post.metricool_id}`);
-      console.log(`  Status: ${post.metricool_status}`);
-      console.log(`  Draft: ${post.draft}`);
-      console.log(`  Scheduled: ${post.metricool_scheduled_date}`);
-      console.log(`  Text: ${post.text?.substring(0, 80)}...`);
-      console.log(`  Media URLs: ${post.media_urls?.length || 0} items`);
-    });
-
     // Use shared metricool service for sync functionality
     const syncResults = await syncMetricoolPosts({
       stockNumber: stockNumber,
     });
-
-    // Get updated campaign to show what changed
-    const updatedCampaign = await SocialCampaigns.findOne({
-      stock_number: stockNumber,
-    });
-
-    // Log updated state after sync
-    const updatedPosts = updatedCampaign.proposed_posts.filter(
-      post => post.metricool_id
-    );
-    console.log('\n--- UPDATED STATE (After Sync) ---');
-    updatedPosts.forEach((post, index) => {
-      console.log(`\nPost ${index + 1}/${updatedPosts.length}:`);
-      console.log(`  Platform: ${post.platform}`);
-      console.log(`  Metricool ID: ${post.metricool_id}`);
-      console.log(`  Status: ${post.metricool_status}`);
-      console.log(`  Draft: ${post.draft}`);
-      console.log(`  Scheduled: ${post.metricool_scheduled_date}`);
-      console.log(`  Text: ${post.text?.substring(0, 80)}...`);
-      console.log(`  Media URLs: ${post.media_urls?.length || 0} items`);
-    });
-
-    console.log('\n=== REFRESH COMPLETED ===');
-    console.log(`Posts Updated: ${syncResults.postsUpdated}`);
-    console.log(`Posts Deleted: ${syncResults.postsDeleted}`);
-    console.log('===========================\n');
 
     // Return success response
     res.status(200).json({

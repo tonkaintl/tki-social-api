@@ -8,6 +8,7 @@ import { z } from 'zod';
 import { MetricoolClient } from '../../../adapters/metricool/metricool.client.js';
 import { config } from '../../../config/env.js';
 import { ApiError, ERROR_CODES } from '../../../constants/errors.js';
+import { SUPPORTED_PROVIDERS } from '../../../constants/providers.js';
 import SocialCampaigns from '../../../models/socialCampaigns.model.js';
 import { logger } from '../../../utils/logger.js';
 
@@ -15,7 +16,7 @@ import { logger } from '../../../utils/logger.js';
 const createMetricoolDraftSchema = z.object({
   draft: z.boolean().optional().default(true), // Default to draft mode
   platforms: z
-    .array(z.enum(['meta', 'linkedin', 'x', 'reddit']))
+    .array(z.enum(SUPPORTED_PROVIDERS))
     .min(1, 'At least one platform is required')
     .optional(), // If not provided, will draft all enabled proposed_posts
   scheduledDate: z
@@ -36,9 +37,15 @@ const createMetricoolDraftSchema = z.object({
 
 // Platform mapping from internal names to Metricool network names
 const PLATFORM_TO_NETWORK_MAP = {
+  instagram: 'instagram',
   linkedin: 'linkedin',
   meta: 'facebook',
+  reddit: 'reddit',
+  threads: 'threads',
+  tiktok_business: 'tiktok',
+  tiktok_personal: 'tiktok',
   x: 'twitter',
+  youtube: 'youtube',
 };
 
 /**
@@ -147,20 +154,14 @@ export const createMetricoolBulkDraft = async (req, res, next) => {
         let dateTimeToSend;
         if (proposedPost.metricool_scheduled_date) {
           const utcDate = new Date(proposedPost.metricool_scheduled_date);
-          console.log('\n📅 DATE CONVERSION FOR METRICOOL:');
-          console.log('  DB UTC Value:', utcDate.toISOString());
 
           // Convert UTC to Central Time by subtracting 5 hours from UTC timestamp
           // Example: 17:30 UTC (5:30 PM) - 5 hours = 12:30 Central
           const centralOffset = 5 * 60 * 60 * 1000; // 5 hours in milliseconds
           const centralDate = new Date(utcDate.getTime() - centralOffset);
           dateTimeToSend = centralDate.toISOString().slice(0, 19);
-
-          console.log('  Converted to Central:', dateTimeToSend);
-          console.log('  Sending with timezone: America/Chicago');
         } else {
           dateTimeToSend = scheduledDate;
-          console.log('\n📅 Using default scheduled date:', dateTimeToSend);
         }
 
         const draftPayload = {
