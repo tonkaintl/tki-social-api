@@ -124,7 +124,8 @@ export const addProposedPosts = async (req, res) => {
     // Explicitly set all schema fields for clarity
     const proposed_posts = platforms.map(platform => ({
       draft: true, // New posts start as drafts until sent to Metricool
-      enabled: false, // Posts start as auto-generated (not manually overridden)
+      enable_text_override: false, // Use base_message by default (not custom text)
+      enabled: true, // Posts are enabled by default
       media_urls: [], // Will be populated later by staff
       metricool_created_at: null, // Not sent to Metricool yet
       metricool_id: null, // Not sent to Metricool yet

@@ -47,6 +47,10 @@ var socialCampaignsSchema = new Schema({
         default: true,
         type: Boolean, // Whether this is a draft (true) or scheduled for publishing (false)
       },
+      enable_text_override: {
+        default: false,
+        type: Boolean, // Whether to use custom text (true) or regenerate from base_message (false)
+      },
       enabled: {
         default: true,
         type: Boolean, // Whether to post to this platform
