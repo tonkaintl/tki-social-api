@@ -6,11 +6,9 @@
 import { z } from 'zod';
 
 import { ApiError, ERROR_CODES } from '../../../constants/errors.js';
+import { SUPPORTED_PROVIDERS } from '../../../constants/providers.js';
 import SocialCampaigns from '../../../models/socialCampaigns.model.js';
-import {
-  generatePlatformContent,
-  SUPPORTED_PROVIDERS,
-} from '../../../utils/contentGeneration.js';
+import { generatePlatformContent } from '../../../utils/contentGeneration.js';
 import { logger } from '../../../utils/logger.js';
 
 // ----------------------------------------------------------------------------
@@ -20,7 +18,7 @@ import { logger } from '../../../utils/logger.js';
 const getCampaignPreviewParamsSchema = z.object({
   provider: z.enum(SUPPORTED_PROVIDERS, {
     errorMap: () => ({
-      message: 'Provider must be one of: meta, linkedin, x, reddit',
+      message: `Provider must be one of: ${SUPPORTED_PROVIDERS.join(', ')}`,
     }),
   }),
   stockNumber: z.string().min(1, 'Stock number is required'),

@@ -8,6 +8,7 @@ import { z } from 'zod';
 import { MetricoolClient } from '../../../adapters/metricool/metricool.client.js';
 import { config } from '../../../config/env.js';
 import { ApiError, ERROR_CODES } from '../../../constants/errors.js';
+import { SUPPORTED_PROVIDERS } from '../../../constants/providers.js';
 import SocialCampaigns from '../../../models/socialCampaigns.model.js';
 import { logger } from '../../../utils/logger.js';
 
@@ -15,7 +16,7 @@ import { logger } from '../../../utils/logger.js';
 const createMetricoolDraftSchema = z.object({
   draft: z.boolean().optional().default(true), // Default to draft mode
   platforms: z
-    .array(z.enum(['meta', 'linkedin', 'x', 'reddit']))
+    .array(z.enum(SUPPORTED_PROVIDERS))
     .min(1, 'At least one platform is required')
     .optional(), // If not provided, will draft all enabled proposed_posts
   scheduledDate: z
@@ -36,9 +37,15 @@ const createMetricoolDraftSchema = z.object({
 
 // Platform mapping from internal names to Metricool network names
 const PLATFORM_TO_NETWORK_MAP = {
+  instagram: 'instagram',
   linkedin: 'linkedin',
   meta: 'facebook',
+  reddit: 'reddit',
+  threads: 'threads',
+  tiktok_business: 'tiktok',
+  tiktok_personal: 'tiktok',
   x: 'twitter',
+  youtube: 'youtube',
 };
 
 /**

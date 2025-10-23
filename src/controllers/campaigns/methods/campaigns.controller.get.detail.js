@@ -6,10 +6,15 @@
 import { z } from 'zod';
 
 import { BinderAdapter } from '../../../adapters/binder/binder.adapter.js';
+import { formatBinderItemForInstagram } from '../../../adapters/instagram/formatters/binder-item.formatter.js';
 import { formatBinderItemForLinkedIn } from '../../../adapters/linkedin/formatters/binder-item.formatter.js';
 import { formatBinderItemForMeta } from '../../../adapters/meta/formatters/binder-item.formatter.js';
 import { formatBinderItemForReddit } from '../../../adapters/reddit/formatters/binder-item.formatter.js';
+import { formatBinderItemForThreads } from '../../../adapters/threads/formatters/binder-item.formatter.js';
+import { formatBinderItemForTikTokBusiness } from '../../../adapters/tiktok_business/formatters/binder-item.formatter.js';
+import { formatBinderItemForTikTokPersonal } from '../../../adapters/tiktok_personal/formatters/binder-item.formatter.js';
 import { formatBinderItemForX } from '../../../adapters/x/formatters/binder-item.formatter.js';
+import { formatBinderItemForYouTube } from '../../../adapters/youtube/formatters/binder-item.formatter.js';
 import { config } from '../../../config/env.js';
 import { ApiError, ERROR_CODES } from '../../../constants/errors.js';
 import SocialCampaigns from '../../../models/socialCampaigns.model.js';
@@ -21,10 +26,15 @@ import { logger } from '../../../utils/logger.js';
 
 const formatters = {
   facebook_page: formatBinderItemForMeta,
+  instagram: formatBinderItemForInstagram,
   instagram_business: formatBinderItemForMeta, // Same as Facebook for now
   linkedin_company: formatBinderItemForLinkedIn,
   reddit: formatBinderItemForReddit,
+  threads: formatBinderItemForThreads,
+  tiktok_business: formatBinderItemForTikTokBusiness,
+  tiktok_personal: formatBinderItemForTikTokPersonal,
   x_profile: formatBinderItemForX,
+  youtube: formatBinderItemForYouTube,
 };
 
 // ----------------------------------------------------------------------------
@@ -82,10 +92,15 @@ export const getCampaignByStockNumber = async (req, res, next) => {
     // Step 3: Generate platform-specific formatted content
     const platformContent = {
       facebook_page: formatters.facebook_page(item),
+      instagram: formatters.instagram(item),
       instagram_business: formatters.instagram_business(item),
       linkedin_company: formatters.linkedin_company(item),
       reddit: formatters.reddit(item),
+      threads: formatters.threads(item),
+      tiktok_business: formatters.tiktok_business(item),
+      tiktok_personal: formatters.tiktok_personal(item),
       x_profile: formatters.x_profile(item),
+      youtube: formatters.youtube(item),
     };
 
     // Step 4: Build response
