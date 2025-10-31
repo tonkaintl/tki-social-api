@@ -21,6 +21,7 @@ export const handleWritersRoomAds = async (req, res) => {
     });
 
     const ad = req.body;
+    logger.info(`Request body: ${JSON.stringify(ad)}`);
 
     // ------------------------------------------------------------------------
     // VALIDATE REQUIRED FIELDS
