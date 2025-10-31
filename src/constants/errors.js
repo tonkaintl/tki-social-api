@@ -1,5 +1,7 @@
 // Standard error codes used across the application
 export const ERROR_CODES = {
+  // Authentication errors
+  AUTHENTICATION_FAILED: 'AUTHENTICATION_FAILED',
   // External service errors
   BINDER_REQUEST_FAILED: 'BINDER_REQUEST_FAILED',
   // Campaign errors
@@ -44,6 +46,7 @@ export const ERROR_CODES = {
 
 // HTTP status codes for different error types
 export const ERROR_STATUS_CODES = {
+  [ERROR_CODES.AUTHENTICATION_FAILED]: 401,
   [ERROR_CODES.INVALID_AUTH_HEADER]: 401,
   [ERROR_CODES.INVALID_JSON]: 400,
   [ERROR_CODES.INVALID_PROVIDER]: 400,
