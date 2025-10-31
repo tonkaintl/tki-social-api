@@ -10,6 +10,8 @@ export const verifyN8nSecret = (req, res, next) => {
   try {
     const internalSecret = req.headers['x-internal-secret'];
 
+    logger.info(`Verifying n8n internal secret ${internalSecret}`);
+
     if (!internalSecret) {
       logger.warn('Missing x-internal-secret header (n8n)', {
         ip: req.ip,
