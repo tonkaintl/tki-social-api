@@ -9,6 +9,7 @@ import {
   handleThreadsWebhook,
   handleTikTokBusinessWebhook,
   handleTikTokPersonalWebhook,
+  handleWritersRoomAds,
   handleXWebhook,
   handleYouTubeWebhook,
   verifyInstagramWebhook,
@@ -21,6 +22,7 @@ import {
   verifyXWebhook,
   verifyYouTubeWebhook,
 } from '../controllers/webhooks/methods.js';
+import { verifyN8nSecret } from '../middleware/auth.n8n.js';
 import { webhookRateLimiter } from '../middleware/rateLimit.js';
 
 // ----------------------------------------------------------------------------
@@ -34,60 +36,65 @@ router.use(webhookRateLimiter);
 // Meta Webhook Routes
 // ----------------------------------------------------------------------------
 router.get('/meta', verifyMetaWebhook);
-router.post('/meta', express.json(), handleMetaWebhook);
+router.post('/meta', handleMetaWebhook);
 
 // ----------------------------------------------------------------------------
 // Instagram Webhook Routes
 // ----------------------------------------------------------------------------
 router.get('/instagram', verifyInstagramWebhook);
-router.post('/instagram', express.json(), handleInstagramWebhook);
+router.post('/instagram', handleInstagramWebhook);
 
 // ----------------------------------------------------------------------------
 // Threads Webhook Routes
 // ----------------------------------------------------------------------------
 router.get('/threads', verifyThreadsWebhook);
-router.post('/threads', express.json(), handleThreadsWebhook);
+router.post('/threads', handleThreadsWebhook);
 
 // ----------------------------------------------------------------------------
 // LinkedIn Webhook Routes
 // ----------------------------------------------------------------------------
 router.get('/linkedin', verifyLinkedInWebhook);
-router.post('/linkedin', express.json(), handleLinkedInWebhook);
+router.post('/linkedin', handleLinkedInWebhook);
 
 // ----------------------------------------------------------------------------
 // X (Twitter) Webhook Routes
 // ----------------------------------------------------------------------------
 router.get('/x', verifyXWebhook);
-router.post('/x', express.json(), handleXWebhook);
+router.post('/x', handleXWebhook);
 
 // ----------------------------------------------------------------------------
 // Reddit Webhook Routes
 // ----------------------------------------------------------------------------
 router.get('/reddit', verifyRedditWebhook);
-router.post('/reddit', express.json(), handleRedditWebhook);
+router.post('/reddit', handleRedditWebhook);
 
 // ----------------------------------------------------------------------------
 // TikTok Personal Webhook Routes
 // ----------------------------------------------------------------------------
 router.get('/tiktok-personal', verifyTikTokPersonalWebhook);
-router.post('/tiktok-personal', express.json(), handleTikTokPersonalWebhook);
+router.post('/tiktok-personal', handleTikTokPersonalWebhook);
 
 // ----------------------------------------------------------------------------
 // TikTok Business Webhook Routes
 // ----------------------------------------------------------------------------
 router.get('/tiktok-business', verifyTikTokBusinessWebhook);
-router.post('/tiktok-business', express.json(), handleTikTokBusinessWebhook);
+router.post('/tiktok-business', handleTikTokBusinessWebhook);
 
 // ----------------------------------------------------------------------------
 // YouTube Webhook Routes
 // ----------------------------------------------------------------------------
 router.get('/youtube', verifyYouTubeWebhook);
-router.post('/youtube', express.json(), handleYouTubeWebhook);
+router.post('/youtube', handleYouTubeWebhook);
 
 // ----------------------------------------------------------------------------
 // Facebook OAuth Callback
 // ----------------------------------------------------------------------------
 router.get('/facebook/callback', handleFacebookCallback);
+
+// ----------------------------------------------------------------------------
+// Writers Room Webhook Routes (Internal - requires x-internal-secret from n8n)
+// ----------------------------------------------------------------------------
+router.post('/writers-room/ads', verifyN8nSecret, handleWritersRoomAds);
 
 // ----------------------------------------------------------------------------
 export default router;

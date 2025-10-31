@@ -7,6 +7,10 @@ dotenv.config();
 const envSchema = z.object({
   AZURE_API_AUDIENCE: z.string().optional(),
   AZURE_CLIENT_ID: z.string().optional(),
+  AZURE_CLIENT_SECRET: z.string().optional(),
+  AZURE_EMAIL_CLIENT_ID: z.string().optional(),
+  AZURE_EMAIL_SENDER: z.string().email().optional(),
+  AZURE_GRAPH_API: z.string().url().default('https://graph.microsoft.com/v1.0'),
   AZURE_TENANT_ID: z.string().optional(),
   BINDER_API_URL: z.string().url().default('http://localhost:4100'),
   BINDER_INTERNAL_SECRET: z.string().min(1).default('test-binder-secret'),
@@ -29,6 +33,7 @@ const envSchema = z.object({
   MONGODB_TKIBINDER_URI: z.string().optional(),
   MONGODB_TKIPORTAL_URI: z.string().optional(),
   MONGODB_TKISOCIAL_URI: z.string().optional(),
+  N8N_INTERNAL_SECRET: z.string().min(1).default('test-n8n-secret'),
   NODE_ENV: z
     .enum(['development', 'production', 'test'])
     .default('development'),
