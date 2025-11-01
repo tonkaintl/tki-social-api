@@ -41,6 +41,7 @@ var writersRoomAdsSchema = new Schema({
     negatives: [{ type: String }],
     require_hook_tokens: [{ type: String }],
   },
+  send_email: { default: false, type: Boolean },
   specs: { type: String },
   status: {
     default: AD_STATUS.DRAFT,
