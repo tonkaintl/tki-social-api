@@ -80,6 +80,8 @@ export const handleWritersRoomAds = async (req, res) => {
         tagline: ad.tagline || null,
         tone_variant: ad.tone_variant || null,
         updated_at: new Date(),
+        voiceover_enabled:
+          ad.voiceover_enabled !== undefined ? ad.voiceover_enabled : false,
       },
       {
         new: true,

@@ -56,6 +56,7 @@ var writersRoomAdsSchema = new Schema({
     type: String,
   },
   updated_at: { default: Date.now, type: Date },
+  voiceover_enabled: { default: false, type: Boolean },
 });
 
 writersRoomAdsSchema.index({
