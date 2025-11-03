@@ -24,6 +24,7 @@ var writersRoomAdsSchema = new Schema({
   is_pass: { default: true, type: Boolean },
   issues: [{ type: String }],
   issues_guard: [{ type: String }],
+  manufacturer: { type: String },
   notifier_email: { required: true, type: String },
   photos: { type: String },
   platform_targets: [
@@ -33,6 +34,7 @@ var writersRoomAdsSchema = new Schema({
     },
   ],
   price_usd: { type: String },
+  quantity: { type: Number },
   rules: {
     copy_max_words: { type: Number },
     copy_min_words: { type: Number },
@@ -55,7 +57,12 @@ var writersRoomAdsSchema = new Schema({
     enum: TONE_VARIANT_VALUES,
     type: String,
   },
+  type: { type: String },
   updated_at: { default: Date.now, type: Date },
+  vo_15: { type: String },
+  vo_15_adj: { type: String },
+  vo_30: { type: String },
+  vo_30_adj: { type: String },
   voiceover_enabled: { default: false, type: Boolean },
 });
 
