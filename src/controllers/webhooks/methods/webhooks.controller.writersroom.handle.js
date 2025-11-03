@@ -104,37 +104,41 @@ export const handleWritersRoomAds = async (req, res) => {
     // ------------------------------------------------------------------------
     // SEND EMAIL NOTIFICATION
     // ------------------------------------------------------------------------
-    const emailSubject = WRITERS_ROOM_EMAIL_TEMPLATES.AD_NOTIFICATION.SUBJECT({
-      subject: ad.subject,
-    });
+    if (ad.sendEmail) {
+      const emailSubject = WRITERS_ROOM_EMAIL_TEMPLATES.AD_NOTIFICATION.SUBJECT(
+        {
+          subject: ad.subject,
+        }
+      );
 
-    const emailBody = WRITERS_ROOM_EMAIL_TEMPLATES.AD_NOTIFICATION.BODY({
-      ad_id: ad.ad_id,
-      condition: ad.condition,
-      copy: ad.copy,
-      date: ad.date,
-      end_phrase: ad.end_phrase,
-      exw: ad.exw,
-      headline: ad.headline,
-      hook: ad.hook,
-      is_pass: ad.is_pass,
-      issues: ad.issues,
-      issues_guard: ad.issues_guard,
-      platform_targets: ad.platform_targets,
-      price_usd: ad.price_usd,
-      specs: ad.specs,
-      stock_number: ad.stock_number,
-      subject: ad.subject,
-      tagline: ad.tagline,
-      timestamp: new Date(),
-      tone_variant: ad.tone_variant,
-    });
+      const emailBody = WRITERS_ROOM_EMAIL_TEMPLATES.AD_NOTIFICATION.BODY({
+        ad_id: ad.ad_id,
+        condition: ad.condition,
+        copy: ad.copy,
+        date: ad.date,
+        end_phrase: ad.end_phrase,
+        exw: ad.exw,
+        headline: ad.headline,
+        hook: ad.hook,
+        is_pass: ad.is_pass,
+        issues: ad.issues,
+        issues_guard: ad.issues_guard,
+        platform_targets: ad.platform_targets,
+        price_usd: ad.price_usd,
+        specs: ad.specs,
+        stock_number: ad.stock_number,
+        subject: ad.subject,
+        tagline: ad.tagline,
+        timestamp: new Date(),
+        tone_variant: ad.tone_variant,
+      });
 
-    await emailService.sendEmail({
-      htmlBody: emailBody,
-      subject: emailSubject,
-      to: ad.notifier_email,
-    });
+      await emailService.sendEmail({
+        htmlBody: emailBody,
+        subject: emailSubject,
+        to: ad.notifier_email,
+      });
+    }
 
     // ------------------------------------------------------------------------
     // UPDATE AD STATUS AFTER EMAIL SENT
