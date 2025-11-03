@@ -4,6 +4,7 @@ import internalRoutes from './internal.routes.js';
 import metricoolRoutes from './metricool.routes.js';
 import platformsRoutes from './platforms.routes.js';
 import webhooksRoutes from './webhooks.routes.js';
+import writersRoomAdsRoutes from './writersRoomAds.routes.js';
 
 // ----------------------------------------------------------------------------
 
@@ -14,4 +15,5 @@ export {
   metricoolRoutes,
   platformsRoutes,
   webhooksRoutes,
+  writersRoomAdsRoutes,
 };

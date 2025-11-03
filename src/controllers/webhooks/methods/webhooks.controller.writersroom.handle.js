@@ -72,13 +72,16 @@ export const handleWritersRoomAds = async (req, res) => {
         platform_targets: ad.platform_targets || [],
         price_usd: ad.price_usd || null,
         rules: ad.rules || {},
+        send_email: ad.send_email !== undefined ? ad.send_email : false,
         specs: ad.specs || null,
         status: AD_STATUS.DRAFT,
-        stock_number: ad.stock_number || null,
+        stock_number: ad.stock_number ? String(ad.stock_number) : null,
         subject: ad.subject || null,
         tagline: ad.tagline || null,
         tone_variant: ad.tone_variant || null,
         updated_at: new Date(),
+        voiceover_enabled:
+          ad.voiceover_enabled !== undefined ? ad.voiceover_enabled : false,
       },
       {
         new: true,
