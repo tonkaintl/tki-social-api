@@ -25,7 +25,7 @@ var writersRoomAdsSchema = new Schema({
   issues: [{ type: String }],
   issues_guard: [{ type: String }],
   manufacturer: { type: String },
-  notifier_email: { required: true, type: String },
+  notifier_email: { required: false, type: String },
   photos: { type: String },
   platform_targets: [
     {
