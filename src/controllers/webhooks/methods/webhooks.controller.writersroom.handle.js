@@ -104,7 +104,7 @@ export const handleWritersRoomAds = async (req, res) => {
     // ------------------------------------------------------------------------
     // SEND EMAIL NOTIFICATION
     // ------------------------------------------------------------------------
-    if (ad.sendEmail && ad.notifier_email) {
+    if (ad.send_email && ad.notifier_email) {
       const emailSubject = WRITERS_ROOM_EMAIL_TEMPLATES.AD_NOTIFICATION.SUBJECT(
         {
           subject: ad.subject,
