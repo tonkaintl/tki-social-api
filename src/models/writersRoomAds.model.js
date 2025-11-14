@@ -14,6 +14,7 @@ var writersRoomAdsSchema = new Schema({
   ad_id: { required: true, type: String, unique: true },
   condition: { type: String },
   copy: { required: true, type: String },
+  copy_length: { type: Number },
   created_at: { default: Date.now, type: Date },
   date: { type: String },
   email_sent_at: { type: Date },
@@ -34,6 +35,7 @@ var writersRoomAdsSchema = new Schema({
     },
   ],
   price_usd: { type: String },
+  pronunciation: { type: String },
   quantity: { type: Number },
   rules: {
     copy_max_words: { type: Number },
@@ -44,6 +46,7 @@ var writersRoomAdsSchema = new Schema({
     require_hook_tokens: [{ type: String }],
   },
   send_email: { default: false, type: Boolean },
+  slate: { type: String },
   specs: { type: String },
   status: {
     default: AD_STATUS.DRAFT,
