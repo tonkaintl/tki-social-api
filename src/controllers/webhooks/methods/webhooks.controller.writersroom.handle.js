@@ -73,7 +73,9 @@ export const handleWritersRoomAds = async (req, res) => {
         photos: ad.photos || null,
         platform_targets: ad.platform_targets || [],
         price_usd: ad.price_usd || null,
-        pronunciation: ad.pronunciation || null,
+        pronunciation: ad.pronunciation
+          ? JSON.stringify(ad.pronunciation)
+          : null,
         quantity: ad.quantity || null,
         rules: ad.rules || {},
         send_email: ad.send_email !== undefined ? ad.send_email : false,
@@ -169,7 +171,15 @@ export const handleWritersRoomAds = async (req, res) => {
       status: 'sent',
     });
   } catch (error) {
+    console.error('=== WEBHOOK ERROR ===');
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
+    console.error('Error name:', error.name);
+    console.error('Full error:', error);
+    console.error('===================');
+
     logger.error('Writers Room ads webhook processing failed', {
+      ad_id: req.body?.ad_id,
       error: error.message,
       stack: error.stack,
     });

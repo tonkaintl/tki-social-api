@@ -28,6 +28,9 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
+// Trust proxy - required when behind reverse proxy/load balancer
+app.set('trust proxy', true);
+
 // Configure passport for Azure AD authentication (if credentials are provided)
 if (config.AZURE_CLIENT_ID && config.AZURE_TENANT_ID) {
   configurePassport();
