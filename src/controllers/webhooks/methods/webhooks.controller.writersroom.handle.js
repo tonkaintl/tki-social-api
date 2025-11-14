@@ -83,9 +83,8 @@ export const handleWritersRoomAds = async (req, res) => {
         tone_variant: ad.tone_variant || null,
         type: ad.type || null,
         updated_at: new Date(),
-        vo_15: ad.vo_15 || null,
+        use_hashtags: ad.use_hashtags !== undefined ? ad.use_hashtags : false,
         vo_15_adj: ad.vo_15_adj || null,
-        vo_30: ad.vo_30 || null,
         vo_30_adj: ad.vo_30_adj || null,
         voiceover_enabled:
           ad.voiceover_enabled !== undefined ? ad.voiceover_enabled : false,
