@@ -72,6 +72,30 @@ export const handleWritersRoomAds = async (req, res) => {
         notifier_email: ad.notifier_email,
         photos: ad.photos || null,
         platform_targets: ad.platform_targets || [],
+        post_proposals: ad.post_proposals
+          ? {
+              instagram: {
+                hashtags: ad.post_proposals.instagram?.hashtags || [],
+                text: ad.post_proposals.instagram?.text || null,
+              },
+              linkedin: {
+                hashtags: ad.post_proposals.linkedin?.hashtags || [],
+                text: ad.post_proposals.linkedin?.text || null,
+              },
+              meta: {
+                hashtags: ad.post_proposals.meta?.hashtags || [],
+                text: ad.post_proposals.meta?.text || null,
+              },
+              tiktok: {
+                hashtags: ad.post_proposals.tiktok?.hashtags || [],
+                text: ad.post_proposals.tiktok?.text || null,
+              },
+              x: {
+                hashtags: ad.post_proposals.x?.hashtags || [],
+                text: ad.post_proposals.x?.text || null,
+              },
+            }
+          : null,
         price_usd: ad.price_usd || null,
         pronunciation: ad.pronunciation
           ? JSON.stringify(ad.pronunciation)
