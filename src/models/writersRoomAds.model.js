@@ -34,6 +34,28 @@ var writersRoomAdsSchema = new Schema({
       type: String,
     },
   ],
+  post_proposals: {
+    instagram: {
+      hashtags: [{ type: String }],
+      text: { type: String },
+    },
+    linkedin: {
+      hashtags: [{ type: String }],
+      text: { type: String },
+    },
+    meta: {
+      hashtags: [{ type: String }],
+      text: { type: String },
+    },
+    tiktok: {
+      hashtags: [{ type: String }],
+      text: { type: String },
+    },
+    x: {
+      hashtags: [{ type: String }],
+      text: { type: String },
+    },
+  },
   price_usd: { type: String },
   pronunciation: { type: String },
   quantity: { type: Number },
