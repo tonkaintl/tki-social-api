@@ -59,6 +59,7 @@ var writersRoomAdsSchema = new Schema({
   price_usd: { type: String },
   pronunciation: { type: String },
   quantity: { type: Number },
+  reel_heading: { type: String },
   rules: {
     copy_max_words: { type: Number },
     copy_min_words: { type: Number },
@@ -85,7 +86,9 @@ var writersRoomAdsSchema = new Schema({
   type: { type: String },
   updated_at: { default: Date.now, type: Date },
   use_hashtags: { default: false, type: Boolean },
+  vo_15: { type: String },
   vo_15_adj: { type: String },
+  vo_30: { type: String },
   vo_30_adj: { type: String },
   voiceover_enabled: { default: false, type: Boolean },
 });
