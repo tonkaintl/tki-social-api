@@ -101,6 +101,7 @@ export const handleWritersRoomAds = async (req, res) => {
           ? JSON.stringify(ad.pronunciation)
           : null,
         quantity: ad.quantity || null,
+        reel_heading: ad.reel_heading || null,
         rules: ad.rules || {},
         send_email: ad.send_email !== undefined ? ad.send_email : false,
         slate: ad.slate || null,
@@ -113,7 +114,9 @@ export const handleWritersRoomAds = async (req, res) => {
         type: ad.type || null,
         updated_at: new Date(),
         use_hashtags: ad.use_hashtags !== undefined ? ad.use_hashtags : false,
+        vo_15: ad.vo_15 || null,
         vo_15_adj: ad.vo_15_adj || null,
+        vo_30: ad.vo_30 || null,
         vo_30_adj: ad.vo_30_adj || null,
         voiceover_enabled:
           ad.voiceover_enabled !== undefined ? ad.voiceover_enabled : false,
