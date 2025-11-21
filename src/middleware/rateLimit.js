@@ -33,10 +33,10 @@ const createRateLimiter = (windowMs, max, message) => {
   });
 };
 
-// General rate limiter - 200 requests per 15 minutes (doubled for dev)
+// General rate limiter - 400 requests per 15 minutes
 export const rateLimiter = createRateLimiter(
   15 * 60 * 1000, // 15 minutes
-  200,
+  400,
   'Too many requests, please try again later'
 );
 
