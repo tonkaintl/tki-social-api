@@ -55,6 +55,10 @@ var writersRoomAdsSchema = new Schema({
       hashtags: [{ type: String }],
       text: { type: String },
     },
+    youtube: {
+      hashtags: [{ type: String }],
+      text: { type: String },
+    },
   },
   price_usd: { type: String },
   pronunciation: { type: String },
