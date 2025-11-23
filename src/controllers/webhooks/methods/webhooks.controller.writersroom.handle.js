@@ -94,6 +94,10 @@ export const handleWritersRoomAds = async (req, res) => {
                 hashtags: ad.post_proposals.x?.hashtags || [],
                 text: ad.post_proposals.x?.text || null,
               },
+              youtube: {
+                hashtags: ad.post_proposals.youtube?.hashtags || [],
+                text: ad.post_proposals.youtube?.text || null,
+              },
             }
           : null,
         price_usd: ad.price_usd || null,
