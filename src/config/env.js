@@ -34,6 +34,7 @@ const envSchema = z.object({
   MONGODB_TKIPORTAL_URI: z.string().optional(),
   MONGODB_TKISOCIAL_URI: z.string().optional(),
   N8N_INTERNAL_SECRET: z.string().min(1).default('test-n8n-secret'),
+  N8N_TONKA_DISPATCH_WEBHOOK_URL: z.string().url().optional(),
   NODE_ENV: z
     .enum(['development', 'production', 'test'])
     .default('development'),
