@@ -14,6 +14,7 @@ import { rateLimiter } from './middleware/rateLimit.js';
 import { requestId } from './middleware/requestId.js';
 import {
   campaignRoutes,
+  dispatchRoutes,
   healthRoutes,
   internalRoutes,
   metricoolRoutes,
@@ -68,6 +69,7 @@ app.get('/about', (req, res) => {
 
 // Application routes
 app.use('/api/campaigns', campaignRoutes);
+app.use('/api/dispatch-entries', dispatchRoutes);
 app.use('/api/health', healthRoutes);
 app.use('/api/internal', internalRoutes);
 app.use('/api/metricool', metricoolRoutes);

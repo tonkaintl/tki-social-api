@@ -29,6 +29,8 @@ const createRateLimiter = (windowMs, max, message) => {
       return req.path === '/health';
     },
     standardHeaders: true,
+    // Acknowledge trust proxy setting - app is behind reverse proxy/load balancer
+    validate: { trustProxy: false },
     windowMs,
   });
 };
