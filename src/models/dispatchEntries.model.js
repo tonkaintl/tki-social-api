@@ -58,6 +58,7 @@ const dispatchEntriesSchema = new Schema({
     },
   ],
   internal_notes: { type: String }, // Internal team notes
+  keyframe_prompt: { type: String }, // Visual description for imagery generation
   // Publishing fields
   published_at: { type: Date }, // When entry was published
   published_url: { type: String }, // URL where entry is published
@@ -70,6 +71,7 @@ const dispatchEntriesSchema = new Schema({
       version: { type: Number },
     },
   ],
+  social_caption: { type: String }, // Short social media caption
   source: { type: String }, // Content generation source (e.g., "writer_room", "manual")
   // Metadata
   status: {
@@ -77,6 +79,7 @@ const dispatchEntriesSchema = new Schema({
     enum: DISPATCH_STATUS_VALUES,
     type: String,
   },
+  summary: { type: String }, // Brief summary of the content
   tags: [{ type: String }], // Flexible tagging system
   thesis: { required: true, type: String }, // Core argument/point
   title: { required: true, type: String },

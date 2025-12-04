@@ -18,6 +18,16 @@ const createRateLimiter = (windowMs, max, message) => {
         requestId: req.id,
       });
     },
+    // Custom key generator to handle IPs with port numbers
+    keyGenerator: req => {
+      // Strip port number if present (e.g., "20.218.174.14:4935" -> "20.218.174.14")
+      const ip =
+        req.ip ||
+        req.headers['x-forwarded-for'] ||
+        req.socket.remoteAddress ||
+        '';
+      return ip.split(':').slice(0, -1).join(':') || ip;
+    },
     legacyHeaders: false,
     max,
     message: {
