@@ -33,6 +33,7 @@ const dispatchEntriesSchema = new Schema({
   draft_text: { type: String }, // AI-generated or human-written draft content
   // Notes and internal metadata
   editorial_notes: { type: String }, // Editorial feedback
+  gdoc_id: { type: String }, // Google Doc ID for the entry
   generation_metadata: {
     type: Schema.Types.Mixed, // Additional generation context
   },
