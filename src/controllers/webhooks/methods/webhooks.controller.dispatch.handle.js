@@ -97,13 +97,11 @@ export const handleTonkaDispatchDraft = async (req, res) => {
     });
 
     // ------------------------------------------------------------------------
-    // RETURN SUCCESS RESPONSE
+    // RETURN SUCCESS RESPONSE WITH FULL ENTRY
     // ------------------------------------------------------------------------
     return res.status(200).json({
-      entry_id: updatedEntry._id.toString(),
+      entry: updatedEntry.toObject(),
       message: 'Dispatch entry updated with draft successfully',
-      source: payload.source,
-      status: updatedEntry.status,
       success: true,
     });
   } catch (error) {
@@ -116,12 +114,13 @@ export const handleTonkaDispatchDraft = async (req, res) => {
 
     const apiError = new ApiError(
       ERROR_CODES.INTERNAL_SERVER_ERROR,
-      'Internal server error processing Tonka Dispatch draft webhook'
+      'Internal server error processing Tonka Dispatch draft webhook',
+      500
     );
     return res.status(apiError.statusCode).json({
       code: apiError.code,
       error: apiError.message,
-      status: 'error',
+      success: false,
     });
   }
 };
