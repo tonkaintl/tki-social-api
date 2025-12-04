@@ -59,6 +59,11 @@ export const handleTonkaDispatchDraft = async (req, res) => {
 
     // Include optional fields if provided
     if (payload.category) updateData.category = payload.category;
+    if (payload.keyframe_prompt)
+      updateData.keyframe_prompt = payload.keyframe_prompt;
+    if (payload.social_caption)
+      updateData.social_caption = payload.social_caption;
+    if (payload.summary) updateData.summary = payload.summary;
     if (payload.tags) updateData.tags = payload.tags;
     if (payload.thesis) updateData.thesis = payload.thesis;
     if (payload.title) updateData.title = payload.title;
