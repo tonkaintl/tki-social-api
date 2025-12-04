@@ -97,10 +97,7 @@ var writersRoomAdsSchema = new Schema({
   voiceover_enabled: { default: false, type: Boolean },
 });
 
-writersRoomAdsSchema.index({
-  ad_id: 1,
-});
-
+// Indexes for efficient querying (ad_id already indexed via unique: true)
 writersRoomAdsSchema.index({
   created_at: -1,
 });
