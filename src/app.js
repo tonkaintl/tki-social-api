@@ -14,7 +14,6 @@ import { rateLimiter } from './middleware/rateLimit.js';
 import { requestId } from './middleware/requestId.js';
 import {
   campaignRoutes,
-  dispatchRoutes,
   healthRoutes,
   internalRoutes,
   metricoolRoutes,
@@ -70,14 +69,13 @@ app.get('/about', (req, res) => {
 
 // Application routes
 app.use('/api/campaigns', campaignRoutes);
-app.use('/api/dispatch-entries', dispatchRoutes);
 app.use('/api/health', healthRoutes);
 app.use('/api/internal', internalRoutes);
 app.use('/api/metricool', metricoolRoutes);
 app.use('/api/platforms', platformsRoutes);
 app.use('/api/webhooks', webhooksRoutes);
 app.use('/api/writers-room-ads', writersRoomAdsRoutes);
-app.use('/api/writers-room-content', writersRoomContentRoutes);
+app.use('/api/writers-room-entries', writersRoomContentRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {

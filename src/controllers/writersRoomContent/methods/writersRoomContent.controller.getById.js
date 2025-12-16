@@ -4,7 +4,7 @@
 // ----------------------------------------------------------------------------
 
 import { ApiError, ERROR_CODES } from '../../../constants/errors.js';
-import WritersRoomContent from '../../../models/writersRoomContent.model.js';
+import WritersRoomEntries from '../../../models/writersRoomEntries.model.js';
 import { logger } from '../../../utils/logger.js';
 
 export const getWritersRoomContentById = async (req, res) => {
@@ -14,7 +14,7 @@ export const getWritersRoomContentById = async (req, res) => {
     // ------------------------------------------------------------------------
     // FIND CONTENT BY content_id
     // ------------------------------------------------------------------------
-    const content = await WritersRoomContent.findOne({
+    const content = await WritersRoomEntries.findOne({
       content_id: id,
     }).lean();
 

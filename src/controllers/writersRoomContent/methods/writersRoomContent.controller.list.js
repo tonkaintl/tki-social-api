@@ -3,7 +3,7 @@ import {
   PLATFORM_BRANDS_VALUES,
   PLATFORM_MODES_VALUES,
 } from '../../../constants/writersroom.js';
-import WritersRoomContent from '../../../models/writersRoomContent.model.js';
+import WritersRoomEntries from '../../../models/writersRoomEntries.model.js';
 import { logger } from '../../../utils/logger.js';
 
 /**
@@ -62,12 +62,12 @@ export async function getWritersRoomContentList(req, res) {
 
     // Execute query
     const [content, totalCount] = await Promise.all([
-      WritersRoomContent.find(filter)
+      WritersRoomEntries.find(filter)
         .sort(sort)
         .skip(skip)
         .limit(limitNum)
         .lean(),
-      WritersRoomContent.countDocuments(filter),
+      WritersRoomEntries.countDocuments(filter),
     ]);
 
     const totalPages = Math.ceil(totalCount / limitNum);
