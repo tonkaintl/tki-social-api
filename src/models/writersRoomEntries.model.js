@@ -206,7 +206,7 @@ var OutputsSchema = new Schema(
 );
 
 // Main schema
-var writersRoomContentSchema = new Schema({
+var writersRoomEntriesSchema = new Schema({
   content_id: { index: true, required: true, type: String, unique: true },
   created_at: { default: Date.now, type: Date },
   creative: CreativeSchema,
@@ -240,16 +240,16 @@ var writersRoomContentSchema = new Schema({
 });
 
 // Indexes for efficient querying (content_id already indexed via unique: true)
-writersRoomContentSchema.index({ created_at: -1 });
-writersRoomContentSchema.index({ status: 1 });
-writersRoomContentSchema.index({ 'project.brand': 1 });
-writersRoomContentSchema.index({ project_mode: 1 });
+writersRoomEntriesSchema.index({ created_at: -1 });
+writersRoomEntriesSchema.index({ status: 1 });
+writersRoomEntriesSchema.index({ 'project.brand': 1 });
+writersRoomEntriesSchema.index({ project_mode: 1 });
 
 // Model
-const WritersRoomContent = mongoose.model(
-  'WritersRoomContent',
-  writersRoomContentSchema,
-  'writers_room_contents'
+const WritersRoomEntries = mongoose.model(
+  'WritersRoomEntries',
+  writersRoomEntriesSchema,
+  'writers_room_entries'
 );
 
-export default WritersRoomContent;
+export default WritersRoomEntries;

@@ -7,11 +7,11 @@
 import { WRITERS_ROOM_EMAIL_TEMPLATES } from '../../../constants/emailTemplates.js';
 import { ApiError, ERROR_CODES } from '../../../constants/errors.js';
 import { CONTENT_STATUS } from '../../../constants/writersroom.js';
-import WritersRoomContent from '../../../models/writersRoomContent.model.js';
+import WritersRoomEntries from '../../../models/writersRoomEntries.model.js';
 import { emailService } from '../../../services/email.service.js';
 import { logger } from '../../../utils/logger.js';
 
-export const handleWritersRoomContent = async (req, res) => {
+export const handleWritersRoomEntries = async (req, res) => {
   try {
     // n8n may send data as array [{}] or direct object {}
     let content = req.body;
@@ -33,7 +33,7 @@ export const handleWritersRoomContent = async (req, res) => {
     // ------------------------------------------------------------------------
     // SAVE CONTENT TO DATABASE
     // ------------------------------------------------------------------------
-    const contentDocument = await WritersRoomContent.create({
+    const contentDocument = await WritersRoomEntries.create({
       creative: content.creative || null,
       final_draft: content.final_draft
         ? {

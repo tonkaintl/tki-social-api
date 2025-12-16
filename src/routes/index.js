@@ -1,5 +1,4 @@
 import campaignRoutes from './campaigns.routes.js';
-import dispatchRoutes from './dispatch.routes.js';
 import healthRoutes from './health.routes.js';
 import internalRoutes from './internal.routes.js';
 import metricoolRoutes from './metricool.routes.js';
@@ -12,7 +11,6 @@ import writersRoomContentRoutes from './writersRoomContent.routes.js';
 
 export {
   campaignRoutes,
-  dispatchRoutes,
   healthRoutes,
   internalRoutes,
   metricoolRoutes,
