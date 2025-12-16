@@ -88,29 +88,6 @@ export const WRITERS_ROOM_EMAIL_TEMPLATES = {
       subject ? `Writers Room Ad: ${subject}` : 'Writers Room Ad Notification',
   },
 
-  ERROR_NOTIFICATION: {
-    BODY: ({ ad_id, errorDetails, errorMessage, timestamp }) => `
-      <h2 style="color: #dc3545;">🚨 Writers Room Processing Error</h2>
-      
-      <p>An error occurred while processing a Writers Room ad.</p>
-      
-      <h3>❌ Error Details</h3>
-      <ul>
-        <li><strong>Ad ID:</strong> ${ad_id || 'N/A'}</li>
-        <li><strong>Error:</strong> ${errorMessage}</li>
-      </ul>
-      
-      <h3>🔍 Technical Details</h3>
-      ${EMAIL_TEMPLATE.CODE_BLOCK(JSON.stringify(errorDetails, null, 2))}
-      
-      ${EMAIL_TEMPLATE.TIMESTAMP(timestamp || new Date())}
-      ${EMAIL_TEMPLATE.SUPPORT_CONTACT}
-      ${EMAIL_TEMPLATE.SIGNATURE}
-    `,
-
-    SUBJECT: ({ ad_id }) => `🚨 Writers Room Error: ${ad_id || 'Unknown Ad'}`,
-  },
-
   CONTENT_NOTIFICATION: {
     BODY: ({
       content_id,
@@ -145,7 +122,7 @@ export const WRITERS_ROOM_EMAIL_TEMPLATES = {
         <p>${arc?.suggested_story_seed || 'n/a'}</p>
       `;
 
-      const formatVisualPrompt = (vp, index) => `
+      const formatVisualPrompt = vp => `
         <div style="margin-bottom: 20px; padding: 15px; background: #f9f9f9; border-left: 4px solid #b70000;">
           <p><strong>(${vp?.id || 'n/a'}) [${vp?.intent || 'n/a'}]</strong></p>
           <p>${vp?.prompt || 'n/a'}</p>
@@ -296,5 +273,28 @@ export const WRITERS_ROOM_EMAIL_TEMPLATES = {
       }
       return "Writer's Room Content Ready";
     },
+  },
+
+  ERROR_NOTIFICATION: {
+    BODY: ({ ad_id, errorDetails, errorMessage, timestamp }) => `
+      <h2 style="color: #dc3545;">🚨 Writers Room Processing Error</h2>
+      
+      <p>An error occurred while processing a Writers Room ad.</p>
+      
+      <h3>❌ Error Details</h3>
+      <ul>
+        <li><strong>Ad ID:</strong> ${ad_id || 'N/A'}</li>
+        <li><strong>Error:</strong> ${errorMessage}</li>
+      </ul>
+      
+      <h3>🔍 Technical Details</h3>
+      ${EMAIL_TEMPLATE.CODE_BLOCK(JSON.stringify(errorDetails, null, 2))}
+      
+      ${EMAIL_TEMPLATE.TIMESTAMP(timestamp || new Date())}
+      ${EMAIL_TEMPLATE.SUPPORT_CONTACT}
+      ${EMAIL_TEMPLATE.SIGNATURE}
+    `,
+
+    SUBJECT: ({ ad_id }) => `🚨 Writers Room Error: ${ad_id || 'Unknown Ad'}`,
   },
 };
