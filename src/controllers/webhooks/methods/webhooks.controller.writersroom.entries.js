@@ -12,25 +12,31 @@ import { emailService } from '../../../services/email.service.js';
 import { logger } from '../../../utils/logger.js';
 
 export const handleWritersRoomEntries = async (req, res) => {
+  const startTime = Date.now();
+
   try {
-    logger.info('Writers Room entries webhook - RAW REQUEST', {
-      body: req.body,
-      headers: {
-        'content-type': req.get('content-type'),
-        'user-agent': req.get('user-agent'),
-      },
-      is_array: Array.isArray(req.body),
+    logger.info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    logger.info('📥 Writers Room entries webhook - INCOMING REQUEST', {
+      body_is_array: Array.isArray(req.body),
+      body_size_bytes: JSON.stringify(req.body).length,
+      content_type: req.get('content-type'),
+      request_id: req.id,
+      timestamp: new Date().toISOString(),
+      user_agent: req.get('user-agent'),
     });
+    logger.info('Raw payload:', JSON.stringify(req.body, null, 2));
 
     // n8n may send data as array [{}] or direct object {}
     let content = req.body;
     if (Array.isArray(content)) {
-      logger.info('Extracting first item from array payload');
+      logger.info('→ Payload is array, extracting first item', {
+        array_length: content.length,
+      });
       content = content[0];
     }
 
     if (!content || typeof content !== 'object') {
-      logger.error('Invalid payload format', {
+      logger.error('✗ Invalid payload format', {
         content,
         type: typeof content,
       });
@@ -40,43 +46,75 @@ export const handleWritersRoomEntries = async (req, res) => {
       );
     }
 
+    logger.info('→ Payload validated', {
+      content_type: typeof content,
+      has_keys: Object.keys(content).length,
+      top_level_keys: Object.keys(content).slice(0, 10).join(', '),
+    });
+
     // Check if n8n sent an error object
     if (content.error) {
-      logger.error('Writers Room workflow error received', {
+      logger.error('⚠️  Writers Room workflow error received from n8n', {
         error_code: content.error.code,
         error_message: content.error.message,
         error_name: content.error.name,
         error_status: content.error.status,
+        full_error: JSON.stringify(content.error, null, 2),
         has_final_draft: !!content.final_draft,
         project_brand: content.project?.brand,
         project_mode: content.project_mode,
       });
+      logger.info('→ Returning acknowledgment without saving to database');
       return res.status(200).json({
         message: 'Workflow error acknowledged',
         status: 'error_received',
       });
     }
 
-    logger.info('Payload structure analysis', {
-      brand: content.project?.brand,
-      has_creative: !!content.creative,
-      has_final_draft: !!content.final_draft,
-      has_future_arcs: !!content.future_story_arc_generator?.arcs?.length,
-      has_outputs: !!content.outputs,
-      has_platform_summaries: !!content.platform_summaries,
-      has_research: !!content.research,
-      has_visual_prompts: !!content.visual_prompts?.length,
-      has_writer_notes: !!content.writer_notes,
-      mode: content.project_mode,
+    logger.info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    logger.info('📊 CONTENT STRUCTURE ANALYSIS', {
+      brand: content.project?.brand || 'UNKNOWN',
+      mode: content.project_mode || 'UNKNOWN',
       notifier_email: content.notifier_email || 'MISSING',
-      send_email: content.send_email,
+      send_email: content.send_email || false,
       title: content.final_draft?.title || 'NO TITLE',
     });
+    logger.info('Content sections present:', {
+      creative: !!content.creative,
+      final_draft: !!content.final_draft,
+      future_story_arcs: !!content.future_story_arc_generator?.arcs?.length,
+      outputs: !!content.outputs,
+      platform_summaries: !!content.platform_summaries,
+      research: !!content.research,
+      visual_prompts: !!content.visual_prompts?.length,
+      writer_notes: !!content.writer_notes,
+      writer_panel: !!content.writer_panel?.length,
+    });
+
+    if (content.final_draft) {
+      logger.info('Final draft details:', {
+        has_markdown: !!content.final_draft.draft_markdown,
+        has_summary: !!content.final_draft.summary,
+        markdown_length: content.final_draft.draft_markdown?.length || 0,
+        role: content.final_draft.role || 'NONE',
+      });
+    }
+
+    if (content.outputs) {
+      logger.info('Outputs details:', {
+        gdocs_folder_id: content.outputs.gdocs_folder_id || 'NONE',
+        gdocs_link: content.outputs.gdocs_folder_id
+          ? `https://drive.google.com/drive/folders/${content.outputs.gdocs_folder_id}`
+          : 'NONE',
+        has_gdocs_folder: !!content.outputs.gdocs_folder_id,
+      });
+    }
 
     // ------------------------------------------------------------------------
     // SAVE CONTENT TO DATABASE
     // ------------------------------------------------------------------------
-    logger.info('Creating database document...');
+    logger.info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    logger.info('💾 Creating database document...');
     const contentDocument = await WritersRoomEntries.create({
       creative: content.creative || null,
       final_draft: content.final_draft
@@ -127,18 +165,37 @@ export const handleWritersRoomEntries = async (req, res) => {
       writers: content.writers || null,
     });
 
-    logger.info('Writers Room content saved to database', {
+    logger.info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    logger.info('✓ DATABASE SAVE SUCCESSFUL', {
       brand: content.project?.brand,
-      documentId: contentDocument._id,
+      collection: 'writers_room_entries',
+      created_at: contentDocument.created_at.toISOString(),
+      document_id: contentDocument._id.toString(),
+      mode: content.project_mode,
+      status: contentDocument.status,
+      title: content.final_draft?.title,
     });
 
     // ------------------------------------------------------------------------
     // SEND EMAIL NOTIFICATION
     // ------------------------------------------------------------------------
+    logger.info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    logger.info('📧 EMAIL NOTIFICATION CHECK');
     if (content.send_email && content.notifier_email) {
+      logger.info('→ Email notification enabled', {
+        notifier_email: content.notifier_email,
+        send_email: true,
+      });
+
       let doc_link = null;
       if (content.outputs?.gdocs_folder_id) {
         doc_link = `https://drive.google.com/drive/folders/${content.outputs.gdocs_folder_id}`;
+        logger.info('→ Google Drive folder link found', {
+          folder_id: content.outputs.gdocs_folder_id,
+          link: doc_link,
+        });
+      } else {
+        logger.info('→ No Google Drive folder ID in outputs');
       }
 
       const emailSubject =
@@ -146,6 +203,10 @@ export const handleWritersRoomEntries = async (req, res) => {
           brand: content.project?.brand_meta?.name || content.project?.brand,
           title: content.final_draft?.title,
         });
+
+      logger.info('→ Email subject generated', {
+        subject: emailSubject,
+      });
 
       const emailBody = WRITERS_ROOM_EMAIL_TEMPLATES.CONTENT_NOTIFICATION.BODY({
         doc_link,
@@ -161,16 +222,61 @@ export const handleWritersRoomEntries = async (req, res) => {
         writer_notes: content.writer_notes,
       });
 
+      logger.info('→ Email body generated', {
+        body_length: emailBody.length,
+      });
+
+      logger.info('→ Calling email service...', {
+        has_gdocs_link: !!doc_link,
+        subject: emailSubject,
+        to: content.notifier_email,
+      });
+
       await emailService.sendEmail({
         htmlBody: emailBody,
         subject: emailSubject,
         to: content.notifier_email,
       });
 
+      logger.info('✓ Email sent successfully via email service');
+
+      logger.info('→ Updating document status to SENT...');
       contentDocument.status = CONTENT_STATUS.SENT;
       contentDocument.email_sent_at = new Date();
       await contentDocument.save();
+
+      logger.info('✓ Document status updated', {
+        document_id: contentDocument._id.toString(),
+        email_sent_at: contentDocument.email_sent_at.toISOString(),
+        new_status: CONTENT_STATUS.SENT,
+        old_status: CONTENT_STATUS.DRAFT,
+      });
+    } else {
+      logger.info('⊘ Email notification SKIPPED', {
+        has_notifier_email: !!content.notifier_email,
+        notifier_email: content.notifier_email || 'NONE',
+        reason: !content.send_email
+          ? 'send_email is false or missing'
+          : !content.notifier_email
+            ? 'notifier_email is missing'
+            : 'Unknown reason',
+        send_email: content.send_email || false,
+      });
     }
+
+    const endTime = Date.now();
+    const processingTime = endTime - startTime;
+
+    logger.info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    logger.info('✅ WEBHOOK PROCESSING COMPLETE', {
+      document_id: contentDocument._id.toString(),
+      email_sent: contentDocument.status === CONTENT_STATUS.SENT,
+      processing_time_ms: processingTime,
+      processing_time_sec: (processingTime / 1000).toFixed(2),
+      status: contentDocument.status,
+      timestamp: new Date().toISOString(),
+    });
+    logger.info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
 
     return res.status(200).json({
       documentId: contentDocument._id.toString(),
@@ -178,10 +284,16 @@ export const handleWritersRoomEntries = async (req, res) => {
       status: contentDocument.status,
     });
   } catch (error) {
-    logger.error('Writers Room content webhook processing failed', {
-      error: error.message,
-      stack: error.stack,
+    logger.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    logger.error('❌ WEBHOOK PROCESSING FAILED', {
+      error_code: error.code || 'UNKNOWN',
+      error_message: error.message,
+      error_name: error.name,
+      request_id: req.id,
+      timestamp: new Date().toISOString(),
     });
+    logger.error('Stack trace:', error.stack);
+    logger.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
 
     const apiError = new ApiError(
       ERROR_CODES.INTERNAL_SERVER_ERROR,
