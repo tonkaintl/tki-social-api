@@ -5,6 +5,19 @@ import { logger } from '../utils/logger.js';
  * Formats and logs errors consistently
  */
 export function errorHandler(error, req, res, _next) {
+  console.log('\n[ERROR HANDLER] Caught error');
+  console.log('[ERROR HANDLER] Name:', error.name);
+  console.log('[ERROR HANDLER] Message:', error.message);
+  console.log('[ERROR HANDLER] Code:', error.code);
+  console.log('[ERROR HANDLER] Status:', error.statusCode || error.status);
+  console.log('[ERROR HANDLER] Method:', req.method);
+  console.log('[ERROR HANDLER] Path:', req.path);
+  console.log('[ERROR HANDLER] Stack:', error.stack);
+  console.log(
+    '[ERROR HANDLER] Full error object:',
+    JSON.stringify(error, null, 2)
+  );
+
   // Log full error details
   logger.error('Unhandled error', {
     code: error.code,
