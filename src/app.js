@@ -21,6 +21,7 @@ import {
   platformsRoutes,
   webhooksRoutes,
   writersRoomAdsRoutes,
+  writersRoomContentRoutes,
 } from './routes/index.js';
 import { logger } from './utils/logger.js';
 
@@ -76,6 +77,7 @@ app.use('/api/metricool', metricoolRoutes);
 app.use('/api/platforms', platformsRoutes);
 app.use('/api/webhooks', webhooksRoutes);
 app.use('/api/writers-room-ads', writersRoomAdsRoutes);
+app.use('/api/writers-room-content', writersRoomContentRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {
