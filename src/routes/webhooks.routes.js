@@ -9,7 +9,6 @@ import {
   handleThreadsWebhook,
   handleTikTokBusinessWebhook,
   handleTikTokPersonalWebhook,
-  handleTonkaDispatchDraft,
   handleWritersRoomAds,
   handleWritersRoomEntries,
   handleXWebhook,
@@ -98,11 +97,6 @@ router.get('/facebook/callback', handleFacebookCallback);
 // ----------------------------------------------------------------------------
 router.post('/writers-room/ads', verifyN8nSecret, handleWritersRoomAds);
 router.post('/writers-room/entries', verifyN8nSecret, handleWritersRoomEntries);
-router.post(
-  '/writers-room/tonka-dispatch-draft',
-  verifyN8nSecret,
-  handleTonkaDispatchDraft
-);
 
 // ----------------------------------------------------------------------------
 export default router;
