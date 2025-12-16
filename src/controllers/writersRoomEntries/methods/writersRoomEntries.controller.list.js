@@ -7,10 +7,10 @@ import WritersRoomEntries from '../../../models/writersRoomEntries.model.js';
 import { logger } from '../../../utils/logger.js';
 
 /**
- * GET /api/writers-room/content
- * List Writers Room content with filtering and pagination
+ * GET /api/writers-room-entries
+ * List Writers Room entries with filtering and pagination
  */
-export async function getWritersRoomContentList(req, res) {
+export async function getWritersRoomEntriesList(req, res) {
   try {
     const {
       brand,
@@ -22,7 +22,7 @@ export async function getWritersRoomContentList(req, res) {
       status,
     } = req.query;
 
-    logger.info('Get Writers Room content list request', {
+    logger.info('Get Writers Room entries list request', {
       brand,
       limit: Number(limit),
       mode,
@@ -72,7 +72,7 @@ export async function getWritersRoomContentList(req, res) {
 
     const totalPages = Math.ceil(totalCount / limitNum);
 
-    logger.info('Writers Room content list retrieved successfully', {
+    logger.info('Writers Room entries list retrieved successfully', {
       count: content.length,
       page: pageNum,
       requestId: req.id,
@@ -97,15 +97,15 @@ export async function getWritersRoomContentList(req, res) {
       requestId: req.id,
     });
   } catch (error) {
-    logger.error('Failed to get Writers Room content list', {
+    logger.error('Failed to get Writers Room entries list', {
       error: error.message,
       requestId: req.id,
       stack: error.stack,
     });
 
     return res.status(500).json({
-      code: 'WRITERS_ROOM_CONTENT_FETCH_FAILED',
-      message: 'Failed to retrieve Writers Room content',
+      code: 'WRITERS_ROOM_ENTRIES_FETCH_FAILED',
+      message: 'Failed to retrieve Writers Room entries',
       requestId: req.id,
     });
   }

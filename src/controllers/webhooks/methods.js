@@ -1,5 +1,4 @@
 // Methods index for webhook controllers
-import { handleTonkaDispatchDraft } from './methods/webhooks.controller.dispatch.handle.js';
 import { handleFacebookCallback } from './methods/webhooks.controller.facebook.callback.js';
 import { handleInstagramWebhook } from './methods/webhooks.controller.instagram.handle.js';
 import { verifyInstagramWebhook } from './methods/webhooks.controller.instagram.verify.js';
@@ -33,7 +32,6 @@ export {
   handleThreadsWebhook,
   handleTikTokBusinessWebhook,
   handleTikTokPersonalWebhook,
-  handleTonkaDispatchDraft,
   handleWritersRoomAds,
   handleWritersRoomEntries,
   handleXWebhook,

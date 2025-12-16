@@ -16,19 +16,7 @@ import { logger } from '../../../utils/logger.js';
 export const handleWritersRoomEntries = async (req, res) => {
   const startTime = Date.now();
 
-  console.log('\n========================================');
-  console.log('WRITERS ROOM ENTRIES WEBHOOK CALLED');
-  console.log('Time:', new Date().toISOString());
-  console.log('Request ID:', req.id);
-  console.log(
-    'Body type:',
-    Array.isArray(req.body) ? 'ARRAY' : typeof req.body
-  );
-  console.log('Body length:', JSON.stringify(req.body).length, 'bytes');
-  console.log('========================================\n');
-
   try {
-    console.log('[STEP 1] Inside try block');
     logger.info('=== WRITERS ROOM ENTRIES WEBHOOK START ===');
     logger.info('Request metadata', {
       body_is_array: Array.isArray(req.body),
@@ -40,28 +28,17 @@ export const handleWritersRoomEntries = async (req, res) => {
       url: req.url,
     });
     logger.info('Full request body', { body: req.body });
-    console.log('[STEP 2] Logger statements executed');
 
     // n8n may send data as array [{}] or direct object {}
     let content = req.body;
-    console.log(
-      '[STEP 3] Content type:',
-      Array.isArray(content) ? 'Array' : typeof content
-    );
     if (Array.isArray(content)) {
-      console.log(
-        '[STEP 4] Extracting first item from array, length:',
-        content.length
-      );
       logger.info('→ Payload is array, extracting first item', {
         array_length: content.length,
       });
       content = content[0];
-      console.log('[STEP 5] Extracted content type:', typeof content);
     }
 
     if (!content || typeof content !== 'object') {
-      console.log('[ERROR] Invalid payload format:', typeof content);
       logger.error('✗ Invalid payload format', {
         content,
         type: typeof content,
@@ -72,14 +49,6 @@ export const handleWritersRoomEntries = async (req, res) => {
       );
     }
 
-    console.log(
-      '[STEP 6] Payload validated, keys:',
-      Object.keys(content).length
-    );
-    console.log(
-      '[STEP 7] Top-level keys:',
-      Object.keys(content).slice(0, 15).join(', ')
-    );
     logger.info('→ Payload validated', {
       content_type: typeof content,
       has_keys: Object.keys(content).length,
@@ -87,9 +56,7 @@ export const handleWritersRoomEntries = async (req, res) => {
     });
 
     // Check if n8n sent an error object
-    console.log('[STEP 8] Checking for error object:', !!content.error);
     if (content.error) {
-      console.log('[ERROR] N8N workflow error detected:', content.error);
       logger.error('⚠️  Writers Room workflow error received from n8n', {
         error_code: content.error.code,
         error_message: content.error.message,
@@ -101,13 +68,11 @@ export const handleWritersRoomEntries = async (req, res) => {
         project_mode: content.project_mode,
       });
       logger.info('→ Returning acknowledgment without saving to database');
-      console.log('[RETURN] Sending 200 response for error acknowledgment');
       return res.status(200).json({
         message: 'Workflow error acknowledged',
         status: 'error_received',
       });
     }
-    console.log('[STEP 9] No error object, proceeding with save');
 
     logger.info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     logger.info('📊 CONTENT STRUCTURE ANALYSIS', {
@@ -151,18 +116,8 @@ export const handleWritersRoomEntries = async (req, res) => {
     // ------------------------------------------------------------------------
     // SAVE CONTENT TO DATABASE
     // ------------------------------------------------------------------------
-    console.log('[STEP 10] Starting database save operation');
-    console.log(
-      '[STEP 11] Brand:',
-      content.project?.brand,
-      'Mode:',
-      content.project_mode
-    );
-    console.log('[STEP 12] Title:', content.final_draft?.title);
-
     // Generate content_id if not provided
     const contentId = content.content_id || crypto.randomUUID();
-    console.log('[STEP 12.5] Generated content_id:', contentId);
 
     logger.info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     logger.info('💾 Creating database document...');
@@ -217,11 +172,6 @@ export const handleWritersRoomEntries = async (req, res) => {
       writers: content.writers || null,
     });
 
-    console.log(
-      '[STEP 13] Database document created, ID:',
-      contentDocument._id.toString()
-    );
-    console.log('[STEP 14] Document status:', contentDocument.status);
     logger.info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     logger.info('✓ DATABASE SAVE SUCCESSFUL', {
       brand: content.project?.brand,
@@ -236,16 +186,9 @@ export const handleWritersRoomEntries = async (req, res) => {
     // ------------------------------------------------------------------------
     // SEND EMAIL NOTIFICATION
     // ------------------------------------------------------------------------
-    console.log(
-      '[STEP 15] Email check - send_email:',
-      content.send_email,
-      'notifier_email:',
-      content.notifier_email
-    );
     logger.info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     logger.info('📧 EMAIL NOTIFICATION CHECK');
     if (content.send_email && content.notifier_email) {
-      console.log('[STEP 16] Email enabled, preparing to send...');
       logger.info('→ Email notification enabled', {
         notifier_email: content.notifier_email,
         send_email: true,
@@ -290,10 +233,6 @@ export const handleWritersRoomEntries = async (req, res) => {
         body_length: emailBody.length,
       });
 
-      console.log(
-        '[STEP 17] Calling email service, to:',
-        content.notifier_email
-      );
       logger.info('→ Calling email service...', {
         has_gdocs_link: !!doc_link,
         subject: emailSubject,
@@ -306,16 +245,13 @@ export const handleWritersRoomEntries = async (req, res) => {
         to: content.notifier_email,
       });
 
-      console.log('[STEP 18] Email sent successfully');
       logger.info('✓ Email sent successfully via email service');
 
-      console.log('[STEP 19] Updating document status to SENT...');
       logger.info('→ Updating document status to SENT...');
       contentDocument.status = CONTENT_STATUS.SENT;
       contentDocument.email_sent_at = new Date();
       await contentDocument.save();
 
-      console.log('[STEP 20] Document status updated to SENT');
       logger.info('✓ Document status updated', {
         document_id: contentDocument._id.toString(),
         email_sent_at: contentDocument.email_sent_at.toISOString(),
@@ -323,12 +259,6 @@ export const handleWritersRoomEntries = async (req, res) => {
         old_status: CONTENT_STATUS.DRAFT,
       });
     } else {
-      console.log(
-        '[STEP 20] Email skipped - send_email:',
-        content.send_email,
-        'has_email:',
-        !!content.notifier_email
-      );
       logger.info('⊘ Email notification SKIPPED', {
         has_notifier_email: !!content.notifier_email,
         notifier_email: content.notifier_email || 'NONE',
@@ -343,11 +273,6 @@ export const handleWritersRoomEntries = async (req, res) => {
 
     const endTime = Date.now();
     const processingTime = endTime - startTime;
-
-    console.log('[COMPLETE] Processing time:', processingTime, 'ms');
-    console.log('[COMPLETE] Document ID:', contentDocument._id.toString());
-    console.log('[COMPLETE] Status:', contentDocument.status);
-    console.log('[COMPLETE] Returning 200 response\n');
 
     logger.info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     logger.info('✅ WEBHOOK PROCESSING COMPLETE', {
@@ -366,13 +291,6 @@ export const handleWritersRoomEntries = async (req, res) => {
       status: contentDocument.status,
     });
   } catch (error) {
-    console.log('\n[ERROR] Caught exception in webhook handler');
-    console.log('[ERROR] Error name:', error.name);
-    console.log('[ERROR] Error message:', error.message);
-    console.log('[ERROR] Error stack:', error.stack);
-    console.log('[ERROR] Request ID:', req.id);
-    console.log('========================================\n');
-
     logger.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     logger.error('❌ WEBHOOK PROCESSING FAILED', {
       error_code: error.code || 'UNKNOWN',
