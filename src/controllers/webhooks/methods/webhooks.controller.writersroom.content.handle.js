@@ -12,16 +12,55 @@ import { emailService } from '../../../services/email.service.js';
 import { logger } from '../../../utils/logger.js';
 
 export const handleWritersRoomContent = async (req, res) => {
+  const startTime = Date.now();
   try {
     // ------------------------------------------------------------------------
-    // LOG INCOMING PAYLOAD
+    // LOG INCOMING PAYLOAD - DETAILED
     // ------------------------------------------------------------------------
-    logger.info('Writers Room content webhook received', {
-      body: req.body,
+    const content = req.body;
+    const payloadSize = JSON.stringify(content).length;
+
+    logger.info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    logger.info('Writers Room Content Webhook - RECEIVED', {
+      content_id: content.content_id || 'not-provided',
+      ip: req.ip,
+      payload_size_kb: (payloadSize / 1024).toFixed(2),
+      request_id: req.id,
+      timestamp: new Date().toISOString(),
+      user_agent: req.get('User-Agent'),
     });
 
-    const content = req.body;
-    logger.info(`Request body keys: ${Object.keys(content).join(', ')}`);
+    logger.info('Payload Structure:', {
+      brand: content.project?.brand || 'unknown',
+      creative_settings: content.creative
+        ? {
+            creativity_to_reporter: content.creative.creativity_to_reporter,
+            fact_to_fiction: content.creative.fact_to_fiction,
+            length: content.creative.length,
+            tone_strictness: content.creative.tone_strictness,
+          }
+        : null,
+      has_final_draft: !!content.final_draft,
+      has_future_story_arcs:
+        !!content.future_story_arc_generator?.arcs?.length,
+      has_platform_summaries: !!content.platform_summaries,
+      has_research: !!content.research,
+      has_visual_prompts: !!content.visual_prompts?.length,
+    logger.info('Saving to database...', {
+      collection: 'writers_room_contents',
+      content_id,
+      operation: 'findOneAndUpdate',
+    });
+
+      has_writer_notes: !!content.writer_notes,
+      mode: content.project_mode || 'unknown',
+      notifier_email: content.notifier_email || 'missing',
+      outputs: content.outputs || {},
+      send_email: content.send_email,
+      target_audience: content.target_audience?.substring(0, 50) + '...' || null,
+      title: content.final_draft?.title || 'no-title',
+      writer_panel_count: content.writer_panel?.length || 0,
+    });
 
     // ------------------------------------------------------------------------
     // VALIDATE REQUIRED FIELDS
@@ -31,7 +70,13 @@ export const handleWritersRoomContent = async (req, res) => {
       content.content_id ||
       `wrc_${Date.now()}_${content.project?.brand || 'unknown'}`;
 
+    logger.info('Content ID assigned', { content_id });
+
     if (!content.notifier_email) {
+      logger.warn('Validation failed: Missing notifier_email', {
+        content_id,
+      });
+
       const error = new ApiError(
         ERROR_CODES.VALIDATION_ERROR,
         'Missing required field: notifier_email',
@@ -42,6 +87,11 @@ export const handleWritersRoomContent = async (req, res) => {
         error: error.message,
       });
     }
+
+    logger.info('Validation passed', {
+      content_id,
+      notifier_email: content.notifier_email,
+    });
 
     // ------------------------------------------------------------------------
     // SAVE CONTENT TO DATABASE
@@ -101,15 +151,20 @@ export const handleWritersRoomContent = async (req, res) => {
         writer_panel: content.writer_panel || [],
         writers: content.writers || null,
       },
-      {
-        new: true,
-        upsert: true,
-      }
-    );
-
-    logger.info('Writers Room content saved to database', {
+      {✓ Database save successful', {
       content_id,
-      documentId: contentDocument._id,
+      document_id: contentDocument._id.toString(),
+      is_new: !contentDocument.created_at,
+    });
+
+    // ------------------------------------------------------------------------
+    // SEND EMAIL NOTIFICATION
+    // ------------------------------------------------------------------------
+    if (content.send_email && content.notifier_email) {
+      logger.info('Preparing email notification...', {
+        content_id,
+        recipient: content.notifier_email,
+      });
     });
 
     // ------------------------------------------------------------------------
@@ -137,39 +192,68 @@ export const handleWritersRoomContent = async (req, res) => {
         platform_summaries: content.platform_summaries,
         project: content.project,
         research: content.research,
-        timestamp: new Date(),
-        title_variations: content.title_variations,
-        visual_prompts: content.visual_prompts,
-        writer_notes: content.writer_notes,
-      });
 
-      await emailService.sendEmail({
-        htmlBody: emailBody,
+      logger.info('✓ Email sent successfully', {
+        content_id,
+        recipient: content.notifier_email,
         subject: emailSubject,
-        to: content.notifier_email,
+      });
+    } else {
+      logger.info('Email sending skipped', {
+        content_id,
+        reason:
+          !content.send_email ? 'send_email=false' : 'no notifier_email',
       });
     }
 
     // ------------------------------------------------------------------------
     // UPDATE CONTENT STATUS AFTER EMAIL SENT
     // ------------------------------------------------------------------------
-    await WritersRoomContent.findOneAndUpdate(
-      { content_id },
-      {
-        email_sent_at: new Date(),
-        status: CONTENT_STATUS.SENT,
-        updated_at: new Date(),
-      }
-    );
+    logger.info('Updating status to SENT...', { content_id });
 
-    logger.info('Writers Room content notification sent', {
+
+    const processingTime = Date.now() - startTime;
+
+    logger.info('✓✓✓ Writers Room Content Webhook - COMPLETED', {
       content_id,
+      document_id: contentDocument._id.toString(),
+      email_sent: content.send_email && content.notifier_email,
       notifier_email: content.notifier_email,
+      processing_time_ms: processingTime,
+      status: 'sent',
+      timestamp: new Date().toISOString(),
     });
+    logger.info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
     // ------------------------------------------------------------------------
     // RETURN SUCCESS RESPONSE
     // ------------------------------------------------------------------------
+    return res.status(200).json({
+      content_id,
+      documentId: contentDocument._id.toString(),
+      notifier_email: content.notifier_email,
+      status: 'sent',
+    });
+  } catch (error) {
+    const processingTime = Date.now() - startTime;
+
+    logger.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    logger.error('✗✗✗ Writers Room Content Webhook - FAILED', {
+      content_id: req.body?.content_id || 'unknown',
+      error_message: error.message,
+      error_name: error.name,
+      processing_time_ms: processingTime,
+      request_id: req.id,
+      timestamp: new Date().toISOString(),
+    });
+
+    logger.error('Error details:', {
+      brand: req.body?.project?.brand,
+      mode: req.body?.project_mode,
+      notifier_email: req.body?.notifier_email,
+      stack: error.stack,
+    });
+    logger.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'/ ------------------------------------------------------------------------
     return res.status(200).json({
       content_id,
       documentId: contentDocument._id.toString(),
