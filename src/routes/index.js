@@ -6,6 +6,7 @@ import metricoolRoutes from './metricool.routes.js';
 import platformsRoutes from './platforms.routes.js';
 import webhooksRoutes from './webhooks.routes.js';
 import writersRoomAdsRoutes from './writersRoomAds.routes.js';
+import writersRoomContentRoutes from './writersRoomContent.routes.js';
 
 // ----------------------------------------------------------------------------
 
@@ -18,4 +19,5 @@ export {
   platformsRoutes,
   webhooksRoutes,
   writersRoomAdsRoutes,
+  writersRoomContentRoutes,
 };

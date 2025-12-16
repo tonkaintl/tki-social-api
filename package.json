@@ -9,8 +9,6 @@
     "start": "node src/server.js",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "test": "vitest run",
-    "test:watch": "vitest",
     "prepare": "npm run lint && npm run format"
   },
   "keywords": [
