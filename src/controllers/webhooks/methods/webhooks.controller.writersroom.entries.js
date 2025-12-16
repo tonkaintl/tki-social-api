@@ -4,6 +4,8 @@
 // Receives validated content from n8n automation and sends notification email
 // ----------------------------------------------------------------------------
 
+import crypto from 'crypto';
+
 import { WRITERS_ROOM_EMAIL_TEMPLATES } from '../../../constants/emailTemplates.js';
 import { ApiError, ERROR_CODES } from '../../../constants/errors.js';
 import { CONTENT_STATUS } from '../../../constants/writersroom.js';
@@ -148,7 +150,8 @@ export const handleWritersRoomEntries = async (req, res) => {
 
     // ------------------------------------------------------------------------
     // SAVE CONTENT TO DATABASE
-    // ------------------------------------------------------------------------    console.log('[STEP 10] Starting database save operation');
+    // ------------------------------------------------------------------------
+    console.log('[STEP 10] Starting database save operation');
     console.log(
       '[STEP 11] Brand:',
       content.project?.brand,
@@ -156,9 +159,15 @@ export const handleWritersRoomEntries = async (req, res) => {
       content.project_mode
     );
     console.log('[STEP 12] Title:', content.final_draft?.title);
+
+    // Generate content_id if not provided
+    const contentId = content.content_id || crypto.randomUUID();
+    console.log('[STEP 12.5] Generated content_id:', contentId);
+
     logger.info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     logger.info('💾 Creating database document...');
     const contentDocument = await WritersRoomEntries.create({
+      content_id: contentId,
       creative: content.creative || null,
       final_draft: content.final_draft
         ? {
