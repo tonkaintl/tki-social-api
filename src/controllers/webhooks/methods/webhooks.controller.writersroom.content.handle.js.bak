@@ -41,17 +41,23 @@ export const handleWritersRoomContent = async (req, res) => {
           }
         : null,
       has_final_draft: !!content.final_draft,
-      has_future_story_arcs: !!content.future_story_arc_generator?.arcs?.length,
+      has_future_story_arcs:
+        !!content.future_story_arc_generator?.arcs?.length,
       has_platform_summaries: !!content.platform_summaries,
       has_research: !!content.research,
       has_visual_prompts: !!content.visual_prompts?.length,
+    logger.info('Saving to database...', {
+      collection: 'writers_room_contents',
+      content_id,
+      operation: 'findOneAndUpdate',
+    });
+
       has_writer_notes: !!content.writer_notes,
       mode: content.project_mode || 'unknown',
       notifier_email: content.notifier_email || 'missing',
       outputs: content.outputs || {},
       send_email: content.send_email,
-      target_audience:
-        content.target_audience?.substring(0, 50) + '...' || null,
+      target_audience: content.target_audience?.substring(0, 50) + '...' || null,
       title: content.final_draft?.title || 'no-title',
       writer_panel_count: content.writer_panel?.length || 0,
     });
@@ -90,12 +96,6 @@ export const handleWritersRoomContent = async (req, res) => {
     // ------------------------------------------------------------------------
     // SAVE CONTENT TO DATABASE
     // ------------------------------------------------------------------------
-    logger.info('Saving to database...', {
-      collection: 'writers_room_contents',
-      content_id,
-      operation: 'findOneAndUpdate',
-    });
-
     const contentDocument = await WritersRoomContent.findOneAndUpdate(
       { content_id },
       {
@@ -136,6 +136,7 @@ export const handleWritersRoomContent = async (req, res) => {
         project_mode: content.project_mode || null,
         project_mode_profile: content.project_mode_profile || null,
         research: content.research || null,
+        revision: content.revision || null,
         send_email:
           content.send_email !== undefined ? content.send_email : false,
         status: CONTENT_STATUS.DRAFT,
@@ -150,13 +151,7 @@ export const handleWritersRoomContent = async (req, res) => {
         writer_panel: content.writer_panel || [],
         writers: content.writers || null,
       },
-      {
-        new: true,
-        upsert: true,
-      }
-    );
-
-    logger.info('✓ Database save successful', {
+      {✓ Database save successful', {
       content_id,
       document_id: contentDocument._id.toString(),
       is_new: !contentDocument.created_at,
@@ -170,7 +165,12 @@ export const handleWritersRoomContent = async (req, res) => {
         content_id,
         recipient: content.notifier_email,
       });
+    });
 
+    // ------------------------------------------------------------------------
+    // SEND EMAIL NOTIFICATION
+    // ------------------------------------------------------------------------
+    if (content.send_email && content.notifier_email) {
       // Generate Google Drive link if gdocs_folder_id is available
       let doc_link = null;
       if (content.outputs?.gdocs_folder_id) {
@@ -192,17 +192,6 @@ export const handleWritersRoomContent = async (req, res) => {
         platform_summaries: content.platform_summaries,
         project: content.project,
         research: content.research,
-        timestamp: new Date(),
-        title_variations: content.title_variations,
-        visual_prompts: content.visual_prompts,
-        writer_notes: content.writer_notes,
-      });
-
-      await emailService.sendEmail({
-        htmlBody: emailBody,
-        subject: emailSubject,
-        to: content.notifier_email,
-      });
 
       logger.info('✓ Email sent successfully', {
         content_id,
@@ -212,7 +201,8 @@ export const handleWritersRoomContent = async (req, res) => {
     } else {
       logger.info('Email sending skipped', {
         content_id,
-        reason: !content.send_email ? 'send_email=false' : 'no notifier_email',
+        reason:
+          !content.send_email ? 'send_email=false' : 'no notifier_email',
       });
     }
 
@@ -221,14 +211,6 @@ export const handleWritersRoomContent = async (req, res) => {
     // ------------------------------------------------------------------------
     logger.info('Updating status to SENT...', { content_id });
 
-    await WritersRoomContent.findOneAndUpdate(
-      { content_id },
-      {
-        email_sent_at: new Date(),
-        status: CONTENT_STATUS.SENT,
-        updated_at: new Date(),
-      }
-    );
 
     const processingTime = Date.now() - startTime;
 
@@ -271,7 +253,26 @@ export const handleWritersRoomContent = async (req, res) => {
       notifier_email: req.body?.notifier_email,
       stack: error.stack,
     });
-    logger.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    logger.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'/ ------------------------------------------------------------------------
+    return res.status(200).json({
+      content_id,
+      documentId: contentDocument._id.toString(),
+      notifier_email: content.notifier_email,
+      status: 'sent',
+    });
+  } catch (error) {
+    console.error('=== WEBHOOK ERROR ===');
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
+    console.error('Error name:', error.name);
+    console.error('Full error:', error);
+    console.error('===================');
+
+    logger.error('Writers Room content webhook processing failed', {
+      content_id: req.body?.content_id,
+      error: error.message,
+      stack: error.stack,
+    });
 
     const apiError = new ApiError(
       ERROR_CODES.INTERNAL_SERVER_ERROR,
