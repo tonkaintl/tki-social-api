@@ -21,119 +21,82 @@ export const handleWritersRoomAds = async (req, res) => {
     });
 
     const ad = req.body;
-    logger.info(`Request body: ${JSON.stringify(ad)}`);
-
-    // ------------------------------------------------------------------------
-    // VALIDATE REQUIRED FIELDS
-    // ------------------------------------------------------------------------
-    if (!ad.ad_id) {
-      const error = new ApiError(
-        ERROR_CODES.VALIDATION_ERROR,
-        'Missing required field: ad_id',
-        400
-      );
-      return res.status(error.statusCode).json({
-        code: error.code,
-        error: error.message,
-      });
-    }
-
-    if (!ad.notifier_email) {
-      const error = new ApiError(
-        ERROR_CODES.VALIDATION_ERROR,
-        'Missing required field: notifier_email',
-        400
-      );
-      return res.status(error.statusCode).json({
-        code: error.code,
-        error: error.message,
-      });
-    }
 
     // ------------------------------------------------------------------------
     // SAVE AD TO DATABASE
     // ------------------------------------------------------------------------
-    const adDocument = await WritersRoomAds.findOneAndUpdate(
-      { ad_id: ad.ad_id },
-      {
-        ad_id: ad.ad_id,
-        condition: ad.condition || null,
-        copy: ad.copy || '',
-        copy_length: ad.copy_length || null,
-        date: ad.date || null,
-        end_phrase: ad.end_phrase || null,
-        exw: ad.exw || null,
-        headline: ad.headline || null,
-        hook: ad.hook || null,
-        is_pass: ad.is_pass !== undefined ? ad.is_pass : true,
-        issues: ad.issues || [],
-        issues_guard: ad.issues_guard || [],
-        manufacturer: ad.manufacturer || null,
-        notifier_email: ad.notifier_email,
-        photos: ad.photos || null,
-        platform_targets: ad.platform_targets || [],
-        post_proposals: ad.post_proposals
-          ? {
-              instagram: {
-                hashtags: ad.post_proposals.instagram?.hashtags || [],
-                text: ad.post_proposals.instagram?.text || null,
-              },
-              linkedin: {
-                hashtags: ad.post_proposals.linkedin?.hashtags || [],
-                text: ad.post_proposals.linkedin?.text || null,
-              },
-              meta: {
-                hashtags: ad.post_proposals.meta?.hashtags || [],
-                text: ad.post_proposals.meta?.text || null,
-              },
-              tiktok: {
-                hashtags: ad.post_proposals.tiktok?.hashtags || [],
-                text: ad.post_proposals.tiktok?.text || null,
-              },
-              x: {
-                hashtags: ad.post_proposals.x?.hashtags || [],
-                text: ad.post_proposals.x?.text || null,
-              },
-              youtube: {
-                hashtags: ad.post_proposals.youtube?.hashtags || [],
-                text: ad.post_proposals.youtube?.text || null,
-              },
-            }
-          : null,
-        price_usd: ad.price_usd || null,
-        pronunciation: ad.pronunciation
-          ? JSON.stringify(ad.pronunciation)
-          : null,
-        quantity: ad.quantity || null,
-        reel_heading: ad.reel_heading || null,
-        rules: ad.rules || {},
-        send_email: ad.send_email !== undefined ? ad.send_email : false,
-        slate: ad.slate || null,
-        specs: ad.specs || null,
-        status: AD_STATUS.DRAFT,
-        stock_number: ad.stock_number ? String(ad.stock_number) : null,
-        subject: ad.subject || null,
-        tagline: ad.tagline || null,
-        tone_variant: ad.tone_variant || null,
-        type: ad.type || null,
-        updated_at: new Date(),
-        use_hashtags: ad.use_hashtags !== undefined ? ad.use_hashtags : false,
-        vo_15: ad.vo_15 || null,
-        vo_15_adj: ad.vo_15_adj || null,
-        vo_30: ad.vo_30 || null,
-        vo_30_adj: ad.vo_30_adj || null,
-        voiceover_enabled:
-          ad.voiceover_enabled !== undefined ? ad.voiceover_enabled : false,
-      },
-      {
-        new: true,
-        upsert: true,
-      }
-    );
+    const adDocument = await WritersRoomAds.create({
+      ad_id: ad.ad_id,
+      condition: ad.condition || null,
+      copy: ad.copy || '',
+      copy_length: ad.copy_length || null,
+      date: ad.date || null,
+      end_phrase: ad.end_phrase || null,
+      exw: ad.exw || null,
+      headline: ad.headline || null,
+      hook: ad.hook || null,
+      is_pass: ad.is_pass !== undefined ? ad.is_pass : true,
+      issues: ad.issues || [],
+      issues_guard: ad.issues_guard || [],
+      manufacturer: ad.manufacturer || null,
+      notifier_email: ad.notifier_email,
+      photos: ad.photos || null,
+      platform_targets: ad.platform_targets || [],
+      post_proposals: ad.post_proposals
+        ? {
+            instagram: {
+              hashtags: ad.post_proposals.instagram?.hashtags || [],
+              text: ad.post_proposals.instagram?.text || null,
+            },
+            linkedin: {
+              hashtags: ad.post_proposals.linkedin?.hashtags || [],
+              text: ad.post_proposals.linkedin?.text || null,
+            },
+            meta: {
+              hashtags: ad.post_proposals.meta?.hashtags || [],
+              text: ad.post_proposals.meta?.text || null,
+            },
+            tiktok: {
+              hashtags: ad.post_proposals.tiktok?.hashtags || [],
+              text: ad.post_proposals.tiktok?.text || null,
+            },
+            x: {
+              hashtags: ad.post_proposals.x?.hashtags || [],
+              text: ad.post_proposals.x?.text || null,
+            },
+            youtube: {
+              hashtags: ad.post_proposals.youtube?.hashtags || [],
+              text: ad.post_proposals.youtube?.text || null,
+            },
+          }
+        : null,
+      price_usd: ad.price_usd || null,
+      pronunciation: ad.pronunciation ? JSON.stringify(ad.pronunciation) : null,
+      quantity: ad.quantity || null,
+      reel_heading: ad.reel_heading || null,
+      rules: ad.rules || {},
+      send_email: ad.send_email !== undefined ? ad.send_email : false,
+      slate: ad.slate || null,
+      specs: ad.specs || null,
+      status: AD_STATUS.DRAFT,
+      stock_number: ad.stock_number ? String(ad.stock_number) : null,
+      subject: ad.subject || null,
+      tagline: ad.tagline || null,
+      tone_variant: ad.tone_variant || null,
+      type: ad.type || null,
+      updated_at: new Date(),
+      use_hashtags: ad.use_hashtags !== undefined ? ad.use_hashtags : false,
+      vo_15: ad.vo_15 || null,
+      vo_15_adj: ad.vo_15_adj || null,
+      vo_30: ad.vo_30 || null,
+      vo_30_adj: ad.vo_30_adj || null,
+      voiceover_enabled:
+        ad.voiceover_enabled !== undefined ? ad.voiceover_enabled : false,
+    });
 
     logger.info('Writers Room ad saved to database', {
-      ad_id: ad.ad_id,
       documentId: adDocument._id,
+      subject: ad.subject,
     });
 
     // ------------------------------------------------------------------------
@@ -173,44 +136,19 @@ export const handleWritersRoomAds = async (req, res) => {
         subject: emailSubject,
         to: ad.notifier_email,
       });
+
+      adDocument.status = AD_STATUS.SENT;
+      adDocument.email_sent_at = new Date();
+      await adDocument.save();
     }
 
-    // ------------------------------------------------------------------------
-    // UPDATE AD STATUS AFTER EMAIL SENT
-    // ------------------------------------------------------------------------
-    await WritersRoomAds.findOneAndUpdate(
-      { ad_id: ad.ad_id },
-      {
-        email_sent_at: new Date(),
-        status: AD_STATUS.SENT,
-        updated_at: new Date(),
-      }
-    );
-
-    logger.info('Writers Room ad notification sent', {
-      ad_id: ad.ad_id,
-      notifier_email: ad.notifier_email,
-    });
-
-    // ------------------------------------------------------------------------
-    // RETURN SUCCESS RESPONSE
-    // ------------------------------------------------------------------------
     return res.status(200).json({
-      ad_id: ad.ad_id,
       documentId: adDocument._id.toString(),
       notifier_email: ad.notifier_email,
-      status: 'sent',
+      status: adDocument.status,
     });
   } catch (error) {
-    console.error('=== WEBHOOK ERROR ===');
-    console.error('Error message:', error.message);
-    console.error('Error stack:', error.stack);
-    console.error('Error name:', error.name);
-    console.error('Full error:', error);
-    console.error('===================');
-
     logger.error('Writers Room ads webhook processing failed', {
-      ad_id: req.body?.ad_id,
       error: error.message,
       stack: error.stack,
     });
