@@ -13,26 +13,70 @@ import { logger } from '../../../utils/logger.js';
 
 export const handleWritersRoomEntries = async (req, res) => {
   try {
+    logger.info('Writers Room entries webhook - RAW REQUEST', {
+      body: req.body,
+      headers: {
+        'content-type': req.get('content-type'),
+        'user-agent': req.get('user-agent'),
+      },
+      is_array: Array.isArray(req.body),
+    });
+
     // n8n may send data as array [{}] or direct object {}
     let content = req.body;
     if (Array.isArray(content)) {
+      logger.info('Extracting first item from array payload');
       content = content[0];
     }
 
     if (!content || typeof content !== 'object') {
+      logger.error('Invalid payload format', {
+        content,
+        type: typeof content,
+      });
       throw new ApiError(
         ERROR_CODES.VALIDATION_ERROR,
         'Invalid payload format'
       );
     }
 
-    logger.info('Writers Room content webhook received', {
-      body: content,
+    // Check if n8n sent an error object
+    if (content.error) {
+      logger.error('Writers Room workflow error received', {
+        error_code: content.error.code,
+        error_message: content.error.message,
+        error_name: content.error.name,
+        error_status: content.error.status,
+        has_final_draft: !!content.final_draft,
+        project_brand: content.project?.brand,
+        project_mode: content.project_mode,
+      });
+      return res.status(200).json({
+        message: 'Workflow error acknowledged',
+        status: 'error_received',
+      });
+    }
+
+    logger.info('Payload structure analysis', {
+      brand: content.project?.brand,
+      has_creative: !!content.creative,
+      has_final_draft: !!content.final_draft,
+      has_future_arcs: !!content.future_story_arc_generator?.arcs?.length,
+      has_outputs: !!content.outputs,
+      has_platform_summaries: !!content.platform_summaries,
+      has_research: !!content.research,
+      has_visual_prompts: !!content.visual_prompts?.length,
+      has_writer_notes: !!content.writer_notes,
+      mode: content.project_mode,
+      notifier_email: content.notifier_email || 'MISSING',
+      send_email: content.send_email,
+      title: content.final_draft?.title || 'NO TITLE',
     });
 
     // ------------------------------------------------------------------------
     // SAVE CONTENT TO DATABASE
     // ------------------------------------------------------------------------
+    logger.info('Creating database document...');
     const contentDocument = await WritersRoomEntries.create({
       creative: content.creative || null,
       final_draft: content.final_draft
