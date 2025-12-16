@@ -17,6 +17,7 @@ export async function getWritersRoomEntriesList(req, res) {
       limit = 50,
       mode,
       page = 1,
+      search,
       sortBy = 'created_at',
       sortOrder = 'desc',
       status,
@@ -28,6 +29,7 @@ export async function getWritersRoomEntriesList(req, res) {
       mode,
       page: Number(page),
       requestId: req.id,
+      search,
       sortBy,
       sortOrder,
       status,
@@ -48,6 +50,10 @@ export async function getWritersRoomEntriesList(req, res) {
       filter.project_mode = mode;
     }
 
+    if (search) {
+      filter['final_draft.title'] = { $options: 'i', $regex: search };
+    }
+
     // Pagination
     const pageNum = Math.max(1, Number(page));
     const limitNum = Math.min(100, Math.max(1, Number(limit)));
@@ -60,9 +66,20 @@ export async function getWritersRoomEntriesList(req, res) {
       : 'created_at';
     sort[sortField] = sortOrder === 'asc' ? 1 : -1;
 
-    // Execute query
+    // Execute query with projection for lightweight list
     const [content, totalCount] = await Promise.all([
       WritersRoomEntries.find(filter)
+        .select({
+          _id: 1,
+          content_id: 1,
+          created_at: 1,
+          'final_draft.title': 1,
+          project_mode: 1,
+          status: 1,
+          'target_brand.project.name': 1,
+          'target_brand.project.slug': 1,
+          updated_at: 1,
+        })
         .sort(sort)
         .skip(skip)
         .limit(limitNum)
@@ -86,6 +103,7 @@ export async function getWritersRoomEntriesList(req, res) {
       filters: {
         brand: brand || null,
         mode: mode || null,
+        search: search || null,
         status: status || null,
       },
       pagination: {
