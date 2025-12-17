@@ -23,6 +23,22 @@ export const handleWritersRoomAds = async (req, res) => {
     const ad = req.body;
 
     // ------------------------------------------------------------------------
+    // NORMALIZE PLATFORM TARGETS
+    // ------------------------------------------------------------------------
+    const platformMap = {
+      Meta: 'meta',
+      'X (Twitter)': 'x',
+      Instagram: 'instagram',
+      TikTok: 'tiktok_business',
+      YouTube: 'youtube',
+      LinkedIn: 'linkedin',
+    };
+
+    const normalizedPlatforms = (ad.platform_targets || []).map(
+      (platform) => platformMap[platform] || platform.toLowerCase()
+    );
+
+    // ------------------------------------------------------------------------
     // SAVE AD TO DATABASE
     // ------------------------------------------------------------------------
     const adDocument = await WritersRoomAds.create({
@@ -41,7 +57,7 @@ export const handleWritersRoomAds = async (req, res) => {
       manufacturer: ad.manufacturer || null,
       notifier_email: ad.notifier_email,
       photos: ad.photos || null,
-      platform_targets: ad.platform_targets || [],
+      platform_targets: normalizedPlatforms,
       post_proposals: ad.post_proposals
         ? {
             instagram: {
@@ -148,11 +164,26 @@ export const handleWritersRoomAds = async (req, res) => {
       status: adDocument.status,
     });
   } catch (error) {
+    // Log error details explicitly for debugging
+    console.error('=== WRITERS ROOM ADS WEBHOOK ERROR ===');
+    console.error('Error Name:', error.name);
+    console.error('Error Message:', error.message);
+    console.error('Error Stack:', error.stack);
+    if (error.errors) {
+      console.error(
+        'Validation Errors:',
+        JSON.stringify(error.errors, null, 2)
+      );
+    }
+    console.error('Full Error:', error);
+    console.error('=====================================');
+
     logger.error('Writers Room ads webhook processing failed', {
       error: error.message,
+      errorCode: error.code,
       errorName: error.name,
-      fullError: error,
       stack: error.stack,
+      validationErrors: error.errors,
     });
 
     const apiError = new ApiError(
