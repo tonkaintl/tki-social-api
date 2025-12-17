@@ -23,22 +23,6 @@ export const handleWritersRoomAds = async (req, res) => {
     const ad = req.body;
 
     // ------------------------------------------------------------------------
-    // NORMALIZE PLATFORM TARGETS
-    // ------------------------------------------------------------------------
-    const platformMap = {
-      Meta: 'meta',
-      'X (Twitter)': 'x',
-      Instagram: 'instagram',
-      TikTok: 'tiktok_business',
-      YouTube: 'youtube',
-      LinkedIn: 'linkedin',
-    };
-
-    const normalizedPlatforms = (ad.platform_targets || []).map(
-      (platform) => platformMap[platform] || platform.toLowerCase()
-    );
-
-    // ------------------------------------------------------------------------
     // SAVE AD TO DATABASE
     // ------------------------------------------------------------------------
     const adDocument = await WritersRoomAds.create({
@@ -57,7 +41,7 @@ export const handleWritersRoomAds = async (req, res) => {
       manufacturer: ad.manufacturer || null,
       notifier_email: ad.notifier_email,
       photos: ad.photos || null,
-      platform_targets: normalizedPlatforms,
+      platform_targets: ad.platform_targets || [],
       post_proposals: ad.post_proposals
         ? {
             instagram: {
