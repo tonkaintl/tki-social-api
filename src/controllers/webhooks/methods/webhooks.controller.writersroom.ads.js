@@ -150,6 +150,8 @@ export const handleWritersRoomAds = async (req, res) => {
   } catch (error) {
     logger.error('Writers Room ads webhook processing failed', {
       error: error.message,
+      errorName: error.name,
+      fullError: error,
       stack: error.stack,
     });
 
