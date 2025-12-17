@@ -227,7 +227,7 @@ var writersRoomEntriesSchema = new Schema({
   final_draft: FinalDraftSchema,
   future_story_arc_generator: FutureStoryArcGeneratorSchema,
   head_writer_system_message: { type: String },
-  notifier_email: { required: false, type: String },
+  notifier_email: { required: true, type: String },
   outputs: OutputsSchema,
   platform_summaries: PlatformSummariesSchema,
   project: ProjectSchema,

@@ -51,7 +51,10 @@ export async function getWritersRoomEntriesList(req, res) {
     }
 
     if (search) {
-      filter['final_draft.title'] = { $options: 'i', $regex: search };
+      filter.$or = [
+        { 'final_draft.title': { $options: 'i', $regex: search } },
+        { notifier_email: { $options: 'i', $regex: search } },
+      ];
     }
 
     // Pagination
@@ -74,6 +77,7 @@ export async function getWritersRoomEntriesList(req, res) {
           content_id: 1,
           created_at: 1,
           'final_draft.title': 1,
+          notifier_email: 1,
           project_mode: 1,
           status: 1,
           'target_brand.project.name': 1,
