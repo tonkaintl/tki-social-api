@@ -119,6 +119,13 @@ export const handleWritersRoomEntries = async (req, res) => {
     // Generate content_id if not provided
     const contentId = content.content_id || crypto.randomUUID();
 
+    // Ensure visual prompts have IDs (required for image upload endpoint)
+    const visualPrompts =
+      content.visual_prompts?.map((prompt, index) => ({
+        ...prompt,
+        id: prompt.id || `vp-${String(index + 1).padStart(2, '0')}`,
+      })) || [];
+
     logger.info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     logger.info('💾 Creating database document...');
     const contentDocument = await WritersRoomEntries.create({
@@ -166,7 +173,7 @@ export const handleWritersRoomEntries = async (req, res) => {
       target_brand: content.target_brand || null,
       title_variations: content.title_variations || [],
       tokens: content.tokens || null,
-      visual_prompts: content.visual_prompts || [],
+      visual_prompts: visualPrompts,
       writer_notes: content.writer_notes || null,
       writer_panel: content.writer_panel || [],
       writers: content.writers || null,

@@ -126,9 +126,22 @@ var TokensSchema = new Schema(
   { _id: false }
 );
 
+var VisualPromptImageSchema = new Schema(
+  {
+    alt: { type: String },
+    created_at: { default: Date.now, type: Date },
+    description: { type: String },
+    filename: { type: String },
+    size: { type: Number },
+    url: { type: String },
+  },
+  { _id: false }
+);
+
 var VisualPromptSchema = new Schema(
   {
     id: { type: String },
+    images: [VisualPromptImageSchema],
     intent: { type: String },
     prompt: { type: String },
   },
