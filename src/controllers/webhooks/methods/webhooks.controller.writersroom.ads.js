@@ -11,6 +11,30 @@ import WritersRoomAds from '../../../models/writersRoomAds.model.js';
 import { emailService } from '../../../services/email.service.js';
 import { logger } from '../../../utils/logger.js';
 
+// Normalize incoming platform and tone names to match database schema
+const normalizePlatformTarget = platform => {
+  const mapping = {
+    Instagram: 'instagram',
+    LinkedIn: 'linkedin',
+    Meta: 'meta',
+    Reddit: 'reddit',
+    Threads: 'threads',
+    TikTok: 'tiktok_business',
+    X: 'x',
+    'X (Twitter)': 'x',
+    YouTube: 'youtube',
+  };
+  return mapping[platform] || platform.toLowerCase();
+};
+
+const normalizeToneVariant = tone => {
+  const mapping = {
+    commercial_ad: 'salesperson',
+    'Commercial Ad': 'salesperson',
+  };
+  return mapping[tone] || tone.toLowerCase();
+};
+
 export const handleWritersRoomAds = async (req, res) => {
   try {
     // ------------------------------------------------------------------------
@@ -41,7 +65,9 @@ export const handleWritersRoomAds = async (req, res) => {
       manufacturer: ad.manufacturer || null,
       notifier_email: ad.notifier_email,
       photos: ad.photos || null,
-      platform_targets: ad.platform_targets || [],
+      platform_targets: (ad.platform_targets || []).map(
+        normalizePlatformTarget
+      ),
       post_proposals: ad.post_proposals
         ? {
             instagram: {
@@ -82,7 +108,9 @@ export const handleWritersRoomAds = async (req, res) => {
       stock_number: ad.stock_number ? String(ad.stock_number) : null,
       subject: ad.subject || null,
       tagline: ad.tagline || null,
-      tone_variant: ad.tone_variant || null,
+      tone_variant: ad.tone_variant
+        ? normalizeToneVariant(ad.tone_variant)
+        : null,
       type: ad.type || null,
       updated_at: new Date(),
       use_hashtags: ad.use_hashtags !== undefined ? ad.use_hashtags : false,
