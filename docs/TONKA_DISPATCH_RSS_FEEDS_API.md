@@ -149,12 +149,15 @@ Retrieve feeds with optional filtering and sorting.
 
 **Query Parameters:**
 
-| Parameter  | Type    | Description                                               |
-| ---------- | ------- | --------------------------------------------------------- |
-| `tier`     | string  | Filter by tier: `core`, `outlier`, `rejected`, `archived` |
-| `category` | string  | Filter by category (exact match)                          |
-| `enabled`  | boolean | Filter by enabled status: `true` or `false`               |
-| `sort`     | string  | Sort field (default: `-dinner_score`)                     |
+| Parameter  | Type    | Required | Description                                                  | Default         |
+| ---------- | ------- | -------- | ------------------------------------------------------------ | --------------- |
+| `tier`     | string  | No       | Filter by tier: `core`, `outlier`, `rejected`, `archived`    | -               |
+| `category` | string  | No       | Filter by category (exact match)                             | -               |
+| `enabled`  | boolean | No       | Filter by enabled status: `true` or `false`                  | -               |
+| `search`   | string  | No       | Full-text search across name, rss_url, category, tier, notes | -               |
+| `sort`     | string  | No       | Sort field (prefix with `-` for descending)                  | `-dinner_score` |
+| `page`     | integer | No       | Page number (1-based)                                        | `1`             |
+| `limit`    | integer | No       | Results per page (max: 100)                                  | `25`            |
 
 **Valid Sort Values:**
 
@@ -163,10 +166,19 @@ Retrieve feeds with optional filtering and sorting.
 - `updated_at` / `-updated_at` - Last update ascending/descending
 - `name` / `-name` - Name alphabetically ascending/descending
 
-**Example Request:**
+**Example Requests:**
 
 ```http
-GET /api/dispatch/feeds?tier=core&enabled=true&sort=-dinner_score
+# Basic filtering with pagination
+GET /api/dispatch/feeds?tier=core&enabled=true&sort=-dinner_score&page=1&limit=25
+Authorization: Bearer {token}
+
+# Search with filters
+GET /api/dispatch/feeds?tier=core&enabled=true&search=trucking&page=1&limit=25
+Authorization: Bearer {token}
+
+# View all feeds, sorted by name
+GET /api/dispatch/feeds?enabled=true&sort=name&page=1&limit=50
 Authorization: Bearer {token}
 ```
 
@@ -175,6 +187,9 @@ Authorization: Bearer {token}
 ```json
 {
   "count": 2,
+  "totalCount": 42,
+  "totalPages": 17,
+  "page": 1,
   "feeds": [
     {
       "_id": "67940a36887e77739dd41328",
@@ -217,7 +232,10 @@ Authorization: Bearer {token}
 
 **Response Fields:**
 
-- `count` - Total number of feeds matching filters
+- `count` - Number of feeds in current page
+- `totalCount` - Total number of feeds matching all filters
+- `totalPages` - Total number of pages available
+- `page` - Current page number
 - `feeds` - Array of feed objects
 - `filters` - Applied filters (for confirmation)
 - `requestId` - Request tracking ID
@@ -236,6 +254,13 @@ Authorization: Bearer {token}
 {
   "code": "INVALID_SORT_FIELD",
   "message": "Sort must be one of: dinner_score, -dinner_score, created_at, -created_at, updated_at, -updated_at, name, -name",
+  "requestId": "req_xyz789"
+}
+
+// 400 - Invalid page number
+{
+  "code": "INVALID_PAGE",
+  "message": "Page number must be at least 1",
   "requestId": "req_xyz789"
 }
 ```
@@ -417,21 +442,39 @@ if (created) {
 }
 ```
 
-### 2. **Filtering Active Core Feeds**
+### 2. **Filtering Active Core Feeds with Pagination**
 
 ```javascript
 const response = await fetch(
-  '/api/dispatch/feeds?tier=core&enabled=true&sort=-dinner_score',
+  '/api/dispatch/feeds?tier=core&enabled=true&sort=-dinner_score&page=1&limit=25',
   {
     headers: { Authorization: `Bearer ${token}` },
   }
 );
 
-const { feeds, count } = await response.json();
+const { feeds, count, totalCount, totalPages, page } = await response.json();
+console.log(
+  `Page ${page} of ${totalPages}, showing ${count} of ${totalCount} total feeds`
+);
 // feeds array sorted by highest dinner_score first
 ```
 
-### 3. **Partial Updates**
+### 3. **Full-Text Search**
+
+```javascript
+const response = await fetch(
+  '/api/dispatch/feeds?tier=core&enabled=true&search=trucking&page=1&limit=25',
+  {
+    headers: { Authorization: `Bearer ${token}` },
+  }
+);
+
+const { feeds, filters } = await response.json();
+console.log('Search term:', filters.search); // "trucking"
+// Searches across name, rss_url, category, tier, and notes fields
+```
+
+### 4. **Partial Updates**
 
 Use PATCH when you only want to change specific fields:
 
@@ -451,7 +494,7 @@ const response = await fetch(`/api/dispatch/feeds/${feedId}`, {
 const { feed } = await response.json();
 ```
 
-### 4. **Error Handling**
+### 5. **Error Handling**
 
 All errors include a `code` field for programmatic handling:
 
@@ -481,7 +524,7 @@ try {
 }
 ```
 
-### 5. **FeedSpot Integration**
+### 6. **FeedSpot Integration**
 
 When adding feeds discovered via FeedSpot, include tracking IDs:
 
@@ -526,6 +569,9 @@ All responses include a `requestId` field for debugging and support purposes. In
 - **Tier Validation**: Changing tier to `rejected` requires notes (either in the request or already existing)
 - **Default Sort**: List endpoint defaults to `-dinner_score` (highest rated first)
 - **Boolean Filters**: Use string values `'true'` or `'false'` in query parameters
+- **Search**: Case-insensitive partial matching across name, rss_url, category, tier, and notes fields
+- **Pagination**: Default is 25 results per page, maximum is 100 per page
+- **Search + Filters**: When both search and filters are present, both are applied (AND logic)
 
 ---
 
