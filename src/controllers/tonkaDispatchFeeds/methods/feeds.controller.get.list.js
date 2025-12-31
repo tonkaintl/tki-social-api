@@ -1,6 +1,7 @@
 import {
   FEED_ERROR_CODE,
   FEED_FIELDS,
+  FEED_PAGINATION,
   FEED_SORT_FIELD_VALUES,
   FEED_TIER_VALUES,
 } from '../../../constants/tonkaDispatch.js';
@@ -8,11 +9,11 @@ import TonkaDispatchRssLinks from '../../../models/tonkaDispatchRssLinks.model.j
 import { logger } from '../../../utils/logger.js';
 
 /**
- * List feeds with optional filtering and sorting
+ * List feeds with optional filtering, searching, sorting, and pagination
  */
 export async function listFeeds(req, res) {
   try {
-    const { category, enabled, sort, tier } = req.query;
+    const { category, enabled, limit, page, search, sort, tier } = req.query;
 
     // Build filter object
     const filter = {};
@@ -37,9 +38,43 @@ export async function listFeeds(req, res) {
       filter[FEED_FIELDS.CATEGORY] = category;
     }
 
-    if (enabled !== undefined) {
-      // Convert string to boolean
+    // Only filter by enabled if explicitly set to 'true' or 'false'
+    // null, undefined, or empty string returns both enabled and disabled
+    if (enabled !== undefined && enabled !== null && enabled !== '') {
       filter[FEED_FIELDS.ENABLED] = enabled === 'true';
+    }
+
+    // Add search filter (case-insensitive, searches across multiple fields)
+    if (search && search.trim() !== '') {
+      const searchRegex = new RegExp(search.trim(), 'i');
+      filter.$or = [
+        { [FEED_FIELDS.NAME]: searchRegex },
+        { [FEED_FIELDS.RSS_URL]: searchRegex },
+        { [FEED_FIELDS.CATEGORY]: searchRegex },
+        { [FEED_FIELDS.TIER]: searchRegex },
+        { [FEED_FIELDS.NOTES]: searchRegex },
+      ];
+    }
+
+    // Parse pagination parameters
+    const pageNum = parseInt(page, 10) || FEED_PAGINATION.DEFAULT_PAGE;
+    const limitNum = Math.min(
+      parseInt(limit, 10) || FEED_PAGINATION.DEFAULT_LIMIT,
+      FEED_PAGINATION.MAX_LIMIT
+    );
+    const skip = (pageNum - 1) * limitNum;
+
+    if (pageNum < 1) {
+      logger.warn('Invalid page number', {
+        page: pageNum,
+        requestId: req.id,
+      });
+
+      return res.status(400).json({
+        code: FEED_ERROR_CODE.INVALID_PAGE,
+        message: 'Page number must be at least 1',
+        requestId: req.id,
+      });
     }
 
     // Parse sort parameter
@@ -69,24 +104,44 @@ export async function listFeeds(req, res) {
 
     logger.info('Listing feeds', {
       filter,
+      limit: limitNum,
+      page: pageNum,
       requestId: req.id,
       sort: sortObj,
     });
 
-    // Query database
-    const feeds = await TonkaDispatchRssLinks.find(filter).sort(sortObj);
+    // Get total count for pagination
+    const totalCount = await TonkaDispatchRssLinks.countDocuments(filter);
+
+    // Query database with pagination
+    const feeds = await TonkaDispatchRssLinks.find(filter)
+      .sort(sortObj)
+      .skip(skip)
+      .limit(limitNum);
+
+    const totalPages = Math.ceil(totalCount / limitNum);
 
     logger.info('Feeds retrieved successfully', {
       count: feeds.length,
       filter,
+      page: pageNum,
       requestId: req.id,
+      totalCount,
     });
 
     return res.status(200).json({
       count: feeds.length,
       feeds,
-      filters: filter,
+      filters: {
+        ...(tier && { tier }),
+        ...(category && { category }),
+        ...(enabled !== undefined && { enabled: enabled === 'true' }),
+        ...(search && { search }),
+      },
+      page: pageNum,
       requestId: req.id,
+      totalCount,
+      totalPages,
     });
   } catch (error) {
     logger.error('Failed to list feeds', {
