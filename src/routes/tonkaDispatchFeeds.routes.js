@@ -6,28 +6,26 @@ import {
   upsertFeed,
 } from '../controllers/tonkaDispatchFeeds/methods.js';
 import { verifyToken } from '../middleware/auth.bearer.js';
+import { verifyN8nSecret } from '../middleware/auth.n8n.js';
 
 // ----------------------------------------------------------------------------
 const router = express.Router();
 // ----------------------------------------------------------------------------
 
-// Apply Bearer token authentication to all Tonka Dispatch Feeds routes
-router.use(verifyToken);
-
 // ----------------------------------------------------------------------------
 // POST Routes
 // ----------------------------------------------------------------------------
-router.post('/', upsertFeed);
+router.post('/', verifyToken, upsertFeed);
 
 // ----------------------------------------------------------------------------
 // GET Routes
 // ----------------------------------------------------------------------------
-router.get('/', listFeeds);
+router.get('/', verifyN8nSecret, listFeeds);
 
 // ----------------------------------------------------------------------------
 // PATCH Routes
 // ----------------------------------------------------------------------------
-router.patch('/:id', updateFeed);
+router.patch('/:id', verifyToken, updateFeed);
 
 // ----------------------------------------------------------------------------
 export default router;
