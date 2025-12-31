@@ -32,6 +32,7 @@ export const FEED_UPDATE_FIELDS = {
   NAME: 'name',
   NOTES: 'notes',
   REJECTED_REASON: 'rejected_reason',
+  RSS_URL: 'rss_url',
   TIER: 'tier',
 };
 
