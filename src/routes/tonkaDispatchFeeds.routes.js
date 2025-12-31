@@ -6,7 +6,7 @@ import {
   upsertFeed,
 } from '../controllers/tonkaDispatchFeeds/methods.js';
 import { verifyToken } from '../middleware/auth.bearer.js';
-import { verifyN8nSecret } from '../middleware/auth.n8n.js';
+import { verifyEitherAuth } from '../middleware/auth.either.js';
 
 // ----------------------------------------------------------------------------
 const router = express.Router();
@@ -20,7 +20,7 @@ router.post('/', verifyToken, upsertFeed);
 // ----------------------------------------------------------------------------
 // GET Routes
 // ----------------------------------------------------------------------------
-router.get('/', verifyN8nSecret, listFeeds);
+router.get('/', verifyEitherAuth, listFeeds);
 
 // ----------------------------------------------------------------------------
 // PATCH Routes
