@@ -197,3 +197,116 @@ export const FEED_MATCH_STATUS = {
 };
 
 export const FEED_MATCH_STATUS_VALUES = Object.values(FEED_MATCH_STATUS);
+
+// ----------------------------------------------------------------------------
+// NEWSLETTER CONSTANTS
+// ----------------------------------------------------------------------------
+
+// Newsletter status values
+export const NEWSLETTER_STATUS = {
+  DRAFT: 'draft',
+  SCHEDULED: 'scheduled',
+  SENT: 'sent',
+};
+
+export const NEWSLETTER_STATUS_VALUES = Object.values(NEWSLETTER_STATUS);
+
+// Newsletter error codes
+export const NEWSLETTER_ERROR_CODE = {
+  ARTICLE_NOT_FOUND: 'ARTICLE_NOT_FOUND',
+  DUPLICATE_ARTICLE: 'DUPLICATE_ARTICLE',
+  INVALID_ARTICLE_ORDER: 'INVALID_ARTICLE_ORDER',
+  INVALID_PAGE: 'INVALID_PAGE',
+  INVALID_SORT_FIELD: 'INVALID_SORT_FIELD',
+  INVALID_STATUS: 'INVALID_STATUS',
+  INVALID_STATUS_TRANSITION: 'INVALID_STATUS_TRANSITION',
+  NEWSLETTER_CREATE_FAILED: 'NEWSLETTER_CREATE_FAILED',
+  NEWSLETTER_DELETE_FAILED: 'NEWSLETTER_DELETE_FAILED',
+  NEWSLETTER_LIST_FAILED: 'NEWSLETTER_LIST_FAILED',
+  NEWSLETTER_NOT_FOUND: 'NEWSLETTER_NOT_FOUND',
+  NEWSLETTER_UPDATE_FAILED: 'NEWSLETTER_UPDATE_FAILED',
+  RANKING_NOT_FOUND: 'RANKING_NOT_FOUND',
+};
+
+// Newsletter field names
+export const NEWSLETTER_FIELDS = {
+  ARTICLES: 'articles',
+  CREATED_AT: 'created_at',
+  HERO_IMAGE_URL: 'hero_image_url',
+  ID: '_id',
+  SCHEDULED_DATE: 'scheduled_date',
+  SENT_DATE: 'sent_date',
+  SOURCE_BATCH_ID: 'source_batch_id',
+  STATUS: 'status',
+  TESTING_EMAILS: 'testing_emails',
+  TITLE: 'title',
+  UPDATED_AT: 'updated_at',
+};
+
+// Article subdocument field names
+export const NEWSLETTER_ARTICLE_FIELDS = {
+  ADDED_AT: 'added_at',
+  CUSTOM_CATEGORY: 'custom_category',
+  CUSTOM_IMAGE_URL: 'custom_image_url',
+  CUSTOM_LINK: 'custom_link',
+  CUSTOM_ORDER: 'custom_order',
+  CUSTOM_SNIPPET: 'custom_snippet',
+  CUSTOM_SOURCE_NAME: 'custom_source_name',
+  CUSTOM_TITLE: 'custom_title',
+  ID: '_id',
+  IS_MANUAL_SECTION: 'is_manual_section',
+  TONKA_DISPATCH_RANKINGS_ID: 'tonka_dispatch_rankings_id',
+  UPDATED_AT: 'updated_at',
+};
+
+// Valid sort fields for newsletter listing
+export const NEWSLETTER_SORT_FIELD = {
+  CREATED_AT: 'created_at',
+  CREATED_AT_DESC: '-created_at',
+  SCHEDULED_DATE: 'scheduled_date',
+  SCHEDULED_DATE_DESC: '-scheduled_date',
+  SENT_DATE: 'sent_date',
+  SENT_DATE_DESC: '-sent_date',
+  TITLE: 'title',
+  TITLE_DESC: '-title',
+  UPDATED_AT: 'updated_at',
+  UPDATED_AT_DESC: '-updated_at',
+};
+
+export const NEWSLETTER_SORT_FIELD_VALUES = Object.values(
+  NEWSLETTER_SORT_FIELD
+);
+
+// Pagination constants for newsletters
+export const NEWSLETTER_PAGINATION = {
+  DEFAULT_LIMIT: 25,
+  DEFAULT_PAGE: 1,
+  MAX_LIMIT: 100,
+};
+
+// Allowed fields for newsletter PATCH updates
+export const NEWSLETTER_UPDATE_FIELDS = {
+  HERO_IMAGE_URL: 'hero_image_url',
+  SCHEDULED_DATE: 'scheduled_date',
+  STATUS: 'status',
+  TESTING_EMAILS: 'testing_emails',
+  TITLE: 'title',
+};
+
+export const NEWSLETTER_UPDATE_FIELDS_VALUES = Object.values(
+  NEWSLETTER_UPDATE_FIELDS
+);
+
+// Allowed fields for article updates
+export const ARTICLE_UPDATE_FIELDS = {
+  CUSTOM_CATEGORY: 'custom_category',
+  CUSTOM_IMAGE_URL: 'custom_image_url',
+  CUSTOM_LINK: 'custom_link',
+  CUSTOM_SNIPPET: 'custom_snippet',
+  CUSTOM_SOURCE_NAME: 'custom_source_name',
+  CUSTOM_TITLE: 'custom_title',
+};
+
+export const ARTICLE_UPDATE_FIELDS_VALUES = Object.values(
+  ARTICLE_UPDATE_FIELDS
+);
