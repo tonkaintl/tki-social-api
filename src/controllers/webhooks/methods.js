@@ -14,6 +14,7 @@ import { handleTikTokBusinessWebhook } from './methods/webhooks.controller.tikto
 import { verifyTikTokBusinessWebhook } from './methods/webhooks.controller.tiktok_business.verify.js';
 import { handleTikTokPersonalWebhook } from './methods/webhooks.controller.tiktok_personal.handle.js';
 import { verifyTikTokPersonalWebhook } from './methods/webhooks.controller.tiktok_personal.verify.js';
+import { handleTonkaDispatchRankings } from './methods/webhooks.controller.tonkadispatch.rankings.js';
 import { handleWritersRoomAds } from './methods/webhooks.controller.writersroom.ads.js';
 import { handleWritersRoomEntries } from './methods/webhooks.controller.writersroom.entries.js';
 import { handleXWebhook } from './methods/webhooks.controller.x.handle.js';
@@ -32,6 +33,7 @@ export {
   handleThreadsWebhook,
   handleTikTokBusinessWebhook,
   handleTikTokPersonalWebhook,
+  handleTonkaDispatchRankings,
   handleWritersRoomAds,
   handleWritersRoomEntries,
   handleXWebhook,
