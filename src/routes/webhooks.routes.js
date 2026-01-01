@@ -9,6 +9,7 @@ import {
   handleThreadsWebhook,
   handleTikTokBusinessWebhook,
   handleTikTokPersonalWebhook,
+  handleTonkaDispatchRankings,
   handleWritersRoomAds,
   handleWritersRoomEntries,
   handleXWebhook,
@@ -97,6 +98,15 @@ router.get('/facebook/callback', handleFacebookCallback);
 // ----------------------------------------------------------------------------
 router.post('/writers-room/ads', verifyN8nSecret, handleWritersRoomAds);
 router.post('/writers-room/entries', verifyN8nSecret, handleWritersRoomEntries);
+
+// ----------------------------------------------------------------------------
+// Tonka Dispatch Webhook Routes (Internal - requires x-internal-secret from n8n)
+// ----------------------------------------------------------------------------
+router.post(
+  '/tonka-dispatch/rankings',
+  verifyN8nSecret,
+  handleTonkaDispatchRankings
+);
 
 // ----------------------------------------------------------------------------
 export default router;

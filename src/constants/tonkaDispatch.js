@@ -32,6 +32,7 @@ export const FEED_UPDATE_FIELDS = {
   NAME: 'name',
   NOTES: 'notes',
   REJECTED_REASON: 'rejected_reason',
+  RSS_URL: 'rss_url',
   TIER: 'tier',
 };
 
@@ -100,3 +101,99 @@ export const FEED_DEFAULTS = {
   ENABLED: true,
   TIER: FEED_TIER.OUTLIER,
 };
+
+// ----------------------------------------------------------------------------
+// RANKINGS WEBHOOK CONSTANTS
+// ----------------------------------------------------------------------------
+
+// Rankings error codes
+export const RANKINGS_ERROR_CODE = {
+  INVALID_PAGE: 'INVALID_PAGE',
+  INVALID_PAYLOAD: 'INVALID_PAYLOAD',
+  INVALID_SORT_FIELD: 'INVALID_SORT_FIELD',
+  MISSING_GENERATED_AT: 'MISSING_GENERATED_AT',
+  MISSING_RANKINGS: 'MISSING_RANKINGS',
+  MISSING_SELECTED_IDS: 'MISSING_SELECTED_IDS',
+  MISSING_SUBJECT: 'MISSING_SUBJECT',
+  RANKINGS_LIST_FAILED: 'RANKINGS_LIST_FAILED',
+  RANKINGS_SAVE_FAILED: 'RANKINGS_SAVE_FAILED',
+};
+
+// Rankings field names
+export const RANKINGS_FIELDS = {
+  ARTICLE: 'article',
+  CANONICAL_ID: 'canonical_id',
+  CREATED_AT: 'created_at',
+  EMAIL_SENT_AT: 'email_sent_at',
+  GENERATED_AT_ISO: 'generated_at_iso',
+  ID: '_id',
+  NOTIFIER_EMAIL: 'notifier_email',
+  RANK: 'rank',
+  RANKINGS: 'rankings',
+  REASON: 'reason',
+  SCORE: 'score',
+  SELECTED_CANONICAL_IDS: 'selected_canonical_ids',
+  SUBJECT: 'subject',
+  UPDATED_AT: 'updated_at',
+};
+
+// Article field names
+export const ARTICLE_FIELDS = {
+  ARTICLE_HOST: 'article_host',
+  ARTICLE_ROOT_DOMAIN: 'article_root_domain',
+  CANONICAL_ID: 'canonical_id',
+  CATEGORY: 'category',
+  CREATOR: 'creator',
+  LINK: 'link',
+  PUB_DATE_MS: 'pub_date_ms',
+  SNIPPET: 'snippet',
+  SOURCE_NAME: 'source_name',
+  TITLE: 'title',
+};
+
+// Rankings schema field names
+export const RANKING_FIELDS = {
+  ARTICLE_HOST: 'article_host',
+  ARTICLE_ROOT_DOMAIN: 'article_root_domain',
+  BATCH_ID: 'batch_id',
+  CANONICAL_ID: 'canonical_id',
+  CATEGORY: 'category',
+  CREATED_AT: 'created_at',
+  CREATOR: 'creator',
+  FEED_MATCH_REASON: 'feed_match_reason',
+  FEED_MATCH_STATUS: 'feed_match_status',
+  LINK: 'link',
+  MATCH_METHOD: 'match_method',
+  PUB_DATE_MS: 'pub_date_ms',
+  RANK: 'rank',
+  SNIPPET: 'snippet',
+  SOURCE_NAME: 'source_name',
+  TITLE: 'title',
+  TONKA_DISPATCH_RSS_LINKS_ID: 'tonka_dispatch_rss_links_id',
+};
+
+// Valid sort fields for rankings listing
+export const RANKING_SORT_FIELD = {
+  CREATED_AT: 'created_at',
+  CREATED_AT_DESC: '-created_at',
+  RANK: 'rank',
+  RANK_DESC: '-rank',
+};
+
+export const RANKING_SORT_FIELD_VALUES = Object.values(RANKING_SORT_FIELD);
+
+// Pagination constants for rankings
+export const RANKING_PAGINATION = {
+  DEFAULT_LIMIT: 25,
+  DEFAULT_PAGE: 1,
+  MAX_LIMIT: 100,
+};
+
+// Feed match status values
+export const FEED_MATCH_STATUS = {
+  MATCHED: 'matched',
+  NO_MATCH: 'no_match',
+  UNKNOWN: 'unknown',
+};
+
+export const FEED_MATCH_STATUS_VALUES = Object.values(FEED_MATCH_STATUS);
