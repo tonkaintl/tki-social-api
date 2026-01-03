@@ -58,11 +58,15 @@ export async function listFeeds(req, res) {
 
     // Parse pagination parameters
     const pageNum = parseInt(page, 10) || FEED_PAGINATION.DEFAULT_PAGE;
-    const limitNum = Math.min(
-      parseInt(limit, 10) || FEED_PAGINATION.DEFAULT_LIMIT,
-      FEED_PAGINATION.MAX_LIMIT
-    );
-    const skip = (pageNum - 1) * limitNum;
+    // limit=0 means no limit (return all results)
+    const limitNum =
+      limit === '0' || limit === 0
+        ? 0
+        : Math.min(
+            parseInt(limit, 10) || FEED_PAGINATION.DEFAULT_LIMIT,
+            FEED_PAGINATION.MAX_LIMIT
+          );
+    const skip = limitNum === 0 ? 0 : (pageNum - 1) * limitNum;
 
     if (pageNum < 1) {
       logger.warn('Invalid page number', {
@@ -114,12 +118,12 @@ export async function listFeeds(req, res) {
     const totalCount = await TonkaDispatchRssLinks.countDocuments(filter);
 
     // Query database with pagination
-    const feeds = await TonkaDispatchRssLinks.find(filter)
-      .sort(sortObj)
-      .skip(skip)
-      .limit(limitNum);
+    const query = TonkaDispatchRssLinks.find(filter).sort(sortObj).skip(skip);
 
-    const totalPages = Math.ceil(totalCount / limitNum);
+    // Apply limit only if not 0 (0 means return all)
+    const feeds = limitNum === 0 ? await query : await query.limit(limitNum);
+
+    const totalPages = limitNum === 0 ? 1 : Math.ceil(totalCount / limitNum);
 
     logger.info('Feeds retrieved successfully', {
       count: feeds.length,

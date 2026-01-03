@@ -1,0 +1,17 @@
+# FeedSpot URLs to scrape
+# Add one URL per line
+# Lines starting with # are ignored
+
+https://www.feedspot.com/reader/fo/7955832/fe/5399426
+https://www.feedspot.com/reader/fo/7955832/fe/4791470
+https://www.feedspot.com/reader/fo/7955832/fe/4959300
+https://www.feedspot.com/reader/fo/7955832/fe/5267127
+https://www.feedspot.com/reader/fo/7955832/fe/3607423
+https://www.feedspot.com/reader/fo/7955832/fe/4647084
+https://www.feedspot.com/reader/fo/7955832/fe/5399424
+https://www.feedspot.com/reader/fo/7955832/fe/5713096
+https://www.feedspot.com/reader/fo/7955832/fe/5043141
+https://www.feedspot.com/reader/fo/7955832/fe/4656204
+https://www.feedspot.com/reader/fo/7955832/fe/5043141
+https://www.feedspot.com/reader/fo/7955832/fe/4656204
+https://www.feedspot.com/reader/fo/7955832/fe/5713095
