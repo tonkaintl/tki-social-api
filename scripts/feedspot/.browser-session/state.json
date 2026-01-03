@@ -1,0 +1,617 @@
+{
+  "cookies": [
+    {
+      "name": "_GRECAPTCHA",
+      "value": "09ABCLyOGyO6LqkchgKVH7KWfLE3aZu8HRCXS-aRVqRJ8poRntBD3ej5tNTPqEAhHtzCNf2b6oiy0GYVSiT_qGTY8",
+      "domain": "www.google.com",
+      "path": "/recaptcha",
+      "expires": 1782949535.747283,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "_ga",
+      "value": "GA1.1.1170155517.1767397533",
+      "domain": ".feedspot.com",
+      "path": "/",
+      "expires": 1801957579.58525,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "PHPSESSID",
+      "value": "lf007hqr0jnq6ic3s04ejqt1j3",
+      "domain": ".www.feedspot.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "wcsid",
+      "value": "VjoQnwuydbspapEl9P7JD0VrCka0BA60",
+      "domain": "www.feedspot.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Strict"
+    },
+    {
+      "name": "hblid",
+      "value": "HlDraqocLKwQsZ239P7JD0V0aA6jbo6B",
+      "domain": "www.feedspot.com",
+      "path": "/",
+      "expires": 1801957537.17076,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Strict"
+    },
+    {
+      "name": "_oklv",
+      "value": "1767397536905%2CVjoQnwuydbspapEl9P7JD0VrCka0BA60",
+      "domain": "www.feedspot.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Strict"
+    },
+    {
+      "name": "_okdetect",
+      "value": "%7B%22token%22%3A%2217673975369650%22%2C%22proto%22%3A%22about%3A%22%2C%22host%22%3A%22%22%7D",
+      "domain": "www.feedspot.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Strict"
+    },
+    {
+      "name": "olfsk",
+      "value": "olfsk3503502071172846",
+      "domain": "www.feedspot.com",
+      "path": "/",
+      "expires": 1801957537.159368,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Strict"
+    },
+    {
+      "name": "_okbk",
+      "value": "cd4%3Dtrue%2Cvi5%3D0%2Cvi4%3D1767397537166%2Cvi3%3Dactive%2Cvi2%3Dfalse%2Cvi1%3Dfalse%2Ccd8%3Dchat%2Ccd6%3D0%2Ccd5%3Daway%2Ccd3%3Dfalse%2Ccd2%3D0%2Ccd1%3D0%2C",
+      "domain": "www.feedspot.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Strict"
+    },
+    {
+      "name": "_ok",
+      "value": "1438-138-10-7259",
+      "domain": "www.feedspot.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Strict"
+    },
+    {
+      "name": "OTZ",
+      "value": "8418226_80_80_104160_76_446820",
+      "domain": "accounts.google.com",
+      "path": "/",
+      "expires": 1769989537,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "NID",
+      "value": "527=qwSW9s9kfbWIQkU6svwRt37RqABp93jptFbD8c8iNnNetv1w1t9fv7vqZ5IRCcY8iQ-6M6I69niuQ4H87K2qrPed_sb4n_h4b_VqHY0hxFPQBv5FHnPBkd-5--Y2adv3R7ulWPsqOMDa7a1-UzHW7qlL3hF_GVsvYVXSFxynGBHyFrJKfofhwoasTTop03ZHn28e9STpZmmIFSnLByMbD9-xMA7dw3Jao7xHnOZE_7IDtIoCtw0sTb5BJ4ISmVBTxSvLNCf41HrHPwOn3JNSoGHvyqQHaeAjw6LciuHWh6U1xqFK-uGmyTVhjALY64pg-TTKreEckrC9_PvPdx8NagAbPrqBTHt2Uo-AG8BZVvCWAaQSpeiKg0EuKlEdGJnBDUFc9xlhAPAB83-et9zffqBVYzOu7Z8Lx5zJjzsz5-dE-sZu_X0JGRW__h_VdBx5X5_ITFAW8aHxqMJ3BKJX4rrL4Q-lzsaG4T8pIxLWxb8dHsmCAQ3pbyRTxeplWsmc9N4uq1uzLeNXC_3EEygirIWHCtQWARaO1j36qUVmsunrkjUnEuLKkKk46HpnBijsCsoyDY_dG9iGJaXgi6kYUeUKMvL9FNNbYSOiZuIiWI1YJSdTOchfVaID1l2HElMNdYfASi3STdodQNvkS2mSRoqAOMY",
+      "domain": ".google.com",
+      "path": "/",
+      "expires": 1783208737.687555,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "SID",
+      "value": "g.a0005Qg-lQ9aZAEip8olGnEPBD1yNgcyKaUKiEP-aiccp8ydsliVIcl-9bqU5r7fdVZYuzbujAACgYKAbUSARYSFQHGX2MiL8_6YMLxc-wsBaOP35c3uRoVAUF8yKpHAlX44k92_Ojk7WwQCswL0076",
+      "domain": ".google.com",
+      "path": "/",
+      "expires": 1801957578.687673,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "__Secure-1PSID",
+      "value": "g.a0005Qg-lQ9aZAEip8olGnEPBD1yNgcyKaUKiEP-aiccp8ydsliVG1eVwGkKuP3LhkkDFjOzPAACgYKASoSARYSFQHGX2Mid165SdiehhKvhn3573aOrhoVAUF8yKo_NNrmquoQ1ZLCQDjM_rNy0076",
+      "domain": ".google.com",
+      "path": "/",
+      "expires": 1801957578.687706,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "__Secure-3PSID",
+      "value": "g.a0005Qg-lQ9aZAEip8olGnEPBD1yNgcyKaUKiEP-aiccp8ydsliVJja0ivZDXJSTmsN2D0xHdwACgYKATMSARYSFQHGX2MiwuOeo4o_mbFUnCiIZ3V5aBoVAUF8yKoMsjW-04EXSI9qp4RbStqT0076",
+      "domain": ".google.com",
+      "path": "/",
+      "expires": 1801957578.687734,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "HSID",
+      "value": "ApvXciBPFwQfGlmVO",
+      "domain": ".google.com",
+      "path": "/",
+      "expires": 1801957578.687824,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "SSID",
+      "value": "AFxYwiUtFs1B_ol8X",
+      "domain": ".google.com",
+      "path": "/",
+      "expires": 1801957578.687851,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "APISID",
+      "value": "0j9JFzELbWkJXxi3/Apauu6j3S__oZQFvt",
+      "domain": ".google.com",
+      "path": "/",
+      "expires": 1801957578.687877,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "SAPISID",
+      "value": "Sgy0tc95paQObFUq/AAJboB6_z8zEpAZMH",
+      "domain": ".google.com",
+      "path": "/",
+      "expires": 1801957578.687903,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "__Secure-1PAPISID",
+      "value": "Sgy0tc95paQObFUq/AAJboB6_z8zEpAZMH",
+      "domain": ".google.com",
+      "path": "/",
+      "expires": 1801957578.687929,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "__Secure-3PAPISID",
+      "value": "Sgy0tc95paQObFUq/AAJboB6_z8zEpAZMH",
+      "domain": ".google.com",
+      "path": "/",
+      "expires": 1801957578.687955,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "__Host-GAPS",
+      "value": "1:BUCjIUlhj3dGECm8Bp5AQ8n1i6MTHba8G-AQzdiW2f_XbC4z9ZL9Iw3XbRmy9iVt8kE0zXjK7tjWj5uhbSRrA7A19I_ANg:6ySV3vv-3zzsjpBj",
+      "domain": "accounts.google.com",
+      "path": "/",
+      "expires": 1801957578.688,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "LSID",
+      "value": "s.youtube:g.a0005Qg-laN8fs_J29lvT23Zbkz-S8mslSOrvieUDm3N3wbNTz4DlZ6FNk2tM9DJ7RhQ976GJgACgYKAQUSARYSFQHGX2MiWBJcyN_0n6BpYEC4n6T1hRoVAUF8yKp_9-umldMl7476WApj5Uf40076",
+      "domain": "accounts.google.com",
+      "path": "/",
+      "expires": 1801957578.737836,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "__Host-1PLSID",
+      "value": "s.youtube:g.a0005Qg-laN8fs_J29lvT23Zbkz-S8mslSOrvieUDm3N3wbNTz4D-PP6jDeGWDwjqCX8oX8lwwACgYKAcoSARYSFQHGX2MikEPxvbOlmOw_HLpNkprybBoVAUF8yKrGGReBRcfvPYFmxgQ25mL60076",
+      "domain": "accounts.google.com",
+      "path": "/",
+      "expires": 1801957578.737921,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "__Host-3PLSID",
+      "value": "s.youtube:g.a0005Qg-laN8fs_J29lvT23Zbkz-S8mslSOrvieUDm3N3wbNTz4DomBsR-nh8vBxSjFg-UpNCQACgYKAVESARYSFQHGX2MiLD41r19TKX2k3dwfQacMPBoVAUF8yKosQ8zWyA7UK8TrbaAuvgOX0076",
+      "domain": "accounts.google.com",
+      "path": "/",
+      "expires": 1801957578.737961,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "ACCOUNT_CHOOSER",
+      "value": "AFx_qI5S0rXFYv81_29Qjv_3eM9LCm5rcYq-INaBHuXpMOvtM1FjNSr_Z8lz_-aBd1PGGtkx56-iEo0VkBCvFVt4zLBg6ebgfLqdiElg3_cNkCLK8A3v4IRcE0j4xBmXtdGXjVYdG4Ax1Tf7v56o9obbLJ4EMceV0g",
+      "domain": "accounts.google.com",
+      "path": "/",
+      "expires": 1801957578.737998,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "__Secure-1PSIDTS",
+      "value": "sidts-CjQBflaCdewwNChIn88qrHd-UbfRkgU8saMih82APfeuUFifAh0ivmWBLfVmAh7vaHhDsQToEAA",
+      "domain": ".youtube.com",
+      "path": "/",
+      "expires": 1798933578.806199,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "__Secure-3PSIDTS",
+      "value": "sidts-CjQBflaCdewwNChIn88qrHd-UbfRkgU8saMih82APfeuUFifAh0ivmWBLfVmAh7vaHhDsQToEAA",
+      "domain": ".youtube.com",
+      "path": "/",
+      "expires": 1798933578.806265,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "HSID",
+      "value": "AXxAXppvy9QNLK5SZ",
+      "domain": ".youtube.com",
+      "path": "/",
+      "expires": 1801957578.806283,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "SSID",
+      "value": "AAv5NeS4yDlfV8CA8",
+      "domain": ".youtube.com",
+      "path": "/",
+      "expires": 1801957578.8063,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "APISID",
+      "value": "0j9JFzELbWkJXxi3/Apauu6j3S__oZQFvt",
+      "domain": ".youtube.com",
+      "path": "/",
+      "expires": 1801957578.806314,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "SAPISID",
+      "value": "Sgy0tc95paQObFUq/AAJboB6_z8zEpAZMH",
+      "domain": ".youtube.com",
+      "path": "/",
+      "expires": 1801957578.80633,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "__Secure-1PAPISID",
+      "value": "Sgy0tc95paQObFUq/AAJboB6_z8zEpAZMH",
+      "domain": ".youtube.com",
+      "path": "/",
+      "expires": 1801957578.806344,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "__Secure-3PAPISID",
+      "value": "Sgy0tc95paQObFUq/AAJboB6_z8zEpAZMH",
+      "domain": ".youtube.com",
+      "path": "/",
+      "expires": 1801957578.806357,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "SID",
+      "value": "g.a0005Qg-lQ9aZAEip8olGnEPBD1yNgcyKaUKiEP-aiccp8ydsliVIcl-9bqU5r7fdVZYuzbujAACgYKAbUSARYSFQHGX2MiL8_6YMLxc-wsBaOP35c3uRoVAUF8yKpHAlX44k92_Ojk7WwQCswL0076",
+      "domain": ".youtube.com",
+      "path": "/",
+      "expires": 1801957578.806371,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "__Secure-1PSID",
+      "value": "g.a0005Qg-lQ9aZAEip8olGnEPBD1yNgcyKaUKiEP-aiccp8ydsliVG1eVwGkKuP3LhkkDFjOzPAACgYKASoSARYSFQHGX2Mid165SdiehhKvhn3573aOrhoVAUF8yKo_NNrmquoQ1ZLCQDjM_rNy0076",
+      "domain": ".youtube.com",
+      "path": "/",
+      "expires": 1801957578.806386,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "__Secure-3PSID",
+      "value": "g.a0005Qg-lQ9aZAEip8olGnEPBD1yNgcyKaUKiEP-aiccp8ydsliVJja0ivZDXJSTmsN2D0xHdwACgYKATMSARYSFQHGX2MiwuOeo4o_mbFUnCiIZ3V5aBoVAUF8yKoMsjW-04EXSI9qp4RbStqT0076",
+      "domain": ".youtube.com",
+      "path": "/",
+      "expires": 1801957578.806401,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "g_state",
+      "value": "{\"i_l\":0,\"i_ll\":1767397536626}",
+      "domain": ".feedspot.com",
+      "path": "/",
+      "expires": 1782949579,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "g_csrf_token",
+      "value": "272b0f35a32dd8b9",
+      "domain": "www.feedspot.com",
+      "path": "/",
+      "expires": 1767397879,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "SIDCC",
+      "value": "AKEyXzXaY38tgD-YRaXNTBxY1U8oFcJs7MaEI2IBTuVFQ0bPG0P0Up9FS2blMHl4grX5sUEDOA",
+      "domain": ".google.com",
+      "path": "/",
+      "expires": 1798933579.260526,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "__Secure-1PSIDCC",
+      "value": "AKEyXzW7GXZhMdiEZaNHm0Jw93Dp9d5vGSdkorHc4YNHoVHdiJtlfpJLSVPVra3KThojnJDz",
+      "domain": ".google.com",
+      "path": "/",
+      "expires": 1798933579.260656,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "__Secure-3PSIDCC",
+      "value": "AKEyXzVdHhYi9PdULauL4b4hNLn_0zs_fQLA3t-vU8oLiV70eyy8UCI_Tsz9JgL-WRsjluQw",
+      "domain": ".google.com",
+      "path": "/",
+      "expires": 1798933579.26074,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "fsblog_src",
+      "value": "home_gp",
+      "domain": ".feedspot.com",
+      "path": "/",
+      "expires": 1767401179.489679,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "cookname",
+      "value": "5kPE5XI7FOpH6eEd",
+      "domain": ".feedspot.com",
+      "path": "/",
+      "expires": 1801957579.489697,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "cookid",
+      "value": "E0XJ42Ia5uweF%2Boc1McXyxEbxrZeTeXqS%2BnnSdvOGdA%3D",
+      "domain": ".feedspot.com",
+      "path": "/",
+      "expires": 1801957579.48971,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_v",
+      "value": "1",
+      "domain": ".feedspot.com",
+      "path": "/",
+      "expires": 1801957579.489726,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "fsps:1",
+      "value": "1",
+      "domain": ".feedspot.com",
+      "path": "/",
+      "expires": 1801957579.489738,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "fspt",
+      "value": "300",
+      "domain": ".feedspot.com",
+      "path": "/",
+      "expires": 1801957579.489751,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_ga_RFC7MZ90X3",
+      "value": "GS2.1.s1767397532$o1$g1$t1767397582$j10$l0$h0",
+      "domain": ".feedspot.com",
+      "path": "/",
+      "expires": 1801957582.766042,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "m",
+      "value": "60516985-f1db-4ff8-89a2-2240490d87e906a457",
+      "domain": "m.stripe.com",
+      "path": "/",
+      "expires": 1801957583.445595,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "__stripe_mid",
+      "value": "8b447296-04dc-4440-9e20-9575c35e1a7a296186",
+      "domain": ".www.feedspot.com",
+      "path": "/",
+      "expires": 1798933583,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "Strict"
+    },
+    {
+      "name": "__stripe_sid",
+      "value": "b65f1e26-7e78-4bb8-a840-5425642dc12c31f651",
+      "domain": ".www.feedspot.com",
+      "path": "/",
+      "expires": 1767399383,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "Strict"
+    }
+  ],
+  "origins": [
+    {
+      "origin": "https://www.feedspot.com",
+      "localStorage": [
+        {
+          "name": "_okdetect",
+          "value": "{\"token\":\"17673975369650\",\"proto\":\"about:\",\"host\":\"\"}"
+        },
+        {
+          "name": "NRBA_SESSION",
+          "value": "{\"value\":\"3129ad8b0c3512cc\",\"inactiveAt\":1767399335454,\"expiresAt\":1767411935454,\"updatedAt\":1767397579544,\"sessionReplayMode\":0,\"sessionReplaySentFirstChunk\":false,\"sessionTraceMode\":0,\"traceHarvestStarted\":false,\"loggingMode\":2,\"logApiMode\":2,\"serverTimeDiff\":-31,\"custom\":{},\"numOfResets\":0,\"consent\":false}"
+        },
+        {
+          "name": "_grecaptcha",
+          "value": "09ABCLyOHp7_UymAvsQv61UmsvSwyJFTX0LKlNDwf_gcAxIzRnaX8UKoU2-iKHDLak931D2ikzeOFriuJoUZmmu7glupn4em91t-w819AL8cRyPBaJUQCGZN64CrJ0FMJv"
+        }
+      ]
+    },
+    {
+      "origin": "https://www.google.com",
+      "localStorage": [
+        {
+          "name": "rc::a",
+          "value": "eGJnOXBhYnd5djc4"
+        },
+        {
+          "name": "rc::f",
+          "value": "0aAKJk-4BAJb1hxmFgKbVPYVfyO5Hh5OyC_XRefSLDOo5hWxFbGHZK45a8CHkOts9EwrpTVGY"
+        }
+      ]
+    },
+    {
+      "origin": "https://static.olark.com",
+      "localStorage": [
+        {
+          "name": "olark/HlDraqocLKwQsZ239P7JD0V0aA6jbo6B/reduxPersist:cobrowsing",
+          "value": "\"{\\\"visible\\\":false}\""
+        },
+        {
+          "name": "olark/HlDraqocLKwQsZ239P7JD0V0aA6jbo6B/reduxPersist:feedback",
+          "value": "\"{\\\"enabled\\\":false,\\\"visible\\\":false,\\\"questions\\\":[{\\\"question\\\":\\\"chat\\\",\\\"type\\\":\\\"radio\\\",\\\"lowAnswerText\\\":\\\"Not at all satisfied\\\",\\\"highAnswerText\\\":\\\"Extremely satisfied\\\",\\\"choices\\\":[1,2,3,4,5],\\\"questionText\\\":\\\"How satisfied were you with this chat?\\\",\\\"isAnswerOptional\\\":true},{\\\"question\\\":\\\"operator_intelligence\\\",\\\"type\\\":\\\"radio\\\",\\\"lowAnswerText\\\":\\\"Not at all knowledgeable\\\",\\\"highAnswerText\\\":\\\"Extremely knowledgeable\\\",\\\"choices\\\":[1,2,3,4,5],\\\"questionText\\\":\\\"How knowledgeable was the chat agent?\\\",\\\"isAnswerOptional\\\":true},{\\\"question\\\":\\\"operator_speed\\\",\\\"type\\\":\\\"radio\\\",\\\"choices\\\":[1,2,3,4,5],\\\"lowAnswerText\\\":\\\"Not at all responsive\\\",\\\"highAnswerText\\\":\\\"Extremely responsive\\\",\\\"questionText\\\":\\\"How responsive was the chat agent?\\\",\\\"isAnswerOptional\\\":true},{\\\"question\\\":\\\"operator_attitude\\\",\\\"type\\\":\\\"radio\\\",\\\"lowAnswerText\\\":\\\"Not at all friendly\\\",\\\"highAnswerText\\\":\\\"Extremely friendly\\\",\\\"choices\\\":[1,2,3,4,5],\\\"questionText\\\":\\\"How friendly was the chat agent?\\\",\\\"isAnswerOptional\\\":true},{\\\"question\\\":\\\"additional_feedback\\\",\\\"type\\\":\\\"textarea\\\",\\\"questionText\\\":\\\"Additional Feedback.\\\",\\\"answer\\\":\\\"\\\",\\\"isAnswerOptional\\\":true}],\\\"activeIndex\\\":0,\\\"activeQuestion\\\":{\\\"question\\\":\\\"chat\\\",\\\"type\\\":\\\"radio\\\",\\\"lowAnswerText\\\":\\\"Not at all satisfied\\\",\\\"highAnswerText\\\":\\\"Extremely satisfied\\\",\\\"choices\\\":[1,2,3,4,5],\\\"questionText\\\":\\\"How satisfied were you with this chat?\\\",\\\"isAnswerOptional\\\":true},\\\"mostRecentValue\\\":{\\\"value\\\":null,\\\"index\\\":-1},\\\"isComplete\\\":false}\""
+        },
+        {
+          "name": "__framestore__.index",
+          "value": "{\"olfsk3503502071172846\":1767397573296}"
+        },
+        {
+          "name": "olark/HlDraqocLKwQsZ239P7JD0V0aA6jbo6B/reduxPersist:offlineMessage",
+          "value": "\"{\\\"visible\\\":false,\\\"sent\\\":false,\\\"hasError\\\":false,\\\"bodyField\\\":{\\\"value\\\":\\\"\\\",\\\"valid\\\":true},\\\"nameField\\\":{\\\"value\\\":null,\\\"valid\\\":true,\\\"field\\\":\\\"name\\\"},\\\"emailField\\\":{\\\"value\\\":null,\\\"valid\\\":true,\\\"field\\\":\\\"email\\\"},\\\"phoneField\\\":{\\\"visible\\\":false,\\\"required\\\":false,\\\"value\\\":null,\\\"valid\\\":true,\\\"field\\\":\\\"phone\\\"}}\""
+        },
+        {
+          "name": "olark/HlDraqocLKwQsZ239P7JD0V0aA6jbo6B/reduxPersist:prechatSurvey",
+          "value": "\"{\\\"welcomeMsgOverride\\\":null,\\\"visible\\\":false,\\\"sent\\\":false,\\\"hasError\\\":false,\\\"error\\\":{\\\"isSet\\\":false,\\\"page\\\":null,\\\"item\\\":null},\\\"formData\\\":[],\\\"activePage\\\":0,\\\"activeConversationId\\\":null}\""
+        },
+        {
+          "name": "olark/HlDraqocLKwQsZ239P7JD0V0aA6jbo6B/reduxPersist:attentionGrabber",
+          "value": "\"{\\\"enabled\\\":false,\\\"visible\\\":true,\\\"slide\\\":false,\\\"url\\\":\\\"\\\",\\\"offlineUrl\\\":\\\"\\\"}\""
+        },
+        {
+          "name": "olark/HlDraqocLKwQsZ239P7JD0V0aA6jbo6B/reduxPersist:conversation",
+          "value": "\"{\\\"storeKey\\\":\\\"VjoQnwuydbspapEl9P7JD0VrCka0BA601438138107259\\\",\\\"id\\\":\\\"VjoQnwuydbspapEl9P7JD0VrCka0BA60\\\",\\\"visitorId\\\":\\\"HlDraqocLKwQsZ239P7JD0V0aA6jbo6B\\\",\\\"unreadMessageCount\\\":0,\\\"isChatting\\\":false,\\\"isEnded\\\":false,\\\"isComposing\\\":false,\\\"composingAvatar\\\":\\\"\\\",\\\"composingOperator\\\":\\\"\\\",\\\"operatorHasSentMsg\\\":false,\\\"visitorHasSentMsg\\\":false,\\\"visitorComposing\\\":\\\"inactive\\\",\\\"messages\\\":[],\\\"fileUploadData\\\":{\\\"status\\\":\\\"empty\\\",\\\"previewType\\\":null,\\\"previewIsBeingRead\\\":false,\\\"previewFileName\\\":\\\"\\\",\\\"previewHeight\\\":0}}\""
+        },
+        {
+          "name": "olark/HlDraqocLKwQsZ239P7JD0V0aA6jbo6B/reduxPersist:chatbox",
+          "value": "\"{\\\"imageModalExpanded\\\":false,\\\"imageModalURL\\\":\\\"\\\",\\\"isRefreshing\\\":false,\\\"defaultLocale\\\":\\\"en-US\\\",\\\"locale\\\":\\\"en-US\\\",\\\"localizations\\\":{\\\"_meta\\\":{\\\"locale\\\":\\\"en-US\\\",\\\"name\\\":\\\"English (United States)\\\",\\\"rightToLeft\\\":false},\\\"before_chat_text\\\":\\\"Chat with us!\\\",\\\"in_chat_text\\\":\\\"Now Chatting\\\",\\\"not_available_text\\\":\\\"Contact us!\\\",\\\"operator_is_typing_text\\\":\\\"is typing...\\\",\\\"operator_has_stopped_typing_text\\\":\\\"has stopped typing\\\",\\\"online_header_text\\\":\\\"Now Chatting\\\",\\\"offline_header_text\\\":\\\"Contact us!\\\",\\\"online_button_text\\\":\\\"Chat with us\\\",\\\"offline_button_text\\\":\\\"Contact us!\\\",\\\"welcome_msg\\\":\\\"Questions? We'd love to chat!\\\",\\\"ended_chat_message\\\":\\\"This chat has ended, start typing below if you need anything else!\\\",\\\"say_text\\\":\\\"Type here and hit enter to chat\\\",\\\"habla_name_input_text\\\":\\\"click here and type your Name\\\",\\\"habla_offline_body_text\\\":\\\"We're not around but we still want to hear from you!  Leave us a note:\\\",\\\"habla_offline_submit_value\\\":\\\"Send\\\",\\\"email_body_error_text\\\":\\\"You must complete all fields and specify a valid email address\\\",\\\"habla_offline_email_text\\\":\\\"click here and type your Email\\\",\\\"habla_offline_phone_text\\\":\\\"click here and type your Phone\\\",\\\"habla_offline_sent_text\\\":\\\"Thanks for your message!  We'll get back to you shortly.\\\",\\\"offline_message\\\":\\\"We're not around, but we'd love to chat another time.\\\",\\\"pre_chat_message\\\":\\\"Hi, I am around, click 'start chatting' to contact me.\\\",\\\"pre_chat_submit\\\":\\\"Click here to start chatting\\\",\\\"pre_chat_error_text\\\":\\\"Please enter your name and email in case we get disconnected.\\\",\\\"feedback_survey_button_finish\\\":\\\"Finish\\\",\\\"feedback_survey_button_next\\\":\\\"Next\\\",\\\"feedback_survey_button_submitting\\\":\\\"Submitting\\\",\\\"feedback_survey_end_message\\\":\\\"Thank you for your feedback :)\\\",\\\"feedback_survey_question_1_text\\\":\\\"Question 1 of 5\\\",\\\"feedback_survey_question_2_text\\\":\\\"Question 2 of 5\\\",\\\"feedback_survey_question_3_text\\\":\\\"Question 3 of 5\\\",\\\"feedback_survey_question_4_text\\\":\\\"Question 4 of 5\\\",\\\"feedback_survey_question_5_text\\\":\\\"Question 5 of 5\\\",\\\"feedback_survey_question_additional_feedback_text\\\":\\\"Additional Feedback.\\\",\\\"feedback_survey_question_additional_feedback_placeholder\\\":\\\"Type message here\\\",\\\"feedback_survey_question_chat_high\\\":\\\"Extremely satisfied\\\",\\\"feedback_survey_question_chat_low\\\":\\\"Not at all satisfied\\\",\\\"feedback_survey_question_chat_text\\\":\\\"How satisfied were you with this chat?\\\",\\\"feedback_survey_question_operator_attitude_high\\\":\\\"Extremely friendly\\\",\\\"feedback_survey_question_operator_attitude_low\\\":\\\"Not at all friendly\\\",\\\"feedback_survey_question_operator_attitude_text\\\":\\\"How friendly was the chat agent?\\\",\\\"feedback_survey_question_operator_intelligence_high\\\":\\\"Extremely knowledgeable\\\",\\\"feedback_survey_question_operator_intelligence_low\\\":\\\"Not at all knowledgeable\\\",\\\"feedback_survey_question_operator_intelligence_text\\\":\\\"How knowledgeable was the chat agent?\\\",\\\"feedback_survey_question_operator_speed_high\\\":\\\"Extremely responsive\\\",\\\"feedback_survey_question_operator_speed_low\\\":\\\"Not at all responsive\\\",\\\"feedback_survey_question_operator_speed_text\\\":\\\"How responsive was the chat agent?\\\",\\\"feedback_survey_submission_error_message\\\":\\\"There was an error submitting your answer, please try again.\\\",\\\"feedback_survey_begin_button_text\\\":\\\"Rate Chat\\\",\\\"feedback_survey_complete_button_text\\\":\\\"Feedback Sent\\\",\\\"feedback_survey_cancel_text\\\":\\\"Cancel\\\",\\\"send_transcript_title_text\\\":\\\"Send Transcript\\\",\\\"send_transcript_begin_button_text\\\":\\\"Send Transcript\\\",\\\"send_transcript_complete_button_text\\\":\\\"Transcript Sent\\\",\\\"send_transcript_error_text\\\":\\\"Please enter a valid email address\\\",\\\"send_transcript_cancel_text\\\":\\\"No Thanks\\\",\\\"send_transcript_placeholder\\\":\\\"Email\\\",\\\"end_chat_button_text\\\":\\\"End Chat\\\",\\\"restart_chat_online_button_text\\\":\\\"Start conversation\\\",\\\"restart_chat_offline_button_text\\\":\\\"Leave a message\\\",\\\"branding_link_text\\\":\\\"Powered by Olark\\\",\\\"branding_panel_cancel_text\\\":\\\"Go back\\\",\\\"branding_panel_link_text\\\":\\\"Try Olark on your site\\\",\\\"branding_panel_message_text\\\":\\\"10,000+ companies rely on Olark software to chat with customers directly.\\\",\\\"dismiss_message_text\\\":\\\"Dismiss\\\",\\\"upload_rejected_error_text\\\":\\\"File uploading is currently unavailable.\\\",\\\"processing_file_error_text\\\":\\\"There was a problem processing your file.\\\",\\\"file_size_error_text\\\":\\\"This file size is too large.\\\",\\\"file_type_error_text\\\":\\\"This file type is not allowed.\\\",\\\"visitor_id_error_text\\\":\\\"File uploading is currently unavailable.\\\",\\\"conversation_id_error_text\\\":\\\"File uploading is currently unavailable.\\\",\\\"generic_upload_error_text\\\":\\\"File uploading is currently unavailable.\\\",\\\"prechat_survey_submit_button_text\\\":\\\"Start chatting\\\",\\\"prechat_survey_next_button_text\\\":\\\"Next\\\",\\\"prechat_survey_welcome_message\\\":\\\"Hi! Let’s get some quick info so we can better serve you:\\\",\\\"prechat_survey_name_label\\\":\\\"Name\\\",\\\"prechat_survey_name_placeholder\\\":\\\"Enter your name...\\\",\\\"prechat_survey_email_label\\\":\\\"Email\\\",\\\"prechat_survey_email_placeholder\\\":\\\"Enter your email...\\\",\\\"prechat_survey_phone_label\\\":\\\"Phone\\\",\\\"prechat_survey_phone_placeholder\\\":\\\"Enter your phone number...\\\",\\\"prechat_survey_website_label\\\":\\\"Website\\\",\\\"prechat_survey_website_placeholder\\\":\\\"Enter your website...\\\",\\\"prechat_required_error_message\\\":\\\"Please complete all required fields\\\",\\\"prechat_email_validation_message\\\":\\\"Please enter a valid email address\\\",\\\"prechat_phone_validation_message\\\":\\\"Please enter a valid phone number\\\",\\\"prechat_website_validation_message\\\":\\\"Please enter a valid URL\\\",\\\"prechat_survey_required_fields\\\":\\\"* indicates a required field\\\",\\\"offline_survey_submit_button_text\\\":\\\"Send\\\",\\\"offline_survey_next_button_text\\\":\\\"Next\\\",\\\"offline_survey_thank_you_message\\\":\\\"Thanks for your message! We will have a member of our team contact you shortly.\\\",\\\"offline_survey_welcome_message\\\":\\\"We're not around but we still want to hear from you! Leave us a note:\\\",\\\"offline_survey_name_label\\\":\\\"Name\\\",\\\"offline_survey_name_placeholder\\\":\\\"Enter your name...\\\",\\\"offline_survey_email_label\\\":\\\"Email\\\",\\\"offline_survey_email_placeholder\\\":\\\"Enter your email...\\\",\\\"offline_survey_phone_label\\\":\\\"Phone\\\",\\\"offline_survey_phone_placeholder\\\":\\\"Enter your phone number...\\\",\\\"offline_survey_website_label\\\":\\\"Website\\\",\\\"offline_survey_website_placeholder\\\":\\\"Enter your website...\\\",\\\"offline_required_error_message\\\":\\\"Please complete all required fields\\\",\\\"offline_email_validation_message\\\":\\\"Please enter a valid email address\\\",\\\"offline_phone_validation_message\\\":\\\"Please enter a valid phone number\\\",\\\"offline_website_validation_message\\\":\\\"Please enter a valid URL\\\"},\\\"previewMode\\\":false,\\\"orientation\\\":\\\"portrait\\\",\\\"state\\\":\\\"minimized\\\",\\\"isShowing\\\":true,\\\"siteStatus\\\":\\\"offline\\\",\\\"config\\\":{\\\"systemConfig\\\":{\\\"right_to_left\\\":false,\\\"start_hidden\\\":0,\\\"hb_dark_theme\\\":false,\\\"hb_primary_color\\\":\\\"#007bff\\\",\\\"hb_show_as_tab\\\":false,\\\"hb_show_button_text\\\":true,\\\"hb_position\\\":\\\"right\\\",\\\"hb_disable_mobile\\\":false,\\\"hb_custom_style\\\":{\\\"general\\\":{\\\"corners\\\":\\\"soft\\\",\\\"secondaryColor\\\":null}},\\\"hb_chatbox_size\\\":\\\"md\\\",\\\"hb_enable_uploads\\\":true,\\\"box\\\":{\\\"inline\\\":false},\\\"locale\\\":{},\\\"default_localization\\\":\\\"en-US\\\",\\\"branding\\\":\\\"powered_by\\\",\\\"show_pre_chat\\\":0,\\\"offline_msg_mode\\\":1,\\\"Sounds\\\":{\\\"enabled\\\":true}},\\\"systemStrings\\\":{\\\"online_header_text\\\":\\\"Now Chatting\\\",\\\"offline_header_text\\\":\\\"Contact us!\\\",\\\"before_chat_text\\\":\\\"Chat with us!\\\",\\\"in_chat_text\\\":\\\"Now Chatting\\\",\\\"not_available_text\\\":\\\"Contact us!\\\",\\\"operator_is_typing_text\\\":\\\"is typing...\\\",\\\"operator_has_stopped_typing_text\\\":\\\"has stopped typing\\\",\\\"online_button_text\\\":\\\"Chat with us\\\",\\\"offline_button_text\\\":\\\"Contact us!\\\",\\\"welcome_msg\\\":\\\"Questions? We'd love to chat!\\\",\\\"ended_chat_message\\\":\\\"This chat has ended, start typing below if you need anything else!\\\",\\\"say_text\\\":\\\"Type here and hit enter to chat\\\",\\\"habla_name_input_text\\\":\\\"click here and type your Name\\\",\\\"habla_offline_body_text\\\":\\\"We're not around but we still want to hear from you!  Leave us a note:\\\",\\\"habla_offline_submit_value\\\":\\\"Send\\\",\\\"email_body_error_text\\\":\\\"You must complete all fields and specify a valid email address\\\",\\\"habla_offline_email_text\\\":\\\"click here and type your Email\\\",\\\"habla_offline_phone_text\\\":\\\"click here and type your Phone\\\",\\\"habla_offline_sent_text\\\":\\\"Thanks for your message!  We'll get back to you shortly.\\\",\\\"offline_message\\\":\\\"We're not around, but we'd love to chat another time.\\\",\\\"pre_chat_message\\\":\\\"Hi, I am around, click 'start chatting' to contact me.\\\",\\\"pre_chat_submit\\\":\\\"Click here to start chatting\\\",\\\"pre_chat_error_text\\\":\\\"Please enter your name and email in case we get disconnected.\\\",\\\"feedback_survey_button_finish\\\":\\\"Finish\\\",\\\"feedback_survey_button_next\\\":\\\"Next\\\",\\\"feedback_survey_button_submitting\\\":\\\"Submitting\\\",\\\"feedback_survey_end_message\\\":\\\"Thank you for your feedback :)\\\",\\\"feedback_survey_question_1_text\\\":\\\"Question 1 of 5\\\",\\\"feedback_survey_question_2_text\\\":\\\"Question 2 of 5\\\",\\\"feedback_survey_question_3_text\\\":\\\"Question 3 of 5\\\",\\\"feedback_survey_question_4_text\\\":\\\"Question 4 of 5\\\",\\\"feedback_survey_question_5_text\\\":\\\"Question 5 of 5\\\",\\\"feedback_survey_question_additional_feedback_text\\\":\\\"Additional Feedback.\\\",\\\"feedback_survey_question_chat_high\\\":\\\"Extremely satisfied\\\",\\\"feedback_survey_question_chat_low\\\":\\\"Not at all satisfied\\\",\\\"feedback_survey_question_chat_text\\\":\\\"How satisfied were you with this chat?\\\",\\\"feedback_survey_question_operator_attitude_high\\\":\\\"Extremely friendly\\\",\\\"feedback_survey_question_operator_attitude_low\\\":\\\"Not at all friendly\\\",\\\"feedback_survey_question_operator_attitude_text\\\":\\\"How friendly was the chat agent?\\\",\\\"feedback_survey_question_operator_intelligence_high\\\":\\\"Extremely knowledgeable\\\",\\\"feedback_survey_question_operator_intelligence_low\\\":\\\"Not at all knowledgeable\\\",\\\"feedback_survey_question_operator_intelligence_text\\\":\\\"How knowledgeable was the chat agent?\\\",\\\"feedback_survey_question_operator_speed_high\\\":\\\"Extremely responsive\\\",\\\"feedback_survey_question_operator_speed_low\\\":\\\"Not at all responsive\\\",\\\"feedback_survey_question_operator_speed_text\\\":\\\"How responsive was the chat agent?\\\",\\\"feedback_survey_submission_error_message\\\":\\\"There was an error submitting your answer, please try again.\\\",\\\"feedback_survey_begin_button_text\\\":\\\"Rate Chat\\\",\\\"feedback_survey_complete_button_text\\\":\\\"Feedback Sent\\\",\\\"feedback_survey_cancel_text\\\":\\\"Cancel\\\",\\\"send_transcript_title_text\\\":\\\"Send Transcript\\\",\\\"send_transcript_begin_button_text\\\":\\\"Send Transcript\\\",\\\"send_transcript_complete_button_text\\\":\\\"Transcript Sent\\\",\\\"send_transcript_error_text\\\":\\\"Please enter a valid email address\\\",\\\"send_transcript_cancel_text\\\":\\\"No Thanks\\\",\\\"send_transcript_placeholder\\\":\\\"Email\\\",\\\"end_chat_button_text\\\":\\\"End Chat\\\",\\\"restart_chat_online_button_text\\\":\\\"Start conversation\\\",\\\"restart_chat_offline_button_text\\\":\\\"Leave a message\\\",\\\"branding_link_text\\\":\\\"Powered by Olark\\\",\\\"branding_panel_cancel_text\\\":\\\"Go back\\\",\\\"branding_panel_link_text\\\":\\\"Try Olark on your site\\\",\\\"branding_panel_message_text\\\":\\\"10,000+ companies rely on Olark software to chat with customers directly.\\\",\\\"dismiss_message_text\\\":\\\"Dismiss\\\",\\\"upload_rejected_error_text\\\":\\\"File uploading is currently unavailable.\\\",\\\"processing_file_error_text\\\":\\\"There was a problem processing your file.\\\",\\\"file_size_error_text\\\":\\\"This file size is too large.\\\",\\\"file_type_error_text\\\":\\\"This file type is not allowed.\\\",\\\"visitor_id_error_text\\\":\\\"File uploading is currently unavailable.\\\",\\\"conversation_id_error_text\\\":\\\"File uploading is currently unavailable.\\\",\\\"generic_upload_error_text\\\":\\\"File uploading is currently unavailable.\\\",\\\"prechat_survey_submit_button_text\\\":\\\"Start chatting\\\",\\\"prechat_survey_next_button_text\\\":\\\"Next\\\",\\\"prechat_survey_welcome_message\\\":\\\"Hi! Let’s get some quick info so we can better serve you:\\\",\\\"prechat_survey_name_label\\\":\\\"Name\\\",\\\"prechat_survey_name_placeholder\\\":\\\"Enter your name...\\\",\\\"prechat_survey_email_label\\\":\\\"Email\\\",\\\"prechat_survey_email_placeholder\\\":\\\"Enter your email...\\\",\\\"prechat_survey_phone_label\\\":\\\"Phone\\\",\\\"prechat_survey_phone_placeholder\\\":\\\"Enter your phone number...\\\",\\\"prechat_survey_website_label\\\":\\\"Website\\\",\\\"prechat_survey_website_placeholder\\\":\\\"Enter your website...\\\",\\\"prechat_required_error_message\\\":\\\"Please complete all required fields\\\",\\\"prechat_email_validation_message\\\":\\\"Please enter a valid email address\\\",\\\"prechat_phone_validation_message\\\":\\\"Please enter a valid phone number\\\",\\\"prechat_website_validation_message\\\":\\\"Please enter a valid URL\\\",\\\"offline_survey_submit_button_text\\\":\\\"Send\\\",\\\"offline_survey_next_button_text\\\":\\\"Next\\\",\\\"offline_survey_thank_you_message\\\":\\\"Thanks for your message! We will have a member of our team contact you shortly.\\\",\\\"offline_survey_welcome_message\\\":\\\"We're not around but we still want to hear from you! Leave us a note:\\\",\\\"offline_survey_name_label\\\":\\\"Name\\\",\\\"offline_survey_name_placeholder\\\":\\\"Enter your name...\\\",\\\"offline_survey_email_label\\\":\\\"Email\\\",\\\"offline_survey_email_placeholder\\\":\\\"Enter your email...\\\",\\\"offline_survey_phone_label\\\":\\\"Phone\\\",\\\"offline_survey_phone_placeholder\\\":\\\"Enter your phone number...\\\",\\\"offline_survey_website_label\\\":\\\"Website\\\",\\\"offline_survey_website_placeholder\\\":\\\"Enter your website...\\\",\\\"offline_required_error_message\\\":\\\"Please complete all required fields\\\",\\\"offline_email_validation_message\\\":\\\"Please enter a valid email address\\\",\\\"offline_phone_validation_message\\\":\\\"Please enter a valid phone number\\\",\\\"offline_website_validation_message\\\":\\\"Please enter a valid URL\\\"},\\\"localeStrings\\\":{}},\\\"localeConfig\\\":{},\\\"connection\\\":{\\\"error\\\":false},\\\"chatButtonWasClicked\\\":false,\\\"announcementText\\\":\\\"\\\",\\\"announcements\\\":[],\\\"isFocused\\\":false,\\\"gdprConsentWasGiven\\\":false,\\\"message\\\":\\\"\\\"}\""
+        },
+        {
+          "name": "__framestore__.stores.olfsk3503502071172846",
+          "value": "{\"metadata\":{\"creator\":\"https://www.feedspot.com/\",\"lastUpdated\":1767397573297},\"data\":{\"csession\":{\"value\":{\"__chatd.last_incr_seq_id\":0,\"__chatd.last_leg_seq_id\":0,\"__chatd.is_conversing\":false,\"__chatd.hasconnected\":true,\"__chatd.data_history\":false,\"__chatd.last_op_presence\":\"away\",\"__chatd.last_cmd_seq_id\":0,\"__chatd.last_presence\":\"chat\",\"__chatd.is_connection_upgraded\":false,\"__chatd.is_ended\":false,\"__vis.inv\":false,\"__vis.vf\":{},\"__vis.dsn\":false,\"__vis.dse\":false,\"__vis.dsp\":false,\"__vis.ves\":true,\"__rul.dafc\":{},\"VisitorInsight.didGivePrechatInsight\":false,\"VisitorInsight.isConversation\":false,\"VisitorInsight.referrer\":\"https://www.feedspot.com/reader/\",\"VisitorInsight.locationNotificationState\":\"active\",\"VisitorInsight.locationNotifsWithoutConversing\":0,\"VisitorInsight.timestampOfLastActivity\":1767397537166,\"VisitorInsight.pagesCount\":1,\"VisitorInsight.visitorMessageCount\":0,\"VisitorInsight.operatorMessageCount\":0,\"VisitorInsight.operatorNotificationCount\":0,\"VisitorInsight.initialArrivalTimestamp\":1767397537166,\"__inline.lock\":false,\"__inline.isFirstBusyCommand\":true,\"__inline.close_hides_window\":false,\"__inline.hidden_for_visit\":false,\"__inline.auto_messages\":[],\"sessconn\":{\"BrowserApi::last_page_visited\":\"https://www.feedspot.com/?product=reader\",\"status_lookup\":{\"VisitorInsight\":{\"snippet\":\"looking at https://www.feedspot.com/?product=reader\\n| referred from https://www.feedspot.com/reader/\\n| located in {{geolocation}}\\n| 1 pages viewed\\n| first visit\\n| using Chrome 120.0 on Windows\\n| 47.185.211.27\\n| spent at least 30 seconds so far\"}},\"has_sent_initial_nickname\":true,\"default_nickname\":\"{{geolocation}} #5809\",\"previous_nickname\":\"[{\\\"v\\\":\\\"{{geolocation}} #5809\\\"}]\",\"has_sent_initial_status\":true,\"previous_status\":\"[{\\\"v\\\":\\\"{{nickname}}\\\"},{\\\"v\\\":\\\"looking at https://www.feedspot.com/?product=reader\\\\n| referred from https://www.feedspot.com/reader/\\\\n| located in {{geolocation}}\\\\n| 1 pages viewed\\\\n| first visit\\\\n| using Chrome 120.0 on Windows\\\\n| 47.185.211.27\\\\n| spent at least 30 seconds so far\\\"}]\"},\"__chatd.needs_prechat\":false},\"unix_timestamp\":1767397567441,\"expiration_in_milliseconds\":8640000,\"expiration_access_tag\":\"VjoQnwuydbspapEl9P7JD0VrCka0BA60\"},\"vsession\":{\"value\":{\"siteId\":\"1438-138-10-7259\",\"__vis.vs\":{\"pageCountAcrossAllVisits\":1,\"messageCountAcrossAllVisits\":0,\"conversationCount\":0,\"secondsSpentAcrossAllVisits\":36022,\"referredByCampaignEver\":false,\"referredByCampaignThisVisit\":false,\"referredByPaidAdvertisingEver\":false,\"referredByPaidAdvertisingThisVisit\":false,\"searchTextForThisVisit\":\"\",\"searchTextForPreviousVisits\":[],\"visitCount\":1},\"__api.visProvidedDetails\":{},\"__vis.rph\":[{\"title\":\"Feedspot - Read All Your Favorite Websites in one place\",\"url\":\"https://www.feedspot.com/?product=reader\",\"timestamp\":1767397537164}],\"__vis.vh\":[{\"didChat\":false,\"pageCount\":1,\"messageCount\":0,\"referrer\":\"https://www.feedspot.com/reader/\",\"url\":\"about:srcdoc\",\"createdAt\":1767397537165,\"updatedAt\":1767397573187}],\"__vis.imp\":0,\"__vis.nts\":[],\"__rul.dafv\":{},\"VisitorInsight.visitCount\":1,\"__inline.hidden_for_visitor\":false},\"unix_timestamp\":1767397573187,\"expiration_in_milliseconds\":31536000000,\"expiration_access_tag\":\"HlDraqocLKwQsZ239P7JD0V0aA6jbo6B\"}}}"
+        },
+        {
+          "name": "olark/HlDraqocLKwQsZ239P7JD0V0aA6jbo6B/reduxPersist:branding",
+          "value": "\"{\\\"visible\\\":true,\\\"panelVisible\\\":false,\\\"referrerId\\\":\\\"1438-138-10-7259\\\"}\""
+        },
+        {
+          "name": "olark/HlDraqocLKwQsZ239P7JD0V0aA6jbo6B/reduxPersist:sendTranscript",
+          "value": "\"{\\\"sent\\\":false,\\\"visible\\\":false,\\\"email\\\":\\\"\\\",\\\"emailValid\\\":false,\\\"hasError\\\":false}\""
+        },
+        {
+          "name": "olark/HlDraqocLKwQsZ239P7JD0V0aA6jbo6B/reduxPersist:offlineSurvey",
+          "value": "\"{\\\"visible\\\":true,\\\"sent\\\":false,\\\"hasError\\\":false,\\\"error\\\":{\\\"isSet\\\":false,\\\"page\\\":null,\\\"item\\\":null},\\\"formData\\\":[[{\\\"is_required\\\":true,\\\"type\\\":\\\"name\\\",\\\"value\\\":null},{\\\"is_required\\\":true,\\\"type\\\":\\\"email\\\",\\\"value\\\":null},{\\\"is_required\\\":true,\\\"label\\\":\\\"Message\\\",\\\"placeholder_text\\\":\\\"\\\",\\\"type\\\":\\\"textarea\\\",\\\"value\\\":null}]],\\\"activePage\\\":0}\""
+        },
+        {
+          "name": "olark/HlDraqocLKwQsZ239P7JD0V0aA6jbo6B/reduxPersist:tabIndex",
+          "value": "\"{\\\"chatButton\\\":0,\\\"minimizeChatButton\\\":-1,\\\"chatInput\\\":-1,\\\"sendChatButton\\\":-1,\\\"endChatButton\\\":-1,\\\"fileUploadButton\\\":-1,\\\"brandingLink\\\":-1,\\\"offlineMessageInput\\\":-1,\\\"preChatInput\\\":-1,\\\"feedbackForm\\\":-1,\\\"startConversationButton\\\":-1,\\\"feedButton\\\":-1,\\\"cancelSendTranscriptOrFeedbackButton\\\":-1}\""
+        },
+        {
+          "name": "olark/HlDraqocLKwQsZ239P7JD0V0aA6jbo6B/reduxPersist:prechat",
+          "value": "\"{\\\"visible\\\":false,\\\"sent\\\":false,\\\"hasError\\\":false,\\\"nameField\\\":{\\\"visible\\\":true,\\\"required\\\":true,\\\"value\\\":null,\\\"valid\\\":true,\\\"field\\\":\\\"name\\\"},\\\"emailField\\\":{\\\"visible\\\":true,\\\"required\\\":false,\\\"value\\\":null,\\\"valid\\\":true,\\\"field\\\":\\\"email\\\"},\\\"phoneField\\\":{\\\"visible\\\":false,\\\"required\\\":false,\\\"value\\\":null,\\\"valid\\\":true,\\\"field\\\":\\\"phone\\\"}}\""
+        }
+      ]
+    }
+  ]
+}

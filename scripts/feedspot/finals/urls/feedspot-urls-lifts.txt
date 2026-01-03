@@ -1,0 +1,33 @@
+# FeedSpot URLs to scrape
+# Add one URL per line
+# Lines starting with # are ignored
+
+https://www.feedspot.com/reader/fo/7957209/fe/5421296
+https://www.feedspot.com/reader/fo/7957209/fe/5421291
+https://www.feedspot.com/reader/fo/7957209/fe/5680819
+https://www.feedspot.com/reader/fo/7957209/fe/5421355
+https://www.feedspot.com/reader/fo/7957209/fe/5680820
+https://www.feedspot.com/reader/fo/7957209/fe/5421256
+https://www.feedspot.com/reader/fo/7957209/fe/5421527
+https://www.feedspot.com/reader/fo/7957209/fe/5601546
+https://www.feedspot.com/reader/fo/7957209/fe/5601547
+https://www.feedspot.com/reader/fo/7957209/fe/5421518
+https://www.feedspot.com/reader/fo/7957209/fe/5421276
+https://www.feedspot.com/reader/fo/7957209/fe/5601542
+https://www.feedspot.com/reader/fo/7957209/fe/5421633
+https://www.feedspot.com/reader/fo/7957209/fe/5421275
+https://www.feedspot.com/reader/fo/7957209/fe/5421277
+https://www.feedspot.com/reader/fo/7957209/fe/5421278
+https://www.feedspot.com/reader/fo/7957209/fe/5421526
+https://www.feedspot.com/reader/fo/7957209/fe/5421517
+https://www.feedspot.com/reader/fo/7957209/fe/5287501
+https://www.feedspot.com/reader/fo/7957209/fe/5422496
+https://www.feedspot.com/reader/fo/7957209/fe/5421533
+https://www.feedspot.com/reader/fo/7957209/fe/5422468
+https://www.feedspot.com/reader/fo/7957209/fe/5601543
+https://www.feedspot.com/reader/fo/7957209/fe/5422495
+https://www.feedspot.com/reader/fo/7957209/fe/5421283
+https://www.feedspot.com/reader/fo/7957209/fe/5419109
+https://www.feedspot.com/reader/fo/7957209/fe/5421521
+https://www.feedspot.com/reader/fo/7957209/fe/5421281
+https://www.feedspot.com/reader/fo/7957209/fe/5421295
