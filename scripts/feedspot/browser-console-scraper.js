@@ -36,7 +36,6 @@
 
   const result = {
     category: '', // Fill in manually
-    dinner_score: 10,
     enabled: true,
     feedspotFeedId,
     feedspotFolderId,

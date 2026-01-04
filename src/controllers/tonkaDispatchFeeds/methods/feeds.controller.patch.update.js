@@ -6,7 +6,6 @@ import {
   FEED_TIER,
   FEED_TIER_VALUES,
   FEED_UPDATE_FIELDS_VALUES,
-  FEED_VALIDATION,
 } from '../../../constants/tonkaDispatch.js';
 import TonkaDispatchRssLinks from '../../../models/tonkaDispatchRssLinks.model.js';
 import { logger } from '../../../utils/logger.js';
@@ -49,27 +48,6 @@ export async function updateFeed(req, res) {
       return res.status(400).json({
         code: FEED_ERROR_CODE.NO_UPDATE_FIELDS,
         message: 'No valid fields to update',
-        requestId: req.id,
-      });
-    }
-
-    // Validate dinner_score if provided
-    if (
-      updateFields[FEED_FIELDS.DINNER_SCORE] !== undefined &&
-      (updateFields[FEED_FIELDS.DINNER_SCORE] <
-        FEED_VALIDATION.DINNER_SCORE_MIN ||
-        updateFields[FEED_FIELDS.DINNER_SCORE] >
-          FEED_VALIDATION.DINNER_SCORE_MAX)
-    ) {
-      logger.warn('Invalid dinner_score value', {
-        dinner_score: updateFields[FEED_FIELDS.DINNER_SCORE],
-        feedId: id,
-        requestId: req.id,
-      });
-
-      return res.status(400).json({
-        code: FEED_ERROR_CODE.INVALID_DINNER_SCORE,
-        message: `Dinner score must be between ${FEED_VALIDATION.DINNER_SCORE_MIN} and ${FEED_VALIDATION.DINNER_SCORE_MAX}`,
         requestId: req.id,
       });
     }

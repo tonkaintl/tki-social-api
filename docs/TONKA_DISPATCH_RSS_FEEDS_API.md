@@ -8,7 +8,7 @@
 
 ## Overview
 
-The RSS Feed Registry provides endpoints for managing the curated collection of RSS feeds used by Tonka Dispatch. Each feed includes editorial ratings (dinner table score), tier classification, categorization, and tracking for FeedSpot discovery sources.
+The RSS Feed Registry provides endpoints for managing the curated collection of RSS feeds used by Tonka Dispatch. Each feed includes tier classification, categorization, and tracking for FeedSpot discovery sources.
 
 Use these endpoints to:
 
@@ -44,7 +44,6 @@ Create a new feed or update an existing one (by `rss_url`). This is an idempoten
 | `name`               | string  | No            | Human-readable feed name                                   |
 | `category`           | string  | No            | Feed category (e.g., "trucking", "logistics", "finance")   |
 | `tier`               | string  | No            | Classification tier (default: `outlier`)                   |
-| `dinner_score`       | number  | No            | Editorial rating 0-100 (default: `50`)                     |
 | `notes`              | string  | Conditional\* | Editorial notes (\*required if `tier: 'rejected'`)         |
 | `enabled`            | boolean | No            | Whether feed is active (default: `true`)                   |
 | `feedspot_feed_id`   | string  | No            | FeedSpot feed identifier (for tracking discovery source)   |
@@ -70,7 +69,6 @@ Content-Type: application/json
   "name": "Trucking Industry News",
   "category": "trucking",
   "tier": "core",
-  "dinner_score": 85,
   "notes": "Excellent coverage of Class 8 market trends",
   "enabled": true,
   "feedspot_feed_id": "fs_12345"
@@ -88,7 +86,6 @@ Content-Type: application/json
     "name": "Trucking Industry News",
     "category": "trucking",
     "tier": "core",
-    "dinner_score": 85,
     "notes": "Excellent coverage of Class 8 market trends",
     "enabled": true,
     "feedspot_feed_id": "fs_12345",
@@ -117,13 +114,6 @@ Content-Type: application/json
   "requestId": "req_abc123"
 }
 
-// 400 - Invalid dinner score
-{
-  "code": "INVALID_DINNER_SCORE",
-  "message": "Dinner score must be between 0 and 100",
-  "requestId": "req_abc123"
-}
-
 // 400 - Invalid tier
 {
   "code": "INVALID_TIER",
@@ -149,19 +139,18 @@ Retrieve feeds with optional filtering and sorting.
 
 **Query Parameters:**
 
-| Parameter  | Type    | Required | Description                                                  | Default         |
-| ---------- | ------- | -------- | ------------------------------------------------------------ | --------------- |
-| `tier`     | string  | No       | Filter by tier: `core`, `outlier`, `rejected`, `archived`    | -               |
-| `category` | string  | No       | Filter by category (exact match)                             | -               |
-| `enabled`  | boolean | No       | Filter by enabled status: `true` or `false`                  | -               |
-| `search`   | string  | No       | Full-text search across name, rss_url, category, tier, notes | -               |
-| `sort`     | string  | No       | Sort field (prefix with `-` for descending)                  | `-dinner_score` |
-| `page`     | integer | No       | Page number (1-based)                                        | `1`             |
-| `limit`    | integer | No       | Results per page (max: 100)                                  | `25`            |
+| Parameter  | Type    | Required | Description                                                  | Default       |
+| ---------- | ------- | -------- | ------------------------------------------------------------ | ------------- |
+| `tier`     | string  | No       | Filter by tier: `core`, `outlier`, `rejected`, `archived`    | -             |
+| `category` | string  | No       | Filter by category (exact match)                             | -             |
+| `enabled`  | boolean | No       | Filter by enabled status: `true` or `false`                  | -             |
+| `search`   | string  | No       | Full-text search across name, rss_url, category, tier, notes | -             |
+| `sort`     | string  | No       | Sort field (prefix with `-` for descending)                  | `-created_at` |
+| `page`     | integer | No       | Page number (1-based)                                        | `1`           |
+| `limit`    | integer | No       | Results per page (max: 100)                                  | `25`          |
 
 **Valid Sort Values:**
 
-- `dinner_score` / `-dinner_score` - Score ascending/descending
 - `created_at` / `-created_at` - Creation date ascending/descending
 - `updated_at` / `-updated_at` - Last update ascending/descending
 - `name` / `-name` - Name alphabetically ascending/descending
@@ -170,7 +159,7 @@ Retrieve feeds with optional filtering and sorting.
 
 ```http
 # Basic filtering with pagination
-GET /api/dispatch/feeds?tier=core&enabled=true&sort=-dinner_score&page=1&limit=25
+GET /api/dispatch/feeds?tier=core&enabled=true&sort=-created_at&page=1&limit=25
 Authorization: Bearer {token}
 
 # Search with filters
@@ -197,7 +186,6 @@ Authorization: Bearer {token}
       "name": "Trucking Industry News",
       "category": "trucking",
       "tier": "core",
-      "dinner_score": 85,
       "notes": "Excellent coverage of Class 8 market trends",
       "enabled": true,
       "feedspot_feed_id": "fs_12345",
@@ -212,7 +200,6 @@ Authorization: Bearer {token}
       "name": "Logistics Daily",
       "category": "logistics",
       "tier": "core",
-      "dinner_score": 78,
       "notes": "Good general logistics coverage",
       "enabled": true,
       "feedspot_feed_id": null,
@@ -253,7 +240,7 @@ Authorization: Bearer {token}
 // 400 - Invalid sort field
 {
   "code": "INVALID_SORT_FIELD",
-  "message": "Sort must be one of: dinner_score, -dinner_score, created_at, -created_at, updated_at, -updated_at, name, -name",
+  "message": "Sort must be one of: created_at, -created_at, updated_at, -updated_at, name, -name",
   "requestId": "req_xyz789"
 }
 
@@ -281,17 +268,16 @@ Partially update a feed by its MongoDB ID. Only provided fields will be updated.
 
 **Request Body (all fields optional):**
 
-| Field                | Type    | Description            |
-| -------------------- | ------- | ---------------------- |
-| `name`               | string  | Feed name              |
-| `category`           | string  | Feed category          |
-| `tier`               | string  | Classification tier    |
-| `dinner_score`       | number  | Editorial rating 0-100 |
-| `notes`              | string  | Editorial notes        |
-| `enabled`            | boolean | Active status          |
-| `feedspot_feed_id`   | string  | FeedSpot feed ID       |
-| `feedspot_folder_id` | string  | FeedSpot folder ID     |
-| `rejected_reason`    | string  | Rejection reason       |
+| Field                | Type    | Description         |
+| -------------------- | ------- | ------------------- |
+| `name`               | string  | Feed name           |
+| `category`           | string  | Feed category       |
+| `tier`               | string  | Classification tier |
+| `notes`              | string  | Editorial notes     |
+| `enabled`            | boolean | Active status       |
+| `feedspot_feed_id`   | string  | FeedSpot feed ID    |
+| `feedspot_folder_id` | string  | FeedSpot folder ID  |
+| `rejected_reason`    | string  | Rejection reason    |
 
 **Example Request:**
 
@@ -301,7 +287,6 @@ Authorization: Bearer {token}
 Content-Type: application/json
 
 {
-  "dinner_score": 90,
   "notes": "Updated after reviewing recent content quality"
 }
 ```
@@ -316,7 +301,6 @@ Content-Type: application/json
     "name": "Trucking Industry News",
     "category": "trucking",
     "tier": "core",
-    "dinner_score": 90,
     "notes": "Updated after reviewing recent content quality",
     "enabled": true,
     "feedspot_feed_id": "fs_12345",
@@ -381,7 +365,6 @@ Content-Type: application/json
   name?: string;            // Human-readable feed name
   category?: string;        // Feed category
   tier: string;             // 'core' | 'outlier' | 'rejected' | 'archived'
-  dinner_score: number;     // Editorial rating 0-100 (default: 50)
   notes?: string;           // Editorial notes (required if tier='rejected')
   enabled: boolean;         // Active status (default: true)
   feedspot_feed_id?: string;    // FeedSpot tracking ID
@@ -399,7 +382,6 @@ Content-Type: application/json
 | Code                          | HTTP Status | Description                            |
 | ----------------------------- | ----------- | -------------------------------------- |
 | `MISSING_RSS_URL`             | 400         | RSS URL is required for upsert         |
-| `INVALID_DINNER_SCORE`        | 400         | Score must be 0-100                    |
 | `INVALID_TIER`                | 400         | Invalid tier value                     |
 | `INVALID_SORT_FIELD`          | 400         | Invalid sort parameter                 |
 | `INVALID_FEED_ID`             | 400         | Malformed MongoDB ObjectId             |
@@ -430,7 +412,6 @@ const response = await fetch('/api/dispatch/feeds', {
     rss_url: 'https://example.com/feed.xml',
     name: 'Example Feed',
     tier: 'outlier',
-    dinner_score: 75,
   }),
 });
 
@@ -446,7 +427,7 @@ if (created) {
 
 ```javascript
 const response = await fetch(
-  '/api/dispatch/feeds?tier=core&enabled=true&sort=-dinner_score&page=1&limit=25',
+  '/api/dispatch/feeds?tier=core&enabled=true&sort=-created_at&page=1&limit=25',
   {
     headers: { Authorization: `Bearer ${token}` },
   }
@@ -456,7 +437,7 @@ const { feeds, count, totalCount, totalPages, page } = await response.json();
 console.log(
   `Page ${page} of ${totalPages}, showing ${count} of ${totalCount} total feeds`
 );
-// feeds array sorted by highest dinner_score first
+// feeds array sorted by newest first
 ```
 
 ### 3. **Full-Text Search**
@@ -512,9 +493,6 @@ try {
       case 'NOTES_REQUIRED_FOR_REJECTED':
         showError('Please add notes when rejecting a feed');
         break;
-      case 'INVALID_DINNER_SCORE':
-        showError('Dinner score must be between 0 and 100');
-        break;
       default:
         showError(error.message);
     }
@@ -567,7 +545,7 @@ All responses include a `requestId` field for debugging and support purposes. In
 - **RSS URL Normalization**: URLs are automatically trimmed and converted to lowercase
 - **Upsert Behavior**: The `rss_url` field serves as the unique identifier - same URL = same feed
 - **Tier Validation**: Changing tier to `rejected` requires notes (either in the request or already existing)
-- **Default Sort**: List endpoint defaults to `-dinner_score` (highest rated first)
+- **Default Sort**: List endpoint defaults to `-created_at` (newest first)
 - **Boolean Filters**: Use string values `'true'` or `'false'` in query parameters
 - **Search**: Case-insensitive partial matching across name, rss_url, category, tier, and notes fields
 - **Pagination**: Default is 25 results per page, maximum is 100 per page

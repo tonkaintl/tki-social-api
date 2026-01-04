@@ -82,7 +82,7 @@ export async function listFeeds(req, res) {
     }
 
     // Parse sort parameter
-    let sortObj = { [FEED_FIELDS.DINNER_SCORE]: -1 }; // Default: highest score first
+    let sortObj = { [FEED_FIELDS.CREATED_AT]: -1 }; // Default: newest first
 
     if (sort) {
       if (!FEED_SORT_FIELD_VALUES.includes(sort)) {

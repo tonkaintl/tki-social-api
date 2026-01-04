@@ -169,7 +169,6 @@ for (let i = 0; i < urls.length; i++) {
 
     results.push({
       category: '', // To be filled in manually
-      dinner_score: 10,
       enabled: true,
       error: '',
       feedspotFeedId: data.feedspotFeedId || '',
@@ -191,7 +190,6 @@ for (let i = 0; i < urls.length; i++) {
     failCount++;
     results.push({
       category: '',
-      dinner_score: 10,
       enabled: true,
       error: String(e?.message || e),
       feedspotFeedId: '',
@@ -227,7 +225,6 @@ const headers = [
   'notes',
   'tier',
   'category',
-  'dinner_score',
   'enabled',
   'error',
 ];
