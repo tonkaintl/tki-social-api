@@ -3,7 +3,6 @@ import {
   FEED_FIELDS,
   FEED_TIER,
   FEED_TIER_VALUES,
-  FEED_VALIDATION,
 } from '../../../constants/tonkaDispatch.js';
 import TonkaDispatchRssLinks from '../../../models/tonkaDispatchRssLinks.model.js';
 import { logger } from '../../../utils/logger.js';
@@ -15,7 +14,6 @@ export async function upsertFeed(req, res) {
   try {
     const {
       category,
-      dinner_score,
       enabled,
       feedspot_feed_id,
       feedspot_folder_id,
@@ -35,24 +33,6 @@ export async function upsertFeed(req, res) {
       return res.status(400).json({
         code: FEED_ERROR_CODE.MISSING_RSS_URL,
         message: 'RSS URL is required',
-        requestId: req.id,
-      });
-    }
-
-    // Validate dinner_score if provided
-    if (
-      dinner_score !== undefined &&
-      (dinner_score < FEED_VALIDATION.DINNER_SCORE_MIN ||
-        dinner_score > FEED_VALIDATION.DINNER_SCORE_MAX)
-    ) {
-      logger.warn('Invalid dinner_score value', {
-        dinner_score,
-        requestId: req.id,
-      });
-
-      return res.status(400).json({
-        code: FEED_ERROR_CODE.INVALID_DINNER_SCORE,
-        message: `Dinner score must be between ${FEED_VALIDATION.DINNER_SCORE_MIN} and ${FEED_VALIDATION.DINNER_SCORE_MAX}`,
         requestId: req.id,
       });
     }
@@ -97,7 +77,6 @@ export async function upsertFeed(req, res) {
     if (name !== undefined) updateFields.name = name;
     if (category !== undefined) updateFields.category = category;
     if (tier !== undefined) updateFields.tier = tier;
-    if (dinner_score !== undefined) updateFields.dinner_score = dinner_score;
     if (notes !== undefined) updateFields.notes = notes;
     if (enabled !== undefined) updateFields.enabled = enabled;
     if (feedspot_feed_id !== undefined)

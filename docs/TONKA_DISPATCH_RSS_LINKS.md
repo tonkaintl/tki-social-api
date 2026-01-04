@@ -32,7 +32,6 @@ The Feed Registry is an internal editorial management system for RSS feeds consu
 | `name`               | String  |             | Feed display name (auto-populate from feed later)              |
 | `category`           | String  |             | Editorial category (e.g., "Tech", "Finance", "Culture")        |
 | `tier`               | String  | ✓           | `core` \| `outlier` \| `rejected` \| `archived`                |
-| `dinner_score`       | Number  | ✓           | Interest rating 0–100 (how interesting to discuss)             |
 | `notes`              | String  | Conditional | Editorial context; **required if tier=rejected**               |
 | `enabled`            | Boolean | ✓           | Whether feed is active for ingestion (default: true)           |
 | `feedspot_feed_id`   | String  |             | FeedSpot's feed ID for tracking discovery source (optional)    |
@@ -43,14 +42,12 @@ The Feed Registry is an internal editorial management system for RSS feeds consu
 
 ### Tier System
 
-**Auto-suggestion logic** (user can override):
+**Editorial classification** (user decides):
 
-- **Core** (`core`): Dinner score ≥ 80 AND you'd miss it if it disappeared
-- **Outlier** (`outlier`): Dinner score 50–79 (interesting sometimes)
-- **Rejected** (`rejected`): Dinner score < 50 OR high friction/noise
+- **Core** (`core`): High-quality, essential feeds you'd miss if they disappeared
+- **Outlier** (`outlier`): Candidate feeds under evaluation (interesting sometimes)
+- **Rejected** (`rejected`): Feeds deemed unsuitable (high friction/noise)
 - **Archived** (`archived`): Previously used but no longer needed
-
-> **Note**: Both `dinner_score` and `tier` are stored. Score informs the suggestion, but tier is the final editorial decision.
 
 ---
 
@@ -70,7 +67,6 @@ The Feed Registry is an internal editorial management system for RSS feeds consu
   "name": "Example Feed",
   "category": "Tech",
   "tier": "core",
-  "dinner_score": 85,
   "notes": "Daily must-read for industry news",
   "enabled": true,
   "feedspot_feed_id": "3816087",
@@ -93,7 +89,6 @@ The Feed Registry is an internal editorial management system for RSS feeds consu
 **Validation**:
 
 - `rss_url` required
-- `dinner_score` must be 0–100
 - `tier` must be valid enum value
 - If `tier=rejected`, `notes` becomes required
 
@@ -110,12 +105,12 @@ The Feed Registry is an internal editorial management system for RSS feeds consu
 - `tier` (string): Filter by tier (core|outlier|rejected|archived)
 - `category` (string): Filter by category
 - `enabled` (boolean): Filter by enabled status
-- `sort` (string): Sort field (default: `-dinner_score`)
+- `sort` (string): Sort field (default: `-created_at`)
 
 **Example**:
 
 ```
-GET /api/dispatch/feeds?tier=core&enabled=true&sort=-dinner_score
+GET /api/dispatch/feeds?tier=core&enabled=true&sort=-created_at
 ```
 
 **Response** (200 OK):
@@ -149,7 +144,6 @@ GET /api/dispatch/feeds?tier=core&enabled=true&sort=-dinner_score
 ```json
 {
   "tier": "outlier",
-  "dinner_score": 65,
   "enabled": false,
   "notes": "Demoted: quality declined over time"
 }
@@ -209,10 +203,8 @@ GET /api/dispatch/feeds?tier=outlier&enabled=true
 **Must-haves**:
 
 - Large RSS URL input field (paste from clipboard)
-- Preset score buttons: **Core (85)** | **Maybe (65)** | **Reject (35)**
-- Manual slider for fine-tuning (0–100)
+- Preset tier buttons: **Core** | **Outlier** | **Reject**
 - Category dropdown
-- Tier auto-suggested from score (editable)
 - Notes field (single line, expands if tier=rejected)
 
 **Behavior**:
@@ -231,9 +223,9 @@ GET /api/dispatch/feeds?tier=outlier&enabled=true
 
 **Sort options**:
 
-- Dinner score (high → low)
-- Created date
+- Created date (newest first)
 - Last updated
+- Name (alphabetical)
 
 **Quick actions** (one-tap):
 

@@ -99,7 +99,6 @@ for (const file of files) {
 
       const payload = {
         category: feed.category,
-        dinner_score: parseInt(feed.dinner_score) || 10,
         enabled: feed.enabled === 'true',
         feedspot_feed_id: feed.feedspotFeedId || null,
         feedspot_folder_id: feed.feedspotFolderId || null,

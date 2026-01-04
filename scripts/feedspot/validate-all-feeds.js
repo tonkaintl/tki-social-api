@@ -142,7 +142,6 @@ for (const file of files) {
     // Build feed object matching model schema
     const feedObject = {
       category: feed.category,
-      dinner_score: parseInt(feed.dinner_score) || 10,
       enabled: feed.enabled === 'true',
       feedspot_feed_id: feed.feedspotFeedId || null,
       feedspot_folder_id: feed.feedspotFolderId || null,
@@ -221,7 +220,6 @@ Object.entries(samplesByCategory).forEach(([cat, feed]) => {
   console.log(`   RSS URL: ${feed.rss_url}`);
   console.log(`   Tier: ${feed.tier}`);
   console.log(`   Category: ${feed.category}`);
-  console.log(`   Dinner Score: ${feed.dinner_score}`);
   console.log(`   Enabled: ${feed.enabled}`);
   console.log(
     `   FeedSpot IDs: ${feed.feedspot_feed_id} / ${feed.feedspot_folder_id}`

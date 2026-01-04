@@ -14,7 +14,7 @@ A complete RSS Feed Registry API for Tonka Dispatch, following the TKI Social AP
 
 **File**: [src/models/tonkaDispatchRssLinks.model.js](../src/models/tonkaDispatchRssLinks.model.js)
 
-- ✅ 10 fields (rss_url, name, category, tier, dinner_score, notes, enabled, rejected_reason, created_at, updated_at)
+- ✅ 9 fields (rss_url, name, category, tier, notes, enabled, rejected_reason, created_at, updated_at)
 - ✅ Unique constraint on `rss_url`
 - ✅ Custom validation: notes required when tier='rejected'
 - ✅ 5 indexes for optimal query performance
@@ -36,8 +36,8 @@ A complete RSS Feed Registry API for Tonka Dispatch, following the TKI Social AP
 
 - ✅ List all feeds with optional filters
 - ✅ Filter by: tier, category, enabled
-- ✅ Sort by: dinner_score, created_at, updated_at, name
-- ✅ Default sort: highest score first
+- ✅ Sort by: created_at, updated_at, name
+- ✅ Default sort: newest first
 
 ##### [feeds.controller.patch.update.js](../src/controllers/tonkaDispatchFeeds/methods/feeds.controller.patch.update.js)
 
@@ -93,7 +93,6 @@ POST /api/dispatch/feeds
   "name": "Example Feed",
   "category": "Tech",
   "tier": "core",
-  "dinner_score": 85,
   "notes": "Great source",
   "enabled": true
 }
@@ -106,7 +105,7 @@ POST /api/dispatch/feeds
 ### 2. List Feeds
 
 ```http
-GET /api/dispatch/feeds?tier=core&enabled=true&sort=-dinner_score
+GET /api/dispatch/feeds?tier=core&enabled=true&sort=-created_at
 ```
 
 **Query Params** (all optional):
@@ -114,7 +113,7 @@ GET /api/dispatch/feeds?tier=core&enabled=true&sort=-dinner_score
 - `tier`: core|outlier|rejected|archived
 - `category`: string
 - `enabled`: true|false
-- `sort`: dinner_score, -dinner_score, created_at, -created_at, etc.
+- `sort`: created_at, -created_at, updated_at, -updated_at, name, -name
 
 **Response**: Array of feeds + count + filters
 
@@ -147,16 +146,14 @@ PATCH /api/dispatch/feeds/:id
 - No duplicate feeds possible
 - Safe to call repeatedly
 
-### 2. Editorial Rating System
+### 2. Editorial Classification System
 
-- **Dinner Score** (0-100): "How interesting to discuss?"
 - **Tier** (core/outlier/rejected/archived): Operational classification
 - **Notes**: Required for rejected feeds
 
 ### 3. Smart Validation
 
 - RSS URL required + unique
-- Dinner score 0-100
 - Notes required when tier=rejected
 - Tier must be valid enum value
 
@@ -269,8 +266,7 @@ Returns tech-specific feeds for targeted workflows.
 1. `rss_url` (unique)
 2. `tier + enabled` (compound, for n8n queries)
 3. `category`
-4. `dinner_score` (descending)
-5. `created_at` (descending)
+4. `created_at` (descending)
 
 ### Sample Document
 
@@ -281,7 +277,6 @@ Returns tech-specific feeds for targeted workflows.
   "name": "Example Feed",
   "category": "Tech",
   "tier": "core",
-  "dinner_score": 85,
   "notes": "Great source",
   "enabled": true,
   "rejected_reason": null,

@@ -5,7 +5,6 @@ import {
   FEED_FIELDS,
   FEED_TIER,
   FEED_TIER_VALUES,
-  FEED_VALIDATION,
 } from '../constants/tonkaDispatch.js';
 
 // ----------------------------------------------------------
@@ -19,19 +18,6 @@ var tonkaDispatchRssLinksSchema = new Schema({
   created_at: {
     default: Date.now,
     type: Date,
-  },
-  dinner_score: {
-    default: FEED_DEFAULTS.DINNER_SCORE,
-    max: [
-      FEED_VALIDATION.DINNER_SCORE_MAX,
-      `Dinner score must be between ${FEED_VALIDATION.DINNER_SCORE_MIN} and ${FEED_VALIDATION.DINNER_SCORE_MAX}`,
-    ],
-    min: [
-      FEED_VALIDATION.DINNER_SCORE_MIN,
-      `Dinner score must be between ${FEED_VALIDATION.DINNER_SCORE_MIN} and ${FEED_VALIDATION.DINNER_SCORE_MAX}`,
-    ],
-    required: true,
-    type: Number,
   },
   enabled: {
     default: FEED_DEFAULTS.ENABLED,
@@ -98,10 +84,6 @@ tonkaDispatchRssLinksSchema.index({
 
 tonkaDispatchRssLinksSchema.index({
   [FEED_FIELDS.CREATED_AT]: -1,
-});
-
-tonkaDispatchRssLinksSchema.index({
-  [FEED_FIELDS.DINNER_SCORE]: -1,
 });
 
 tonkaDispatchRssLinksSchema.index({

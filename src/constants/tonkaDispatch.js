@@ -12,8 +12,6 @@ export const FEED_TIER_VALUES = Object.values(FEED_TIER);
 export const FEED_SORT_FIELD = {
   CREATED_AT: 'created_at',
   CREATED_AT_DESC: '-created_at',
-  DINNER_SCORE: 'dinner_score',
-  DINNER_SCORE_DESC: '-dinner_score',
   NAME: 'name',
   NAME_DESC: '-name',
   UPDATED_AT: 'updated_at',
@@ -25,7 +23,6 @@ export const FEED_SORT_FIELD_VALUES = Object.values(FEED_SORT_FIELD);
 // Allowed fields for PATCH updates
 export const FEED_UPDATE_FIELDS = {
   CATEGORY: 'category',
-  DINNER_SCORE: 'dinner_score',
   ENABLED: 'enabled',
   FEEDSPOT_FEED_ID: 'feedspot_feed_id',
   FEEDSPOT_FOLDER_ID: 'feedspot_folder_id',
@@ -42,7 +39,6 @@ export const FEED_UPDATE_FIELDS_VALUES = Object.values(FEED_UPDATE_FIELDS);
 export const FEED_FIELDS = {
   CATEGORY: 'category',
   CREATED_AT: 'created_at',
-  DINNER_SCORE: 'dinner_score',
   ENABLED: 'enabled',
   FEEDSPOT_FEED_ID: 'feedspot_feed_id',
   FEEDSPOT_FOLDER_ID: 'feedspot_folder_id',
@@ -62,7 +58,6 @@ export const FEED_ERROR_CODE = {
   FEED_NOT_FOUND: 'FEED_NOT_FOUND',
   FEED_UPDATE_FAILED: 'FEED_UPDATE_FAILED',
   FEED_UPSERT_FAILED: 'FEED_UPSERT_FAILED',
-  INVALID_DINNER_SCORE: 'INVALID_DINNER_SCORE',
   INVALID_FEED_ID: 'INVALID_FEED_ID',
   INVALID_PAGE: 'INVALID_PAGE',
   INVALID_SORT_FIELD: 'INVALID_SORT_FIELD',
@@ -71,12 +66,6 @@ export const FEED_ERROR_CODE = {
   NO_UPDATE_FIELDS: 'NO_UPDATE_FIELDS',
   NOT_REQUIRED_FOR_REJECTED: 'NOTES_REQUIRED_FOR_REJECTED',
   VALIDATION_ERROR: 'VALIDATION_ERROR',
-};
-
-// Validation constants
-export const FEED_VALIDATION = {
-  DINNER_SCORE_MAX: 100,
-  DINNER_SCORE_MIN: 0,
 };
 
 // Pagination constants
@@ -97,7 +86,6 @@ export const FEED_SEARCH_FIELDS = [
 
 // Default values
 export const FEED_DEFAULTS = {
-  DINNER_SCORE: 50,
   ENABLED: true,
   TIER: FEED_TIER.OUTLIER,
 };
