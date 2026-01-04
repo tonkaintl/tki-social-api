@@ -45,6 +45,10 @@ var tonkaDispatchRssLinksSchema = new Schema({
     trim: true,
     type: String,
   },
+  requires_browser: {
+    default: false,
+    type: Boolean,
+  },
   rss_url: {
     required: [true, 'RSS URL is required'],
     trim: true,

@@ -20,6 +20,7 @@ export async function upsertFeed(req, res) {
       name,
       notes,
       rejected_reason,
+      requires_browser,
       rss_url,
       tier,
     } = req.body;
@@ -85,6 +86,8 @@ export async function upsertFeed(req, res) {
       updateFields.feedspot_folder_id = feedspot_folder_id;
     if (rejected_reason !== undefined)
       updateFields.rejected_reason = rejected_reason;
+    if (requires_browser !== undefined)
+      updateFields.requires_browser = requires_browser;
 
     logger.info('Upserting feed', {
       requestId: req.id,

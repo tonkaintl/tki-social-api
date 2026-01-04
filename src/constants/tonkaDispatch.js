@@ -29,6 +29,7 @@ export const FEED_UPDATE_FIELDS = {
   NAME: 'name',
   NOTES: 'notes',
   REJECTED_REASON: 'rejected_reason',
+  REQUIRES_BROWSER: 'requires_browser',
   RSS_URL: 'rss_url',
   TIER: 'tier',
 };
@@ -46,6 +47,7 @@ export const FEED_FIELDS = {
   NAME: 'name',
   NOTES: 'notes',
   REJECTED_REASON: 'rejected_reason',
+  REQUIRES_BROWSER: 'requires_browser',
   RSS_URL: 'rss_url',
   TIER: 'tier',
   UPDATED_AT: 'updated_at',
