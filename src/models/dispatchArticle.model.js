@@ -25,7 +25,11 @@ const dispatchArticleSchema = new mongoose.Schema(
       },
     },
     // Source tracking (references tonka_dispatch_rss_links._id)
-    rss_link_id: { required: true, type: String },
+    rss_link_id: {
+      ref: 'tonka_dispatch_rss_links',
+      required: true,
+      type: mongoose.Schema.Types.ObjectId,
+    },
     tier: { type: String },
 
     // Core RSS fields

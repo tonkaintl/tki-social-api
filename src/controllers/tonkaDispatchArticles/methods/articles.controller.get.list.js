@@ -183,8 +183,11 @@ export async function listArticles(req, res) {
     // Get total count for pagination
     const totalCount = await DispatchArticle.countDocuments(filter);
 
-    // Query database with pagination
-    const query = DispatchArticle.find(filter).sort(sortObj).skip(skip);
+    // Query database with pagination and populate RSS feed reference
+    const query = DispatchArticle.find(filter)
+      .sort(sortObj)
+      .skip(skip)
+      .populate('rss_link_id');
 
     // Apply limit only if not 0 (0 means return all)
     const articles = limitNum === 0 ? await query : await query.limit(limitNum);
