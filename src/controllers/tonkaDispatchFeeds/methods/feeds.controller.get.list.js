@@ -59,13 +59,15 @@ export async function listFeeds(req, res) {
     // Parse pagination parameters
     const pageNum = parseInt(page, 10) || FEED_PAGINATION.DEFAULT_PAGE;
     // limit=0 means no limit (return all results)
-    const limitNum =
-      limit === '0' || limit === 0
-        ? 0
-        : Math.min(
-            parseInt(limit, 10) || FEED_PAGINATION.DEFAULT_LIMIT,
-            FEED_PAGINATION.MAX_LIMIT
-          );
+    let limitNum;
+    if (limit === '0' || limit === 0) {
+      limitNum = 0;
+    } else {
+      const parsedLimit = parseInt(limit, 10);
+      limitNum = isNaN(parsedLimit)
+        ? FEED_PAGINATION.DEFAULT_LIMIT
+        : Math.min(parsedLimit, FEED_PAGINATION.MAX_LIMIT);
+    }
     const skip = limitNum === 0 ? 0 : (pageNum - 1) * limitNum;
 
     if (pageNum < 1) {
