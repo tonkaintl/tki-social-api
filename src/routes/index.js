@@ -3,6 +3,7 @@ import healthRoutes from './health.routes.js';
 import internalRoutes from './internal.routes.js';
 import metricoolRoutes from './metricool.routes.js';
 import platformsRoutes from './platforms.routes.js';
+import tonkaDispatchArticlesRoutes from './tonkaDispatchArticles.routes.js';
 import tonkaDispatchFeedsRoutes from './tonkaDispatchFeeds.routes.js';
 import tonkaDispatchNewslettersRoutes from './tonkaDispatchNewsletters.routes.js';
 import tonkaDispatchRankingsRoutes from './tonkaDispatchRankings.routes.js';
@@ -18,6 +19,7 @@ export {
   internalRoutes,
   metricoolRoutes,
   platformsRoutes,
+  tonkaDispatchArticlesRoutes,
   tonkaDispatchFeedsRoutes,
   tonkaDispatchNewslettersRoutes,
   tonkaDispatchRankingsRoutes,
