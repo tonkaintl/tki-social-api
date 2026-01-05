@@ -18,6 +18,7 @@ import {
   internalRoutes,
   metricoolRoutes,
   platformsRoutes,
+  tonkaDispatchArticlesRoutes,
   tonkaDispatchFeedsRoutes,
   tonkaDispatchNewslettersRoutes,
   tonkaDispatchRankingsRoutes,
@@ -72,6 +73,7 @@ app.get('/about', (req, res) => {
 
 // Application routes
 app.use('/api/campaigns', campaignRoutes);
+app.use('/api/dispatch/articles', tonkaDispatchArticlesRoutes);
 app.use('/api/dispatch/feeds', tonkaDispatchFeedsRoutes);
 app.use('/api/dispatch/newsletters', tonkaDispatchNewslettersRoutes);
 app.use('/api/dispatch/rankings', tonkaDispatchRankingsRoutes);

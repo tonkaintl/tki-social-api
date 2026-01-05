@@ -300,3 +300,61 @@ export const ARTICLE_UPDATE_FIELDS = {
 export const ARTICLE_UPDATE_FIELDS_VALUES = Object.values(
   ARTICLE_UPDATE_FIELDS
 );
+
+// ----------------------------------------------------------------------------
+// DISPATCH ARTICLES CONSTANTS
+// ----------------------------------------------------------------------------
+
+// Articles error codes
+export const ARTICLES_ERROR_CODE = {
+  ARTICLES_LIST_FAILED: 'ARTICLES_LIST_FAILED',
+  INVALID_DATE_RANGE: 'INVALID_DATE_RANGE',
+  INVALID_PAGE: 'INVALID_PAGE',
+  INVALID_SCORE_RANGE: 'INVALID_SCORE_RANGE',
+  INVALID_SORT_FIELD: 'INVALID_SORT_FIELD',
+};
+
+// Articles field names (schema fields from dispatch_articles)
+export const ARTICLES_FIELDS = {
+  AUTHOR: 'author',
+  CATEGORIES: 'categories',
+  CATEGORY: 'category',
+  CONTENT: 'content',
+  CONTENT_SNIPPET: 'content_snippet',
+  GUID: 'guid',
+  ID: '_id',
+  LINK: 'link',
+  PUBLISHED_AT_MS: 'published_at_ms',
+  PUB_DATE: 'pub_date',
+  RELEVANCE_SCORE: 'relevance.score',
+  RSS_LINK_ID: 'rss_link_id',
+  TIER: 'tier',
+  TITLE: 'title',
+};
+
+// Valid sort fields for articles listing
+export const ARTICLES_SORT_FIELD = {
+  PUBLISHED_AT_MS: 'published_at_ms',
+  PUBLISHED_AT_MS_DESC: '-published_at_ms',
+  RELEVANCE_SCORE: 'relevance.score',
+  RELEVANCE_SCORE_DESC: '-relevance.score',
+  TITLE: 'title',
+  TITLE_DESC: '-title',
+};
+
+export const ARTICLES_SORT_FIELD_VALUES = Object.values(ARTICLES_SORT_FIELD);
+
+// Pagination constants for articles
+export const ARTICLES_PAGINATION = {
+  DEFAULT_LIMIT: 25,
+  DEFAULT_PAGE: 1,
+  MAX_LIMIT: 100,
+};
+
+// Search fields for articles (for full-text search)
+export const ARTICLES_SEARCH_FIELDS = [
+  ARTICLES_FIELDS.TITLE,
+  ARTICLES_FIELDS.AUTHOR,
+  ARTICLES_FIELDS.CATEGORY,
+  ARTICLES_FIELDS.CONTENT_SNIPPET,
+];
