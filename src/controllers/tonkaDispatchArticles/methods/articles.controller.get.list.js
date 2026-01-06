@@ -194,8 +194,35 @@ export async function listArticles(req, res) {
 
     const totalPages = limitNum === 0 ? 1 : Math.ceil(totalCount / limitNum);
 
+    // Truncate content fields for performance (articles consumed by AI)
+    const MAX_CONTENT_LENGTH = 2000;
+    const MAX_SNIPPET_LENGTH = 500;
+    const truncatedArticles = articles.map(article => {
+      const articleObj = article.toObject();
+
+      if (
+        articleObj.content &&
+        articleObj.content.length > MAX_CONTENT_LENGTH
+      ) {
+        articleObj.content =
+          articleObj.content.substring(0, MAX_CONTENT_LENGTH) +
+          '... [content truncated]';
+      }
+
+      if (
+        articleObj.content_snippet &&
+        articleObj.content_snippet.length > MAX_SNIPPET_LENGTH
+      ) {
+        articleObj.content_snippet =
+          articleObj.content_snippet.substring(0, MAX_SNIPPET_LENGTH) +
+          '... [truncated]';
+      }
+
+      return articleObj;
+    });
+
     logger.info('Articles retrieved successfully', {
-      count: articles.length,
+      count: truncatedArticles.length,
       filter,
       page: pageNum,
       requestId: req.id,
@@ -203,8 +230,8 @@ export async function listArticles(req, res) {
     });
 
     return res.status(200).json({
-      articles,
-      count: articles.length,
+      articles: truncatedArticles,
+      count: truncatedArticles.length,
       filters: {
         ...(category && { category }),
         ...(publish_start && { publish_start: parseInt(publish_start, 10) }),
