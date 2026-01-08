@@ -6,6 +6,8 @@
 
 import crypto from 'crypto';
 
+import mongoose from 'mongoose';
+
 import { ApiError, ERROR_CODES } from '../../../constants/errors.js';
 import TonkaDispatchRanking from '../../../models/tonkaDispatchRankings.model.js';
 
@@ -82,10 +84,19 @@ export const handleTonkaDispatchRankings = async (req, res) => {
       const feedMatch = article.feed_match || {};
 
       console.log(`Processing ranking ${i + 1}/${payload.length}:`, {
-        canonical_id: r.canonical_id,
-        has_article: !!r.article,
+        has_article_id: !!(r.article_id || article.article_id),
         rank: r.rank,
       });
+
+      // Parse article_id from either ranking level or article level
+      let dispatchArticleId = null;
+      const articleIdStr = r.article_id || article.article_id;
+      if (articleIdStr && mongoose.Types.ObjectId.isValid(articleIdStr)) {
+        dispatchArticleId = new mongoose.Types.ObjectId(articleIdStr);
+        console.log(`  ✓ Valid article_id: ${articleIdStr}`);
+      } else if (articleIdStr) {
+        console.warn(`  ⚠ Invalid article_id format: ${articleIdStr}`);
+      }
 
       try {
         const ranking = await TonkaDispatchRanking.create({
@@ -95,6 +106,7 @@ export const handleTonkaDispatchRankings = async (req, res) => {
           canonical_id: r.canonical_id || null,
           category: article.category || null,
           creator: article.creator || null,
+          dispatch_article_id: dispatchArticleId,
           feed_match_reason: article.feed_match_reason || null,
           feed_match_status: article.feed_match_status || null,
           link: article.link || null,
@@ -110,6 +122,7 @@ export const handleTonkaDispatchRankings = async (req, res) => {
         savedRankings.push(ranking);
         console.log(`✓ Saved ranking ${i + 1}:`, {
           _id: ranking._id,
+          dispatch_article_id: ranking.dispatch_article_id,
           rank: ranking.rank,
         });
       } catch (error) {

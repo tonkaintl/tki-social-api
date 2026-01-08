@@ -150,6 +150,7 @@ export const RANKING_FIELDS = {
   CATEGORY: 'category',
   CREATED_AT: 'created_at',
   CREATOR: 'creator',
+  DISPATCH_ARTICLE_ID: 'dispatch_article_id',
   FEED_MATCH_REASON: 'feed_match_reason',
   FEED_MATCH_STATUS: 'feed_match_status',
   LINK: 'link',
