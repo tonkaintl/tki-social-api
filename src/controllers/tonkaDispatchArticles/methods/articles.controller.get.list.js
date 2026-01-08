@@ -36,12 +36,22 @@ export async function listArticles(req, res) {
       // Filter out null values and ensure we have valid ObjectIds
       const validIds = usedArticleIds.filter(id => id !== null);
 
-      console.log('[ARTICLES] Exclude used filter:', {
-        distinct_total: usedArticleIds.length,
-        null_count: usedArticleIds.length - validIds.length,
-        sample_ids: validIds.slice(0, 3).map(id => id.toString()),
-        valid_count: validIds.length,
-      });
+      console.log('[ARTICLES] ========================================');
+      console.log('[ARTICLES] EXCLUDE_USED=TRUE - IDs TO EXCLUDE:');
+      console.log(
+        '[ARTICLES] Total distinct IDs from rankings:',
+        usedArticleIds.length
+      );
+      console.log('[ARTICLES] Valid (non-null) IDs:', validIds.length);
+      console.log(
+        '[ARTICLES] Null IDs:',
+        usedArticleIds.length - validIds.length
+      );
+      console.log(
+        '[ARTICLES] IDs being excluded:',
+        validIds.map(id => id.toString())
+      );
+      console.log('[ARTICLES] ========================================');
 
       if (validIds.length > 0) {
         filter[ARTICLES_FIELDS.ID] = { $nin: validIds };
@@ -230,11 +240,16 @@ export async function listArticles(req, res) {
       categoryDistribution[cat] = (categoryDistribution[cat] || 0) + 1;
     });
 
-    console.log('[ARTICLES] Retrieved successfully:', {
-      categoryDistribution,
-      count: truncatedArticles.length,
-      totalCount,
-    });
+    console.log('[ARTICLES] ========================================');
+    console.log('[ARTICLES] RESULTS - ARTICLES BEING RETURNED:');
+    console.log('[ARTICLES] Count:', truncatedArticles.length);
+    console.log('[ARTICLES] Total available:', totalCount);
+    console.log('[ARTICLES] Category distribution:', categoryDistribution);
+    console.log(
+      '[ARTICLES] Article IDs being returned:',
+      truncatedArticles.map(a => a._id.toString())
+    );
+    console.log('[ARTICLES] ========================================');
 
     return res.status(200).json({
       articles: truncatedArticles,
