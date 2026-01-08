@@ -3,7 +3,6 @@ import {
   FEED_CATEGORY_VALUES,
 } from '../../../constants/tonkaDispatch.js';
 import DispatchArticle from '../../../models/dispatchArticle.model.js';
-import { logger } from '../../../utils/logger.js';
 
 /**
  * Fetch articles with balanced distribution across categories
@@ -12,25 +11,12 @@ import { logger } from '../../../utils/logger.js';
  * @param {Object} baseFilter - Base MongoDB filter object (excludes category)
  * @param {Object} sortObj - MongoDB sort object
  * @param {number} targetLimit - Total number of articles desired
- * @param {string} requestId - Request ID for logging
  * @returns {Promise<Array>} Array of article documents
  */
-export async function fetchBalancedArticles(
-  baseFilter,
-  sortObj,
-  targetLimit,
-  requestId
-) {
+export async function fetchBalancedArticles(baseFilter, sortObj, targetLimit) {
   const MAX_BACKFILL_ITERATIONS = 5;
   const categories = FEED_CATEGORY_VALUES;
   const targetPerCategory = Math.ceil(targetLimit / categories.length);
-
-  logger.info('Starting balanced category fetch', {
-    categories: categories.length,
-    requestId,
-    targetLimit,
-    targetPerCategory,
-  });
 
   // Track articles fetched per category
   const categoryResults = new Map();
@@ -55,31 +41,13 @@ export async function fetchBalancedArticles(
     });
 
     allArticles.push(...articles);
-
-    logger.debug('First pass category fetch', {
-      category,
-      fetched: articles.length,
-      requestId,
-      target: targetPerCategory,
-    });
   }
 
   const firstPassCount = allArticles.length;
-  logger.info('First pass complete', {
-    deficit: targetLimit - firstPassCount,
-    fetched: firstPassCount,
-    requestId,
-    target: targetLimit,
-  });
 
   // If we already have enough or more than requested, trim and return
   if (firstPassCount >= targetLimit) {
-    const trimmed = allArticles.slice(0, targetLimit);
-    logger.info('Target met in first pass', {
-      requestId,
-      returned: trimmed.length,
-    });
-    return trimmed;
+    return allArticles.slice(0, targetLimit);
   }
 
   // BACKFILL PASSES: Try to fill deficit from categories with available articles
@@ -90,13 +58,6 @@ export async function fetchBalancedArticles(
   while (currentCount < targetLimit && iteration < MAX_BACKFILL_ITERATIONS) {
     iteration++;
     let articlesAddedThisIteration = 0;
-
-    logger.debug('Starting backfill iteration', {
-      currentCount,
-      deficit: targetLimit - currentCount,
-      iteration,
-      requestId,
-    });
 
     // Cycle through categories and try to fetch one more from each
     for (const category of categories) {
@@ -124,48 +85,14 @@ export async function fetchBalancedArticles(
         const categoryData = categoryResults.get(category);
         categoryData.fetched++;
         categoryData.articles.push(article);
-
-        logger.debug('Backfill article added', {
-          category,
-          currentCount,
-          iteration,
-          requestId,
-        });
       }
     }
 
     // Fail-safe: If no articles were added this iteration, we've exhausted the database
     if (articlesAddedThisIteration === 0) {
-      logger.info('No more articles available for backfill', {
-        currentCount,
-        iteration,
-        requestId,
-        targetLimit,
-      });
       break;
     }
-
-    logger.debug('Backfill iteration complete', {
-      added: articlesAddedThisIteration,
-      currentCount,
-      iteration,
-      requestId,
-    });
   }
-
-  // Final summary
-  const categoryDistribution = {};
-  for (const [category, data] of categoryResults.entries()) {
-    categoryDistribution[category] = data.fetched;
-  }
-
-  logger.info('Balanced fetch complete', {
-    categoryDistribution,
-    iterations: iteration,
-    requestId,
-    returned: allArticles.length,
-    target: targetLimit,
-  });
 
   return allArticles;
 }

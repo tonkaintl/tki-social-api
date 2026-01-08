@@ -239,9 +239,16 @@ export async function listArticles(req, res) {
       return articleObj;
     });
 
+    // Calculate category distribution summary
+    const categoryDistribution = {};
+    truncatedArticles.forEach(article => {
+      const cat = article.category || 'uncategorized';
+      categoryDistribution[cat] = (categoryDistribution[cat] || 0) + 1;
+    });
+
     logger.info('Articles retrieved successfully', {
+      categoryDistribution,
       count: truncatedArticles.length,
-      filter,
       page: pageNum,
       requestId: req.id,
       totalCount,

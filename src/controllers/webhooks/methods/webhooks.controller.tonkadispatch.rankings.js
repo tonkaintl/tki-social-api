@@ -83,19 +83,11 @@ export const handleTonkaDispatchRankings = async (req, res) => {
       const article = r.article || {};
       const feedMatch = article.feed_match || {};
 
-      console.log(`Processing ranking ${i + 1}/${payload.length}:`, {
-        has_article_id: !!(r.article_id || article.article_id),
-        rank: r.rank,
-      });
-
       // Parse article_id from either ranking level or article level
       let dispatchArticleId = null;
       const articleIdStr = r.article_id || article.article_id;
       if (articleIdStr && mongoose.Types.ObjectId.isValid(articleIdStr)) {
         dispatchArticleId = new mongoose.Types.ObjectId(articleIdStr);
-        console.log(`  ✓ Valid article_id: ${articleIdStr}`);
-      } else if (articleIdStr) {
-        console.warn(`  ⚠ Invalid article_id format: ${articleIdStr}`);
       }
 
       try {
@@ -120,17 +112,7 @@ export const handleTonkaDispatchRankings = async (req, res) => {
         });
 
         savedRankings.push(ranking);
-        console.log(`✓ Saved ranking ${i + 1}:`, {
-          _id: ranking._id,
-          dispatch_article_id: ranking.dispatch_article_id,
-          rank: ranking.rank,
-        });
       } catch (error) {
-        console.error(`✗ Failed to save ranking ${i + 1}:`, {
-          error: error.message,
-          rank: r.rank,
-          stack: error.stack,
-        });
         errors.push({
           error: error.message,
           index: i,
