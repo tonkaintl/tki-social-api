@@ -52,28 +52,8 @@ export const handleTonkaDispatchRankings = async (req, res) => {
 
     // Generate batch ID for this submission
     const batchId = crypto.randomUUID();
-    console.log('Generated batch_id:', batchId);
-
-    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.log('📊 TONKA DISPATCH RANKINGS STRUCTURE ANALYSIS', {
-      batch_id: batchId,
-      rankings_count: payload.length,
-    });
-
-    // Log first ranking item for structure validation
-    if (payload.length > 0) {
-      console.log('First ranking item structure:', {
-        has_article: !!payload[0].article,
-        has_canonical_id: !!payload[0].canonical_id,
-        has_rank: !!payload[0].rank,
-        rank: payload[0].rank,
-      });
-    }
-
-    // ------------------------------------------------------------------------
-    // SAVE RANKINGS TO DATABASE
-    // ------------------------------------------------------------------------
-    console.log('→ Saving rankings to database...');
+    console.log('[RANKINGS] Batch ID:', batchId);
+    console.log('[RANKINGS] Saving', payload.length, 'rankings to database...');
 
     const savedRankings = [];
     const errors = [];
