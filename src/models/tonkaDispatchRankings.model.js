@@ -20,6 +20,10 @@ var tonkaDispatchRankingSchema = new Schema({
     type: Date,
   },
   creator: String,
+  dispatch_article_id: {
+    ref: 'dispatch_articles',
+    type: mongoose.Schema.Types.ObjectId,
+  },
   feed_match_reason: String,
   feed_match_status: String,
   link: String,

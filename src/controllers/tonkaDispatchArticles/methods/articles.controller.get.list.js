@@ -5,6 +5,7 @@ import {
   ARTICLES_SORT_FIELD_VALUES,
 } from '../../../constants/tonkaDispatch.js';
 import DispatchArticle from '../../../models/dispatchArticle.model.js';
+import TonkaDispatchRanking from '../../../models/tonkaDispatchRankings.model.js';
 import { logger } from '../../../utils/logger.js';
 
 /**
@@ -14,6 +15,7 @@ export async function listArticles(req, res) {
   try {
     const {
       category,
+      exclude_used,
       limit,
       page,
       publish_end,
@@ -26,6 +28,22 @@ export async function listArticles(req, res) {
 
     // Build filter object
     const filter = {};
+
+    // Exclude articles already used in rankings
+    if (exclude_used === 'true') {
+      const usedArticleIds = await TonkaDispatchRanking.distinct(
+        'dispatch_article_id'
+      );
+      // Filter out null values and ensure we have valid ObjectIds
+      const validIds = usedArticleIds.filter(id => id !== null);
+      if (validIds.length > 0) {
+        filter[ARTICLES_FIELDS.ID] = { $nin: validIds };
+      }
+      logger.info('Excluding used articles', {
+        requestId: req.id,
+        used_count: validIds.length,
+      });
+    }
 
     if (category) {
       filter[ARTICLES_FIELDS.CATEGORY] = category;
@@ -234,6 +252,7 @@ export async function listArticles(req, res) {
       count: truncatedArticles.length,
       filters: {
         ...(category && { category }),
+        ...(exclude_used && { exclude_used: exclude_used === 'true' }),
         ...(publish_start && { publish_start: parseInt(publish_start, 10) }),
         ...(publish_end && { publish_end: parseInt(publish_end, 10) }),
         ...(score_min !== undefined && { score_min: parseFloat(score_min) }),
