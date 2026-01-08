@@ -6,7 +6,6 @@ import {
 } from '../../../constants/tonkaDispatch.js';
 import DispatchArticle from '../../../models/dispatchArticle.model.js';
 import TonkaDispatchRanking from '../../../models/tonkaDispatchRankings.model.js';
-import { logger } from '../../../utils/logger.js';
 
 /**
  * List dispatch articles with optional filtering, searching, sorting, and pagination
@@ -36,13 +35,17 @@ export async function listArticles(req, res) {
       );
       // Filter out null values and ensure we have valid ObjectIds
       const validIds = usedArticleIds.filter(id => id !== null);
+
+      console.log('[ARTICLES] Exclude used filter:', {
+        distinct_total: usedArticleIds.length,
+        null_count: usedArticleIds.length - validIds.length,
+        sample_ids: validIds.slice(0, 3).map(id => id.toString()),
+        valid_count: validIds.length,
+      });
+
       if (validIds.length > 0) {
         filter[ARTICLES_FIELDS.ID] = { $nin: validIds };
       }
-      logger.info('Excluding used articles', {
-        requestId: req.id,
-        used_count: validIds.length,
-      });
     }
 
     if (category) {
@@ -56,10 +59,7 @@ export async function listArticles(req, res) {
       if (publish_start) {
         const startMs = parseInt(publish_start, 10);
         if (isNaN(startMs)) {
-          logger.warn('Invalid publish_start value', {
-            publish_start,
-            requestId: req.id,
-          });
+          console.log('[ARTICLES] Invalid publish_start:', publish_start);
 
           return res.status(400).json({
             code: ARTICLES_ERROR_CODE.INVALID_DATE_RANGE,
@@ -73,10 +73,7 @@ export async function listArticles(req, res) {
       if (publish_end) {
         const endMs = parseInt(publish_end, 10);
         if (isNaN(endMs)) {
-          logger.warn('Invalid publish_end value', {
-            publish_end,
-            requestId: req.id,
-          });
+          console.log('[ARTICLES] Invalid publish_end:', publish_end);
 
           return res.status(400).json({
             code: ARTICLES_ERROR_CODE.INVALID_DATE_RANGE,
@@ -95,10 +92,7 @@ export async function listArticles(req, res) {
       if (score_min !== undefined) {
         const minScore = parseFloat(score_min);
         if (isNaN(minScore) || minScore < -1 || minScore > 100) {
-          logger.warn('Invalid score_min value', {
-            requestId: req.id,
-            score_min,
-          });
+          console.log('[ARTICLES] Invalid score_min:', score_min);
 
           return res.status(400).json({
             code: ARTICLES_ERROR_CODE.INVALID_SCORE_RANGE,
@@ -112,10 +106,7 @@ export async function listArticles(req, res) {
       if (score_max !== undefined) {
         const maxScore = parseFloat(score_max);
         if (isNaN(maxScore) || maxScore < -1 || maxScore > 100) {
-          logger.warn('Invalid score_max value', {
-            requestId: req.id,
-            score_max,
-          });
+          console.log('[ARTICLES] Invalid score_max:', score_max);
 
           return res.status(400).json({
             code: ARTICLES_ERROR_CODE.INVALID_SCORE_RANGE,
@@ -153,10 +144,7 @@ export async function listArticles(req, res) {
     const skip = limitNum === 0 ? 0 : (pageNum - 1) * limitNum;
 
     if (pageNum < 1) {
-      logger.warn('Invalid page number', {
-        page: pageNum,
-        requestId: req.id,
-      });
+      console.log('[ARTICLES] Invalid page number:', pageNum);
 
       return res.status(400).json({
         code: ARTICLES_ERROR_CODE.INVALID_PAGE,
@@ -170,10 +158,7 @@ export async function listArticles(req, res) {
 
     if (sort) {
       if (!ARTICLES_SORT_FIELD_VALUES.includes(sort)) {
-        logger.warn('Invalid sort field', {
-          requestId: req.id,
-          sort,
-        });
+        console.log('[ARTICLES] Invalid sort field:', sort);
 
         return res.status(400).json({
           code: ARTICLES_ERROR_CODE.INVALID_SORT_FIELD,
@@ -190,11 +175,10 @@ export async function listArticles(req, res) {
       }
     }
 
-    logger.info('Listing articles', {
+    console.log('[ARTICLES] Listing articles:', {
       filter,
       limit: limitNum,
       page: pageNum,
-      requestId: req.id,
       sort: sortObj,
     });
 
@@ -246,11 +230,9 @@ export async function listArticles(req, res) {
       categoryDistribution[cat] = (categoryDistribution[cat] || 0) + 1;
     });
 
-    logger.info('Articles retrieved successfully', {
+    console.log('[ARTICLES] Retrieved successfully:', {
       categoryDistribution,
       count: truncatedArticles.length,
-      page: pageNum,
-      requestId: req.id,
       totalCount,
     });
 
@@ -272,11 +254,8 @@ export async function listArticles(req, res) {
       totalPages,
     });
   } catch (error) {
-    logger.error('Failed to list articles', {
-      error: error.message,
-      requestId: req.id,
-      stack: error.stack,
-    });
+    console.log('[ARTICLES] ERROR:', error.message);
+    console.log('[ARTICLES] Stack:', error.stack);
 
     return res.status(500).json({
       code: ARTICLES_ERROR_CODE.ARTICLES_LIST_FAILED,
