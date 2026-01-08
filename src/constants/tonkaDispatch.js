@@ -8,6 +8,26 @@ export const FEED_TIER = {
 
 export const FEED_TIER_VALUES = Object.values(FEED_TIER);
 
+// Category classification values for RSS feeds
+export const FEED_CATEGORY = {
+  AGRICULTURE: 'agriculture',
+  BUILDING_CONSTRUCTION: 'building_construction',
+  CIVIL_INFRASTRUCTURE: 'civil_infrastructure',
+  FOOD_AND_BEVERAGE: 'food_and_beverage',
+  FORESTRY: 'forestry',
+  LIFTS: 'lifts',
+  LOGISTICS: 'logistics',
+  MANUFACTURING: 'manufacturing',
+  MARINE: 'marine',
+  MEDICAL: 'medical',
+  MINING: 'mining',
+  OIL_AND_GAS: 'oil_and_gas',
+  POWER: 'power',
+  RECYCLING: 'recycling',
+};
+
+export const FEED_CATEGORY_VALUES = Object.values(FEED_CATEGORY);
+
 // Valid sort fields for feed listing
 export const FEED_SORT_FIELD = {
   CREATED_AT: 'created_at',
