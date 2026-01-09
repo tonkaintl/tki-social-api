@@ -46,6 +46,7 @@ const envSchema = z.object({
   PORTAL_API_URL: z.string().url().default('http://localhost:4200'),
   PORTAL_INTERNAL_SECRET: z.string().min(1).default('test_portal_secret'),
   THREADS_ACCESS_TOKEN: z.string().optional(),
+  TONKA_SPARK_RECIPIENTS: z.string().default('stephen@tonkaintl.com'),
   THREADS_CLIENT_ID: z.string().optional(),
   THREADS_CLIENT_SECRET: z.string().optional(),
   TIKTOK_BUSINESS_ACCESS_TOKEN: z.string().optional(),

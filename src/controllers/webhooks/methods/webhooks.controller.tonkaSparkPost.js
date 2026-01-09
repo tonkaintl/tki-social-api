@@ -152,7 +152,7 @@ export const handleTonkaSparkPost = async (req, res) => {
           }
         : null,
       head_writer_system_message: content.head_writer_system_message || null,
-      notifier_email: content.notifier_email,
+      notifier_email: content.notifier_email || 'stephen@tonkaintl.com',
       outputs: content.outputs || null,
       platform_summaries: content.platform_summaries || null,
       project: content.project
