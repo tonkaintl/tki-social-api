@@ -55,6 +55,11 @@ const envSchema = z.object({
   TIKTOK_PERSONAL_CLIENT_ID: z.string().optional(),
   TIKTOK_PERSONAL_CLIENT_SECRET: z.string().optional(),
   TONKA_SPARK_RECIPIENTS: z.string().default('stephen@tonkaintl.com'),
+  TONKA_SPARK_SEND_EMAIL: z
+    .string()
+    .transform(val => val === 'true')
+    .pipe(z.boolean())
+    .default(true),
   X_ACCESS_TOKEN: z.string().optional(),
   X_CLIENT_ID: z.string().optional(),
   X_CLIENT_SECRET: z.string().optional(),
