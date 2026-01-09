@@ -165,8 +165,8 @@ export async function updateTonkaSpark(req, res) {
     logger.error('Failed to update tonka spark', {
       error: error.message,
       requestId: req.id,
-      stack: error.stack,
       sparkId: req.params.id,
+      stack: error.stack,
     });
 
     return res.status(500).json({
