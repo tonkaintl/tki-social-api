@@ -146,7 +146,7 @@ export const handleTonkaSparkPost = async (req, res) => {
       await emailService.sendEmail({
         htmlBody: emailBody,
         subject: emailSubject,
-        to: contentDocument.notifier_email,
+        to: contentDocument.notifier_email.split(',').map(e => e.trim()),
       });
 
       contentDocument.status = CONTENT_STATUS.SENT;
