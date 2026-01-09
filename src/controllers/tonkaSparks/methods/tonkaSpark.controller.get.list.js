@@ -1,11 +1,11 @@
+import { FEED_CATEGORY_VALUES } from '../../../constants/tonkaDispatch.js';
 import {
   SPARK_ERROR_CODE,
   SPARK_FIELDS,
   SPARK_GROUP_VALUES,
   SPARK_PAGINATION,
   SPARK_SORT_FIELD_VALUES,
-} from '../../../constants/sparks.js';
-import { FEED_CATEGORY_VALUES } from '../../../constants/tonkaDispatch.js';
+} from '../../../constants/tonkaSparks.js';
 import TonkaSparks from '../../../models/tonkaSparks.model.js';
 import { logger } from '../../../utils/logger.js';
 

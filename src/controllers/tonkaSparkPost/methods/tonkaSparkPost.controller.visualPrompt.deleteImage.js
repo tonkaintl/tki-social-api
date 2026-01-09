@@ -10,7 +10,7 @@ import {
   ERROR_CODES,
   ERROR_MESSAGES,
 } from '../../../constants/errors.js';
-import TonkaSparkPost from '../../../models/tonkaSparkPost.model.js';
+import TonkaSparkPosts from '../../../models/tonkaSparkPost.model.js';
 import { logger } from '../../../utils/logger.js';
 
 // ----------------------------------------------------------------------------
@@ -51,7 +51,7 @@ export const deleteVisualPromptImage = async (req, res) => {
     const query = id.includes('-') ? { content_id: id } : { _id: id };
 
     // Remove the image from the prompt's images array
-    const updatedEntry = await TonkaSparkPost.findOneAndUpdate(
+    const updatedEntry = await TonkaSparkPosts.findOneAndUpdate(
       {
         ...query,
         'visual_prompts.id': promptId,

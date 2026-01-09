@@ -10,7 +10,7 @@ import {
   ERROR_CODES,
   ERROR_MESSAGES,
 } from '../../../constants/errors.js';
-import TonkaSparkPost from '../../../models/tonkaSparkPost.model.js';
+import TonkaSparkPosts from '../../../models/tonkaSparkPost.model.js';
 import { logger } from '../../../utils/logger.js';
 
 // ----------------------------------------------------------------------------
@@ -53,7 +53,7 @@ export const addVisualPromptImage = async (req, res) => {
     const query = id.includes('-') ? { content_id: id } : { _id: id };
 
     // Check if entry and prompt exist
-    const entry = await TonkaSparkPost.findOne(query);
+    const entry = await TonkaSparkPosts.findOne(query);
 
     if (!entry) {
       const error = new ApiError(
@@ -94,7 +94,7 @@ export const addVisualPromptImage = async (req, res) => {
     };
 
     // Update the specific visual prompt with the new image
-    const updatedEntry = await TonkaSparkPost.findOneAndUpdate(
+    const updatedEntry = await TonkaSparkPosts.findOneAndUpdate(
       {
         ...query,
         'visual_prompts.id': promptId,

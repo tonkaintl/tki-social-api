@@ -4,7 +4,7 @@
 // ----------------------------------------------------------------------------
 
 import { ApiError, ERROR_CODES } from '../../../constants/errors.js';
-import TonkaSparkPost from '../../../models/tonkaSparkPost.model.js';
+import TonkaSparkPosts from '../../../models/tonkaSparkPost.model.js';
 import { logger } from '../../../utils/logger.js';
 
 export const getTonkaSparkPostById = async (req, res) => {
@@ -19,7 +19,7 @@ export const getTonkaSparkPostById = async (req, res) => {
       ? { content_id: id } // UUID format (contains dashes)
       : { _id: id }; // MongoDB ObjectId format
 
-    const content = await TonkaSparkPost.findOne(query).lean();
+    const content = await TonkaSparkPosts.findOne(query).lean();
 
     if (!content) {
       const error = new ApiError(

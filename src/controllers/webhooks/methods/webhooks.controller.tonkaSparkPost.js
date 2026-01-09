@@ -9,7 +9,7 @@ import crypto from 'crypto';
 import { WRITERS_ROOM_EMAIL_TEMPLATES } from '../../../constants/emailTemplates.js';
 import { ApiError, ERROR_CODES } from '../../../constants/errors.js';
 import { CONTENT_STATUS } from '../../../constants/writersroom.js';
-import TonkaSparkPost from '../../../models/tonkaSparkPost.model.js';
+import TonkaSparkPosts from '../../../models/tonkaSparkPost.model.js';
 import { emailService } from '../../../services/email.service.js';
 import { logger } from '../../../utils/logger.js';
 
@@ -128,7 +128,7 @@ export const handleTonkaSparkPost = async (req, res) => {
 
     logger.info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     logger.info('💾 Creating database document...');
-    const contentDocument = await TonkaSparkPost.create({
+    const contentDocument = await TonkaSparkPosts.create({
       content_id: contentId,
       creative: content.creative || null,
       final_draft: content.final_draft
@@ -182,7 +182,7 @@ export const handleTonkaSparkPost = async (req, res) => {
     logger.info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     logger.info('✓ DATABASE SAVE SUCCESSFUL', {
       brand: content.project?.brand,
-      collection: 'tonka_spark_post',
+      collection: 'tonka_spark_posts',
       created_at: contentDocument.created_at.toISOString(),
       document_id: contentDocument._id.toString(),
       mode: content.project_mode,

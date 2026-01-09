@@ -259,10 +259,10 @@ tonkaSparkPostSchema.index({ 'project.brand': 1 });
 tonkaSparkPostSchema.index({ project_mode: 1 });
 
 // Model
-const TonkaSparkPost = mongoose.model(
-  'TonkaSparkPost',
+const TonkaSparkPosts = mongoose.model(
+  'TonkaSparkPosts',
   tonkaSparkPostSchema,
-  'tonka_spark_post'
+  'tonka_spark_posts'
 );
 
-export default TonkaSparkPost;
+export default TonkaSparkPosts;

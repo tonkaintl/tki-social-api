@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
-import { SPARK_GROUP_VALUES } from '../constants/sparks.js';
 import { FEED_CATEGORY_VALUES } from '../constants/tonkaDispatch.js';
+import { SPARK_GROUP_VALUES } from '../constants/tonkaSparks.js';
 
 const Schema = mongoose.Schema;
 

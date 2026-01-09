@@ -3,7 +3,7 @@ import {
   PLATFORM_BRANDS_VALUES,
   PLATFORM_MODES_VALUES,
 } from '../../../constants/writersroom.js';
-import TonkaSparkPost from '../../../models/tonkaSparkPost.model.js';
+import TonkaSparkPosts from '../../../models/tonkaSparkPost.model.js';
 import { logger } from '../../../utils/logger.js';
 
 /**
@@ -71,7 +71,7 @@ export async function getTonkaSparkPostList(req, res) {
 
     // Execute query with projection for lightweight list
     const [content, totalCount] = await Promise.all([
-      TonkaSparkPost.find(filter)
+      TonkaSparkPosts.find(filter)
         .select({
           _id: 1,
           content_id: 1,
@@ -88,7 +88,7 @@ export async function getTonkaSparkPostList(req, res) {
         .skip(skip)
         .limit(limitNum)
         .lean(),
-      TonkaSparkPost.countDocuments(filter),
+      TonkaSparkPosts.countDocuments(filter),
     ]);
 
     const totalPages = Math.ceil(totalCount / limitNum);
