@@ -123,11 +123,12 @@ export const handleTonkaSparkPost = async (req, res) => {
         doc_link = `https://drive.google.com/drive/folders/${content.outputs.gdocs_folder_id}`;
       }
 
-      const emailSubject =
-        WRITERS_ROOM_EMAIL_TEMPLATES.CONTENT_NOTIFICATION.SUBJECT({
+      const emailSubject = `TKI-WR: ${WRITERS_ROOM_EMAIL_TEMPLATES.CONTENT_NOTIFICATION.SUBJECT(
+        {
           brand: content.project?.brand_meta?.name || content.project?.brand,
           title: content.final_draft?.title,
-        });
+        }
+      )}`;
 
       const emailBody = WRITERS_ROOM_EMAIL_TEMPLATES.CONTENT_NOTIFICATION.BODY({
         doc_link,

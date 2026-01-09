@@ -83,13 +83,19 @@ class EmailService {
             },
           },
           subject,
-          toRecipients: [
-            {
-              emailAddress: {
-                address: String(to),
-              },
-            },
-          ],
+          toRecipients: Array.isArray(to)
+            ? to.map(email => ({
+                emailAddress: {
+                  address: email,
+                },
+              }))
+            : [
+                {
+                  emailAddress: {
+                    address: to,
+                  },
+                },
+              ],
         },
         saveToSentItems: true,
       };
