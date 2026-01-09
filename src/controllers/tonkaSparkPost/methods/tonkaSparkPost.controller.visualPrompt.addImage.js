@@ -1,5 +1,5 @@
 /**
- * Writers Room Entries Visual Prompt Image Upload Controller
+ * Tonka Spark Post Visual Prompt Image Upload Controller
  * Add generated images to visual prompts
  */
 
@@ -10,7 +10,7 @@ import {
   ERROR_CODES,
   ERROR_MESSAGES,
 } from '../../../constants/errors.js';
-import WritersRoomEntries from '../../../models/writersRoomEntries.model.js';
+import TonkaSparkPost from '../../../models/tonkaSparkPost.model.js';
 import { logger } from '../../../utils/logger.js';
 
 // ----------------------------------------------------------------------------
@@ -36,7 +36,7 @@ const addImageBodySchema = z.object({
 
 /**
  * Add Generated Image to Visual Prompt
- * POST /api/writers-room-entries/:id/visual-prompts/:promptId/images
+ * POST /api/tonka-spark-post/:id/visual-prompts/:promptId/images
  */
 export const addVisualPromptImage = async (req, res) => {
   try {
@@ -53,12 +53,12 @@ export const addVisualPromptImage = async (req, res) => {
     const query = id.includes('-') ? { content_id: id } : { _id: id };
 
     // Check if entry and prompt exist
-    const entry = await WritersRoomEntries.findOne(query);
+    const entry = await TonkaSparkPost.findOne(query);
 
     if (!entry) {
       const error = new ApiError(
         ERROR_CODES.NOT_FOUND,
-        `Writers Room entry not found: ${id}`,
+        `Tonka Spark Post not found: ${id}`,
         404
       );
       return res.status(error.statusCode).json({
@@ -94,7 +94,7 @@ export const addVisualPromptImage = async (req, res) => {
     };
 
     // Update the specific visual prompt with the new image
-    const updatedEntry = await WritersRoomEntries.findOneAndUpdate(
+    const updatedEntry = await TonkaSparkPost.findOneAndUpdate(
       {
         ...query,
         'visual_prompts.id': promptId,

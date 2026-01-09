@@ -10,8 +10,8 @@ import {
   handleTikTokBusinessWebhook,
   handleTikTokPersonalWebhook,
   handleTonkaDispatchRankings,
+  handleTonkaSparkPost,
   handleWritersRoomAds,
-  handleWritersRoomEntries,
   handleXWebhook,
   handleYouTubeWebhook,
   verifyInstagramWebhook,
@@ -94,10 +94,10 @@ router.post('/youtube', handleYouTubeWebhook);
 router.get('/facebook/callback', handleFacebookCallback);
 
 // ----------------------------------------------------------------------------
-// Writers Room Webhook Routes (Internal - requires x-internal-secret from n8n)
+// Tonka Spark Post Webhook Routes (Internal - requires x-internal-secret from n8n)
 // ----------------------------------------------------------------------------
 router.post('/writers-room/ads', verifyN8nSecret, handleWritersRoomAds);
-router.post('/writers-room/entries', verifyN8nSecret, handleWritersRoomEntries);
+router.post('/tonka-spark-post', verifyN8nSecret, handleTonkaSparkPost);
 
 // ----------------------------------------------------------------------------
 // Tonka Dispatch Webhook Routes (Internal - requires x-internal-secret from n8n)

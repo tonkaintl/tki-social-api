@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
-// POST /webhooks/writers-room/content
-// Writers Room content webhook handler
+// POST /webhooks/tonka-spark-post
+// Tonka Spark Post webhook handler
 // Receives validated content from n8n automation and sends notification email
 // ----------------------------------------------------------------------------
 
@@ -9,15 +9,15 @@ import crypto from 'crypto';
 import { WRITERS_ROOM_EMAIL_TEMPLATES } from '../../../constants/emailTemplates.js';
 import { ApiError, ERROR_CODES } from '../../../constants/errors.js';
 import { CONTENT_STATUS } from '../../../constants/writersroom.js';
-import WritersRoomEntries from '../../../models/writersRoomEntries.model.js';
+import TonkaSparkPost from '../../../models/tonkaSparkPost.model.js';
 import { emailService } from '../../../services/email.service.js';
 import { logger } from '../../../utils/logger.js';
 
-export const handleWritersRoomEntries = async (req, res) => {
+export const handleTonkaSparkPost = async (req, res) => {
   const startTime = Date.now();
 
   try {
-    logger.info('=== WRITERS ROOM ENTRIES WEBHOOK START ===');
+    logger.info('=== TONKA SPARK POST WEBHOOK START ===');
     logger.info('Request metadata', {
       body_is_array: Array.isArray(req.body),
       body_size_bytes: JSON.stringify(req.body).length,
@@ -57,7 +57,7 @@ export const handleWritersRoomEntries = async (req, res) => {
 
     // Check if n8n sent an error object
     if (content.error) {
-      logger.error('⚠️  Writers Room workflow error received from n8n', {
+      logger.error('⚠️  Tonka Spark Post workflow error received from n8n', {
         error_code: content.error.code,
         error_message: content.error.message,
         error_name: content.error.name,
@@ -128,7 +128,7 @@ export const handleWritersRoomEntries = async (req, res) => {
 
     logger.info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     logger.info('💾 Creating database document...');
-    const contentDocument = await WritersRoomEntries.create({
+    const contentDocument = await TonkaSparkPost.create({
       content_id: contentId,
       creative: content.creative || null,
       final_draft: content.final_draft
@@ -182,7 +182,7 @@ export const handleWritersRoomEntries = async (req, res) => {
     logger.info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     logger.info('✓ DATABASE SAVE SUCCESSFUL', {
       brand: content.project?.brand,
-      collection: 'writers_room_entries',
+      collection: 'tonka_spark_post',
       created_at: contentDocument.created_at.toISOString(),
       document_id: contentDocument._id.toString(),
       mode: content.project_mode,
@@ -311,7 +311,7 @@ export const handleWritersRoomEntries = async (req, res) => {
 
     const apiError = new ApiError(
       ERROR_CODES.INTERNAL_SERVER_ERROR,
-      'Internal server error processing Writers Room content webhook'
+      'Internal server error processing Tonka Spark Post webhook'
     );
     return res.status(apiError.statusCode).json({
       code: apiError.code,

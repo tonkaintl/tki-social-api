@@ -219,7 +219,7 @@ var OutputsSchema = new Schema(
 );
 
 // Main schema
-var writersRoomEntriesSchema = new Schema({
+var tonkaSparkPostSchema = new Schema({
   content_id: { index: true, required: true, type: String, unique: true },
   created_at: { default: Date.now, type: Date },
   creative: CreativeSchema,
@@ -253,16 +253,16 @@ var writersRoomEntriesSchema = new Schema({
 });
 
 // Indexes for efficient querying (content_id already indexed via unique: true)
-writersRoomEntriesSchema.index({ created_at: -1 });
-writersRoomEntriesSchema.index({ status: 1 });
-writersRoomEntriesSchema.index({ 'project.brand': 1 });
-writersRoomEntriesSchema.index({ project_mode: 1 });
+tonkaSparkPostSchema.index({ created_at: -1 });
+tonkaSparkPostSchema.index({ status: 1 });
+tonkaSparkPostSchema.index({ 'project.brand': 1 });
+tonkaSparkPostSchema.index({ project_mode: 1 });
 
 // Model
-const WritersRoomEntries = mongoose.model(
-  'WritersRoomEntries',
-  writersRoomEntriesSchema,
-  'writers_room_entries'
+const TonkaSparkPost = mongoose.model(
+  'TonkaSparkPost',
+  tonkaSparkPostSchema,
+  'tonka_spark_post'
 );
 
-export default WritersRoomEntries;
+export default TonkaSparkPost;

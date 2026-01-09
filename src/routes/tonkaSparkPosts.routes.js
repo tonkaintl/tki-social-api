@@ -1,34 +1,31 @@
 import express from 'express';
 
 import {
-  addVisualPromptImage,
-  deleteVisualPromptImage,
-  getWritersRoomEntriesById,
-  getWritersRoomEntriesList,
-} from '../controllers/writersRoomEntries/methods.js';
+  listSparks,
+  updateSpark,
+  upsertSpark,
+} from '../controllers/sparks/methods.js';
 import { verifyToken } from '../middleware/auth.bearer.js';
+import { verifyEitherAuth } from '../middleware/auth.either.js';
 
 // ----------------------------------------------------------------------------
 const router = express.Router();
 // ----------------------------------------------------------------------------
 
-// Apply Bearer token authentication to all Writers Room entries routes
-router.use(verifyToken);
+// ----------------------------------------------------------------------------
+// POST Routes
+// ----------------------------------------------------------------------------
+router.post('/', verifyToken, upsertSpark);
 
 // ----------------------------------------------------------------------------
 // GET Routes
 // ----------------------------------------------------------------------------
-router.get('/', getWritersRoomEntriesList);
-router.get('/:id', getWritersRoomEntriesById);
+router.get('/', verifyEitherAuth, listSparks);
 
 // ----------------------------------------------------------------------------
-// Visual Prompts Routes
+// PATCH Routes
 // ----------------------------------------------------------------------------
-router.post('/:id/visual-prompts/:promptId/images', addVisualPromptImage);
-router.delete(
-  '/:id/visual-prompts/:promptId/images/:imageUrl',
-  deleteVisualPromptImage
-);
+router.patch('/:id', verifyToken, updateSpark);
 
 // ----------------------------------------------------------------------------
 export default router;

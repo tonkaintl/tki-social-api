@@ -1,5 +1,5 @@
 /**
- * Writers Room Entries Visual Prompt Image Delete Controller
+ * Tonka Spark Post Visual Prompt Image Delete Controller
  * Remove generated image from visual prompt
  */
 
@@ -10,7 +10,7 @@ import {
   ERROR_CODES,
   ERROR_MESSAGES,
 } from '../../../constants/errors.js';
-import WritersRoomEntries from '../../../models/writersRoomEntries.model.js';
+import TonkaSparkPost from '../../../models/tonkaSparkPost.model.js';
 import { logger } from '../../../utils/logger.js';
 
 // ----------------------------------------------------------------------------
@@ -29,7 +29,7 @@ const deleteImageParamsSchema = z.object({
 
 /**
  * Delete Image from Visual Prompt
- * DELETE /api/writers-room-entries/:id/visual-prompts/:promptId/images/:imageUrl
+ * DELETE /api/tonka-spark-post/:id/visual-prompts/:promptId/images/:imageUrl
  */
 export const deleteVisualPromptImage = async (req, res) => {
   try {
@@ -51,7 +51,7 @@ export const deleteVisualPromptImage = async (req, res) => {
     const query = id.includes('-') ? { content_id: id } : { _id: id };
 
     // Remove the image from the prompt's images array
-    const updatedEntry = await WritersRoomEntries.findOneAndUpdate(
+    const updatedEntry = await TonkaSparkPost.findOneAndUpdate(
       {
         ...query,
         'visual_prompts.id': promptId,
@@ -68,7 +68,7 @@ export const deleteVisualPromptImage = async (req, res) => {
     if (!updatedEntry) {
       const error = new ApiError(
         ERROR_CODES.NOT_FOUND,
-        `Writers Room entry or visual prompt not found`,
+        `Tonka Spark Post or visual prompt not found`,
         404
       );
       return res.status(error.statusCode).json({

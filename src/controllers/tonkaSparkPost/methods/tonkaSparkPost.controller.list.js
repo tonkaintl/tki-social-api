@@ -3,14 +3,14 @@ import {
   PLATFORM_BRANDS_VALUES,
   PLATFORM_MODES_VALUES,
 } from '../../../constants/writersroom.js';
-import WritersRoomEntries from '../../../models/writersRoomEntries.model.js';
+import TonkaSparkPost from '../../../models/tonkaSparkPost.model.js';
 import { logger } from '../../../utils/logger.js';
 
 /**
- * GET /api/writers-room-entries
- * List Writers Room entries with filtering and pagination
+ * GET /api/tonka-spark-post
+ * List Tonka Spark Posts with filtering and pagination
  */
-export async function getWritersRoomEntriesList(req, res) {
+export async function getTonkaSparkPostList(req, res) {
   try {
     const {
       brand,
@@ -23,7 +23,7 @@ export async function getWritersRoomEntriesList(req, res) {
       status,
     } = req.query;
 
-    logger.info('Get Writers Room entries list request', {
+    logger.info('Get Tonka Spark Post list request', {
       brand,
       limit: Number(limit),
       mode,
@@ -71,7 +71,7 @@ export async function getWritersRoomEntriesList(req, res) {
 
     // Execute query with projection for lightweight list
     const [content, totalCount] = await Promise.all([
-      WritersRoomEntries.find(filter)
+      TonkaSparkPost.find(filter)
         .select({
           _id: 1,
           content_id: 1,
@@ -88,12 +88,12 @@ export async function getWritersRoomEntriesList(req, res) {
         .skip(skip)
         .limit(limitNum)
         .lean(),
-      WritersRoomEntries.countDocuments(filter),
+      TonkaSparkPost.countDocuments(filter),
     ]);
 
     const totalPages = Math.ceil(totalCount / limitNum);
 
-    logger.info('Writers Room entries list retrieved successfully', {
+    logger.info('Tonka Spark Post list retrieved successfully', {
       count: content.length,
       page: pageNum,
       requestId: req.id,
@@ -119,15 +119,15 @@ export async function getWritersRoomEntriesList(req, res) {
       requestId: req.id,
     });
   } catch (error) {
-    logger.error('Failed to get Writers Room entries list', {
+    logger.error('Failed to get Tonka Spark Post list', {
       error: error.message,
       requestId: req.id,
       stack: error.stack,
     });
 
     return res.status(500).json({
-      code: 'WRITERS_ROOM_ENTRIES_FETCH_FAILED',
-      message: 'Failed to retrieve Writers Room entries',
+      code: 'TONKA_SPARK_POST_FETCH_FAILED',
+      message: 'Failed to retrieve Tonka Spark Posts',
       requestId: req.id,
     });
   }
