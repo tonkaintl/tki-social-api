@@ -85,7 +85,7 @@ app.use('/api/platforms', platformsRoutes);
 app.use('/api/tonka-spark', tonkaSparksRoutes);
 app.use('/api/webhooks', webhooksRoutes);
 app.use('/api/writers-room-ads', writersRoomAdsRoutes);
-app.use('/api/tonka-spark-post', tonkaSparkPostRoutes);
+app.use('/api/tonka-spark-posts', tonkaSparkPostRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {
