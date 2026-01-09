@@ -1,6 +1,6 @@
 /**
- * Writers Room Entries Visual Prompt Image Upload Controller
- * Add generated images to visual prompts
+ * Tonka Spark Post Visual Prompt Image Delete Controller
+ * Remove generated image from visual prompt
  */
 
 import { z } from 'zod';
@@ -10,24 +10,17 @@ import {
   ERROR_CODES,
   ERROR_MESSAGES,
 } from '../../../constants/errors.js';
-import WritersRoomEntries from '../../../models/writersRoomEntries.model.js';
+import TonkaSparkPosts from '../../../models/tonkaSparkPost.model.js';
 import { logger } from '../../../utils/logger.js';
 
 // ----------------------------------------------------------------------------
 // Validation Schemas
 // ----------------------------------------------------------------------------
 
-const visualPromptParamsSchema = z.object({
+const deleteImageParamsSchema = z.object({
   id: z.string().min(1, 'Entry ID is required'),
+  imageUrl: z.string().min(1, 'Image URL is required'),
   promptId: z.string().min(1, 'Prompt ID is required'),
-});
-
-const addImageBodySchema = z.object({
-  alt: z.string().optional(),
-  description: z.string().optional(),
-  filename: z.string().optional(),
-  imageUrl: z.string().url('Valid URL is required'),
-  size: z.number().optional(),
 });
 
 // ----------------------------------------------------------------------------
@@ -35,16 +28,21 @@ const addImageBodySchema = z.object({
 // ----------------------------------------------------------------------------
 
 /**
- * Add Generated Image to Visual Prompt
- * POST /api/writers-room-entries/:id/visual-prompts/:promptId/images
+ * Delete Image from Visual Prompt
+ * DELETE /api/tonka-spark-post/:id/visual-prompts/:promptId/images/:imageUrl
  */
-export const addVisualPromptImage = async (req, res) => {
+export const deleteVisualPromptImage = async (req, res) => {
   try {
-    const { id, promptId } = visualPromptParamsSchema.parse(req.params);
-    const imageData = addImageBodySchema.parse(req.body);
+    const { id, imageUrl, promptId } = deleteImageParamsSchema.parse(
+      req.params
+    );
 
-    logger.info('Adding image to visual prompt', {
+    // Decode the URL-encoded imageUrl parameter
+    const decodedImageUrl = decodeURIComponent(imageUrl);
+
+    logger.info('Deleting image from visual prompt', {
       entryId: id,
+      imageUrl: decodedImageUrl,
       promptId,
       requestId: req.id,
     });
@@ -52,55 +50,16 @@ export const addVisualPromptImage = async (req, res) => {
     // Determine query type (content_id vs _id)
     const query = id.includes('-') ? { content_id: id } : { _id: id };
 
-    // Check if entry and prompt exist
-    const entry = await WritersRoomEntries.findOne(query);
-
-    if (!entry) {
-      const error = new ApiError(
-        ERROR_CODES.NOT_FOUND,
-        `Writers Room entry not found: ${id}`,
-        404
-      );
-      return res.status(error.statusCode).json({
-        code: error.code,
-        error: error.message,
-      });
-    }
-
-    const promptExists = entry.visual_prompts?.some(
-      prompt => prompt.id === promptId
-    );
-
-    if (!promptExists) {
-      const error = new ApiError(
-        ERROR_CODES.NOT_FOUND,
-        `Visual prompt not found: ${promptId}`,
-        404
-      );
-      return res.status(error.statusCode).json({
-        code: error.code,
-        error: error.message,
-      });
-    }
-
-    // Create image object with metadata
-    const imageObject = {
-      alt: imageData.alt,
-      created_at: new Date(),
-      description: imageData.description,
-      filename: imageData.filename,
-      size: imageData.size,
-      url: imageData.imageUrl,
-    };
-
-    // Update the specific visual prompt with the new image
-    const updatedEntry = await WritersRoomEntries.findOneAndUpdate(
+    // Remove the image from the prompt's images array
+    const updatedEntry = await TonkaSparkPosts.findOneAndUpdate(
       {
         ...query,
         'visual_prompts.id': promptId,
       },
       {
-        $addToSet: { 'visual_prompts.$.images': imageObject },
+        $pull: {
+          'visual_prompts.$.images': { url: decodedImageUrl },
+        },
         $set: { updated_at: new Date() },
       },
       { new: true, projection: { _id: 1, content_id: 1, visual_prompts: 1 } }
@@ -108,8 +67,9 @@ export const addVisualPromptImage = async (req, res) => {
 
     if (!updatedEntry) {
       const error = new ApiError(
-        ERROR_CODES.INTERNAL_SERVER_ERROR,
-        'Failed to update visual prompt'
+        ERROR_CODES.NOT_FOUND,
+        `Tonka Spark Post or visual prompt not found`,
+        404
       );
       return res.status(error.statusCode).json({
         code: error.code,
@@ -123,26 +83,26 @@ export const addVisualPromptImage = async (req, res) => {
     );
 
     const response = {
-      added_image: imageObject,
       content_id: updatedEntry.content_id,
       image_count: updatedPrompt?.images?.length || 0,
-      message: 'Image added to visual prompt successfully',
+      message: 'Image deleted from visual prompt successfully',
       prompt_id: promptId,
     };
 
-    logger.info('Image added to visual prompt successfully', {
+    logger.info('Image deleted from visual prompt successfully', {
       contentId: updatedEntry.content_id,
       imageCount: updatedPrompt?.images?.length,
-      imageUrl: imageData.imageUrl,
+      imageUrl: decodedImageUrl,
       promptId,
       requestId: req.id,
     });
 
-    res.status(201).json(response);
+    res.status(200).json(response);
   } catch (error) {
-    logger.error('Error adding image to visual prompt', {
+    logger.error('Error deleting image from visual prompt', {
       entryId: req.params.id,
       error: error.message,
+      imageUrl: req.params.imageUrl,
       promptId: req.params.promptId,
       requestId: req.id,
       stack: error.stack,
@@ -169,7 +129,7 @@ export const addVisualPromptImage = async (req, res) => {
     res.status(apiError.statusCode).json({
       code: apiError.code,
       error: apiError.message,
-      message: 'Failed to add image to visual prompt',
+      message: 'Failed to delete image from visual prompt',
     });
   }
 };

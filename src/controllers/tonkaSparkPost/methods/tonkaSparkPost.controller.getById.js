@@ -1,13 +1,13 @@
 // ----------------------------------------------------------------------------
-// GET /api/writers-room-entries/:id
-// Get a single Writers Room entry by content_id
+// GET /api/tonka-spark-post/:id
+// Get a single Tonka Spark Post by content_id
 // ----------------------------------------------------------------------------
 
 import { ApiError, ERROR_CODES } from '../../../constants/errors.js';
-import WritersRoomEntries from '../../../models/writersRoomEntries.model.js';
+import TonkaSparkPosts from '../../../models/tonkaSparkPost.model.js';
 import { logger } from '../../../utils/logger.js';
 
-export const getWritersRoomEntriesById = async (req, res) => {
+export const getTonkaSparkPostById = async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -19,12 +19,12 @@ export const getWritersRoomEntriesById = async (req, res) => {
       ? { content_id: id } // UUID format (contains dashes)
       : { _id: id }; // MongoDB ObjectId format
 
-    const content = await WritersRoomEntries.findOne(query).lean();
+    const content = await TonkaSparkPosts.findOne(query).lean();
 
     if (!content) {
       const error = new ApiError(
         ERROR_CODES.NOT_FOUND,
-        `Writers Room entry not found: ${id}`,
+        `Tonka Spark Post not found: ${id}`,
         404
       );
       return res.status(error.statusCode).json({
@@ -33,7 +33,7 @@ export const getWritersRoomEntriesById = async (req, res) => {
       });
     }
 
-    logger.info('Writers Room entry retrieved', {
+    logger.info('Tonka Spark Post retrieved', {
       content_id: id,
     });
 
@@ -42,7 +42,7 @@ export const getWritersRoomEntriesById = async (req, res) => {
     // ------------------------------------------------------------------------
     return res.status(200).json(content);
   } catch (error) {
-    logger.error('Error retrieving Writers Room entry', {
+    logger.error('Error retrieving Tonka Spark Post', {
       content_id: req.params.id,
       error: error.message,
       stack: error.stack,
@@ -50,7 +50,7 @@ export const getWritersRoomEntriesById = async (req, res) => {
 
     const apiError = new ApiError(
       ERROR_CODES.INTERNAL_ERROR,
-      'Failed to retrieve Writers Room entry',
+      'Failed to retrieve Tonka Spark Post',
       500
     );
 

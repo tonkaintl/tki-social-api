@@ -22,9 +22,10 @@ import {
   tonkaDispatchFeedsRoutes,
   tonkaDispatchNewslettersRoutes,
   tonkaDispatchRankingsRoutes,
+  tonkaSparkPostRoutes,
+  tonkaSparksRoutes,
   webhooksRoutes,
   writersRoomAdsRoutes,
-  writersRoomEntriesRoutes,
 } from './routes/index.js';
 import { logger } from './utils/logger.js';
 
@@ -81,9 +82,10 @@ app.use('/api/health', healthRoutes);
 app.use('/api/internal', internalRoutes);
 app.use('/api/metricool', metricoolRoutes);
 app.use('/api/platforms', platformsRoutes);
+app.use('/api/tonka-spark', tonkaSparksRoutes);
 app.use('/api/webhooks', webhooksRoutes);
 app.use('/api/writers-room-ads', writersRoomAdsRoutes);
-app.use('/api/writers-room-entries', writersRoomEntriesRoutes);
+app.use('/api/tonka-spark-post', tonkaSparkPostRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {

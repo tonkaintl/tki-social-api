@@ -7,9 +7,10 @@ import tonkaDispatchArticlesRoutes from './tonkaDispatchArticles.routes.js';
 import tonkaDispatchFeedsRoutes from './tonkaDispatchFeeds.routes.js';
 import tonkaDispatchNewslettersRoutes from './tonkaDispatchNewsletters.routes.js';
 import tonkaDispatchRankingsRoutes from './tonkaDispatchRankings.routes.js';
+import tonkaSparkPostRoutes from './tonkaSparkPost.routes.js';
+import tonkaSparksRoutes from './tonkaSparks.routes.js';
 import webhooksRoutes from './webhooks.routes.js';
 import writersRoomAdsRoutes from './writersRoomAds.routes.js';
-import writersRoomEntriesRoutes from './writersRoomEntries.routes.js';
 
 // ----------------------------------------------------------------------------
 
@@ -23,7 +24,8 @@ export {
   tonkaDispatchFeedsRoutes,
   tonkaDispatchNewslettersRoutes,
   tonkaDispatchRankingsRoutes,
+  tonkaSparkPostRoutes,
+  tonkaSparksRoutes,
   webhooksRoutes,
   writersRoomAdsRoutes,
-  writersRoomEntriesRoutes,
 };

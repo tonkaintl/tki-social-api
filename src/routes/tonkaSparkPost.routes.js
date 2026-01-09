@@ -3,23 +3,23 @@ import express from 'express';
 import {
   addVisualPromptImage,
   deleteVisualPromptImage,
-  getWritersRoomEntriesById,
-  getWritersRoomEntriesList,
-} from '../controllers/writersRoomEntries/methods.js';
+  getTonkaSparkPostById,
+  getTonkaSparkPostList,
+} from '../controllers/tonkaSparkPost/methods.js';
 import { verifyToken } from '../middleware/auth.bearer.js';
 
 // ----------------------------------------------------------------------------
 const router = express.Router();
 // ----------------------------------------------------------------------------
 
-// Apply Bearer token authentication to all Writers Room entries routes
+// Apply Bearer token authentication to all Tonka Spark Post routes
 router.use(verifyToken);
 
 // ----------------------------------------------------------------------------
 // GET Routes
 // ----------------------------------------------------------------------------
-router.get('/', getWritersRoomEntriesList);
-router.get('/:id', getWritersRoomEntriesById);
+router.get('/', getTonkaSparkPostList);
+router.get('/:id', getTonkaSparkPostById);
 
 // ----------------------------------------------------------------------------
 // Visual Prompts Routes
