@@ -13,8 +13,8 @@ import { fileURLToPath } from 'url';
 
 import connectToDb from '../src/config/database.js';
 import { config } from '../src/config/env.js';
-import { SPARK_GROUP } from '../src/constants/sparks.js';
-import Sparks from '../src/models/sparks.model.js';
+import { SPARK_GROUP } from '../src/constants/tonkaSparks.js';
+import TonkaSparks from '../src/models/tonkaSparks.model.js';
 import { logger } from '../src/utils/logger.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -87,7 +87,7 @@ async function importSparks() {
     await connectToDb(config.MONGODB_TKISOCIAL_URI);
     logger.info('Connected to MongoDB');
 
-    const sparksDir = path.join(__dirname, '../src/controllers/sparks');
+    const sparksDir = path.join(__dirname, '../src/controllers/tonkaSparks');
     const allSparks = [];
 
     // Read each file and parse sparks
@@ -115,7 +115,7 @@ async function importSparks() {
 
     for (const spark of allSparks) {
       try {
-        const result = await Sparks.findOneAndUpdate(
+        const result = await TonkaSparks.findOneAndUpdate(
           { section: spark.section },
           {
             $set: {
