@@ -18,12 +18,12 @@ import {
   internalRoutes,
   metricoolRoutes,
   platformsRoutes,
-  tonkaSparksRoutes,
   tonkaDispatchArticlesRoutes,
   tonkaDispatchFeedsRoutes,
   tonkaDispatchNewslettersRoutes,
   tonkaDispatchRankingsRoutes,
   tonkaSparkPostRoutes,
+  tonkaSparksRoutes,
   webhooksRoutes,
   writersRoomAdsRoutes,
 } from './routes/index.js';
