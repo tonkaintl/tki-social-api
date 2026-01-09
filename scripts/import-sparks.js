@@ -87,7 +87,7 @@ async function importSparks() {
     await connectToDb(config.MONGODB_TKISOCIAL_URI);
     logger.info('Connected to MongoDB');
 
-    const sparksDir = path.join(__dirname, '../src/controllers/tonkaSparks');
+    const sparksDir = path.join(__dirname, '../docs');
     const allSparks = [];
 
     // Read each file and parse sparks
