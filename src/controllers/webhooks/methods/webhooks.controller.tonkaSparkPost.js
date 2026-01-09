@@ -298,6 +298,7 @@ export const handleTonkaSparkPost = async (req, res) => {
       status: contentDocument.status,
     });
   } catch (error) {
+    console.log('WEBHOOK ERROR:', error);
     logger.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     logger.error('❌ WEBHOOK PROCESSING FAILED', {
       error_code: error.code || 'UNKNOWN',

@@ -22,7 +22,7 @@ import {
   tonkaDispatchFeedsRoutes,
   tonkaDispatchNewslettersRoutes,
   tonkaDispatchRankingsRoutes,
-  tonkaSparkPostRoutes,
+  tonkaSparkPostsRoutes,
   tonkaSparksRoutes,
   webhooksRoutes,
   writersRoomAdsRoutes,
@@ -83,9 +83,9 @@ app.use('/api/internal', internalRoutes);
 app.use('/api/metricool', metricoolRoutes);
 app.use('/api/platforms', platformsRoutes);
 app.use('/api/tonka-spark', tonkaSparksRoutes);
+app.use('/api/tonka-spark-posts', tonkaSparkPostsRoutes);
 app.use('/api/webhooks', webhooksRoutes);
 app.use('/api/writers-room-ads', writersRoomAdsRoutes);
-app.use('/api/tonka-spark-posts', tonkaSparkPostRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {
