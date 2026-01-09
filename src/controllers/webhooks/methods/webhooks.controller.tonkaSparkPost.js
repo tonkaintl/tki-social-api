@@ -6,6 +6,7 @@
 
 import crypto from 'crypto';
 
+import { config } from '../../../config/env.js';
 import { WRITERS_ROOM_EMAIL_TEMPLATES } from '../../../constants/emailTemplates.js';
 import { ApiError, ERROR_CODES } from '../../../constants/errors.js';
 import { CONTENT_STATUS } from '../../../constants/writersroom.js';
@@ -152,7 +153,7 @@ export const handleTonkaSparkPost = async (req, res) => {
           }
         : null,
       head_writer_system_message: content.head_writer_system_message || null,
-      notifier_email: content.notifier_email || 'stephen@tonkaintl.com',
+      notifier_email: content.notifier_email || config.TONKA_SPARK_RECIPIENTS,
       outputs: content.outputs || null,
       platform_summaries: content.platform_summaries || null,
       project: content.project
@@ -195,7 +196,11 @@ export const handleTonkaSparkPost = async (req, res) => {
     // ------------------------------------------------------------------------
     logger.info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     logger.info('📧 EMAIL NOTIFICATION CHECK');
-    if (content.send_email && content.notifier_email) {
+    const shouldSendEmail =
+      content.send_email !== undefined
+        ? content.send_email
+        : config.TONKA_SPARK_SEND_EMAIL;
+    if (shouldSendEmail && content.notifier_email) {
       logger.info('→ Email notification enabled', {
         notifier_email: content.notifier_email,
         send_email: true,
