@@ -1,32 +1,32 @@
 import mongoose from 'mongoose';
 
-import { FEED_CATEGORY_VALUES } from '../../../constants/tonkaDispatch.js';
 import {
   SPARK_ERROR_CODE,
   SPARK_FIELDS,
   SPARK_GROUP_VALUES,
   SPARK_UPDATE_FIELDS_VALUES,
 } from '../../../constants/sparks.js';
-import Sparks from '../../../models/sparks.model.js';
+import { FEED_CATEGORY_VALUES } from '../../../constants/tonkaDispatch.js';
+import TonkaSparks from '../../../models/tonkaSparks.model.js';
 import { logger } from '../../../utils/logger.js';
 
 /**
- * Update a spark by ID (partial update)
+ * Update a tonka spark by ID (partial update)
  */
-export async function updateSpark(req, res) {
+export async function updateTonkaSpark(req, res) {
   try {
     const { id } = req.params;
 
     // Validate MongoDB ObjectId
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      logger.warn('Invalid tonka spark post ID format', {
+      logger.warn('Invalid tonka spark ID format', {
         requestId: req.id,
         sparkId: id,
       });
 
       return res.status(400).json({
         code: SPARK_ERROR_CODE.INVALID_SPARK_ID,
-        message: 'Invalid tonka spark post ID format',
+        message: 'Invalid tonka spark ID format',
         requestId: req.id,
       });
     }
@@ -54,9 +54,9 @@ export async function updateSpark(req, res) {
 
     // Validate categories if provided
     if (updateFields[SPARK_FIELDS.CATEGORIES]) {
-      const invalidCategories = updateFields[
-        SPARK_FIELDS.CATEGORIES
-      ].filter(cat => !FEED_CATEGORY_VALUES.includes(cat));
+      const invalidCategories = updateFields[SPARK_FIELDS.CATEGORIES].filter(
+        cat => !FEED_CATEGORY_VALUES.includes(cat)
+      );
 
       if (invalidCategories.length > 0) {
         logger.warn('Invalid category values', {
@@ -75,11 +75,7 @@ export async function updateSpark(req, res) {
 
     // Validate group if provided
     if (updateFields[SPARK_FIELDS.GROUP]) {
-      if (
-        !SPARK_GROUP_VALUES.includes(
-          updateFields[SPARK_FIELDS.GROUP]
-        )
-      ) {
+      if (!SPARK_GROUP_VALUES.includes(updateFields[SPARK_FIELDS.GROUP])) {
         logger.warn('Invalid group value', {
           group: updateFields[SPARK_FIELDS.GROUP],
           requestId: req.id,
@@ -97,14 +93,14 @@ export async function updateSpark(req, res) {
     // Add updated_at timestamp
     updateFields[SPARK_FIELDS.UPDATED_AT] = new Date();
 
-    logger.info('Updating tonka spark post', {
+    logger.info('Updating tonka spark', {
       requestId: req.id,
       sparkId: id,
       updateFields: Object.keys(updateFields),
     });
 
     // Perform update
-    const updated = await Sparks.findByIdAndUpdate(
+    const updated = await TonkaSparks.findByIdAndUpdate(
       id,
       { $set: updateFields },
       {
@@ -114,19 +110,19 @@ export async function updateSpark(req, res) {
     );
 
     if (!updated) {
-      logger.warn('Tonka tonka spark post post not found', {
+      logger.warn('Tonka spark not found', {
         requestId: req.id,
         sparkId: id,
       });
 
       return res.status(404).json({
         code: SPARK_ERROR_CODE.SPARK_NOT_FOUND,
-        message: 'Tonka tonka spark post post not found',
+        message: 'Tonka spark not found',
         requestId: req.id,
       });
     }
 
-    logger.info('Tonka tonka spark post post updated successfully', {
+    logger.info('Tonka spark updated successfully', {
       requestId: req.id,
       sparkId: id,
     });
@@ -138,7 +134,7 @@ export async function updateSpark(req, res) {
   } catch (error) {
     // Handle Mongoose validation errors
     if (error.name === 'ValidationError') {
-      logger.warn('Tonka tonka spark post post validation failed', {
+      logger.warn('Tonka spark validation failed', {
         error: error.message,
         requestId: req.id,
         sparkId: req.params.id,
@@ -161,12 +157,12 @@ export async function updateSpark(req, res) {
 
       return res.status(400).json({
         code: SPARK_ERROR_CODE.DUPLICATE_SECTION,
-        message: 'A tonka spark post with this section already exists',
+        message: 'A tonka spark with this section already exists',
         requestId: req.id,
       });
     }
 
-    logger.error('Failed to update tonka spark post', {
+    logger.error('Failed to update tonka spark', {
       error: error.message,
       requestId: req.id,
       stack: error.stack,
@@ -175,7 +171,7 @@ export async function updateSpark(req, res) {
 
     return res.status(500).json({
       code: SPARK_ERROR_CODE.SPARK_UPDATE_FAILED,
-      message: 'Failed to update tonka spark post',
+      message: 'Failed to update tonka spark',
       requestId: req.id,
     });
   }

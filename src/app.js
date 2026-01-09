@@ -18,7 +18,7 @@ import {
   internalRoutes,
   metricoolRoutes,
   platformsRoutes,
-  sparksRoutes,
+  tonkaSparksRoutes,
   tonkaDispatchArticlesRoutes,
   tonkaDispatchFeedsRoutes,
   tonkaDispatchNewslettersRoutes,
@@ -82,7 +82,7 @@ app.use('/api/health', healthRoutes);
 app.use('/api/internal', internalRoutes);
 app.use('/api/metricool', metricoolRoutes);
 app.use('/api/platforms', platformsRoutes);
-app.use('/api/tonka-spark', sparksRoutes);
+app.use('/api/tonka-spark', tonkaSparksRoutes);
 app.use('/api/webhooks', webhooksRoutes);
 app.use('/api/writers-room-ads', writersRoomAdsRoutes);
 app.use('/api/tonka-spark-post', tonkaSparkPostRoutes);

@@ -6,13 +6,13 @@ import {
   SPARK_SORT_FIELD_VALUES,
 } from '../../../constants/sparks.js';
 import { FEED_CATEGORY_VALUES } from '../../../constants/tonkaDispatch.js';
-import Sparks from '../../../models/sparks.model.js';
+import TonkaSparks from '../../../models/tonkaSparks.model.js';
 import { logger } from '../../../utils/logger.js';
 
 /**
- * List sparks with optional filtering, searching, sorting, and pagination
+ * List tonka sparks with optional filtering, searching, sorting, and pagination
  */
-export async function listSparks(req, res) {
+export async function listTonkaSparks(req, res) {
   try {
     const { category, group, limit, page, search, sort } = req.query;
 
@@ -114,7 +114,7 @@ export async function listSparks(req, res) {
       }
     }
 
-    logger.info('Listing sparks', {
+    logger.info('Listing tonka sparks', {
       filter,
       limit: limitNum,
       page: pageNum,
@@ -123,17 +123,17 @@ export async function listSparks(req, res) {
     });
 
     // Get total count for pagination
-    const totalCount = await Sparks.countDocuments(filter);
+    const totalCount = await TonkaSparks.countDocuments(filter);
 
     // Query database with pagination
-    const query = Sparks.find(filter).sort(sortObj).skip(skip);
+    const query = TonkaSparks.find(filter).sort(sortObj).skip(skip);
 
     // Apply limit only if not 0 (0 means return all)
     const sparks = limitNum === 0 ? await query : await query.limit(limitNum);
 
     const totalPages = limitNum === 0 ? 1 : Math.ceil(totalCount / limitNum);
 
-    logger.info('Sparks retrieved successfully', {
+    logger.info('Tonka sparks retrieved successfully', {
       count: sparks.length,
       filter,
       page: pageNum,
@@ -155,7 +155,7 @@ export async function listSparks(req, res) {
       totalPages,
     });
   } catch (error) {
-    logger.error('Failed to List sparks', {
+    logger.error('Failed to list tonka sparks', {
       error: error.message,
       requestId: req.id,
       stack: error.stack,
@@ -163,7 +163,7 @@ export async function listSparks(req, res) {
 
     return res.status(500).json({
       code: SPARK_ERROR_CODE.SPARK_LIST_FAILED,
-      message: 'Failed to retrieve sparks',
+      message: 'Failed to retrieve tonka sparks',
       requestId: req.id,
     });
   }

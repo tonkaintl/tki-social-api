@@ -66,6 +66,6 @@ sparksSchema.index({ times_used: -1 });
 sparksSchema.index({ categories: 1 });
 sparksSchema.index({ group: 1 });
 
-const Sparks = mongoose.model('Sparks', sparksSchema, 'sparks');
+const TonkaSparks = mongoose.model('TonkaSparks', sparksSchema, 'tonka_sparks');
 
-export default Sparks;
+export default TonkaSparks;

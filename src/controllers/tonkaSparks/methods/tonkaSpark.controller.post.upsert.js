@@ -1,16 +1,16 @@
-import { FEED_CATEGORY_VALUES } from '../../../constants/tonkaDispatch.js';
 import {
   SPARK_ERROR_CODE,
   SPARK_FIELDS,
   SPARK_GROUP_VALUES,
 } from '../../../constants/sparks.js';
-import Sparks from '../../../models/sparks.model.js';
+import { FEED_CATEGORY_VALUES } from '../../../constants/tonkaDispatch.js';
+import TonkaSparks from '../../../models/tonkaSparks.model.js';
 import { logger } from '../../../utils/logger.js';
 
 /**
- * Upsert a spark by section (create or update)
+ * Upsert a tonka spark by section (create or update)
  */
-export async function upsertSpark(req, res) {
+export async function upsertTonkaSpark(req, res) {
   try {
     const {
       categories,
@@ -94,13 +94,13 @@ export async function upsertSpark(req, res) {
     if (last_used !== undefined) updateFields.last_used = last_used;
     if (times_used !== undefined) updateFields.times_used = times_used;
 
-    logger.info('Upserting tonka spark post', {
+    logger.info('Upserting tonka spark', {
       requestId: req.id,
       section: normalizedSection,
     });
 
     // Perform upsert operation
-    const result = await Sparks.findOneAndUpdate(
+    const result = await TonkaSparks.findOneAndUpdate(
       { [SPARK_FIELDS.SECTION]: normalizedSection },
       { $set: updateFields },
       {
@@ -115,7 +115,7 @@ export async function upsertSpark(req, res) {
       result[SPARK_FIELDS.CREATED_AT].getTime() ===
       result[SPARK_FIELDS.UPDATED_AT].getTime();
 
-    logger.info('Tonka tonka spark post post upserted successfully', {
+    logger.info('Tonka spark upserted successfully', {
       created: wasCreated,
       requestId: req.id,
       section: normalizedSection,
@@ -130,7 +130,7 @@ export async function upsertSpark(req, res) {
   } catch (error) {
     // Handle Mongoose validation errors
     if (error.name === 'ValidationError') {
-      logger.warn('Tonka tonka spark post post validation failed', {
+      logger.warn('Tonka spark validation failed', {
         error: error.message,
         requestId: req.id,
       });
@@ -151,12 +151,12 @@ export async function upsertSpark(req, res) {
 
       return res.status(400).json({
         code: SPARK_ERROR_CODE.DUPLICATE_SECTION,
-        message: 'A tonka spark post with this section already exists',
+        message: 'A tonka spark with this section already exists',
         requestId: req.id,
       });
     }
 
-    logger.error('Failed to upsert tonka spark post', {
+    logger.error('Failed to upsert tonka spark', {
       error: error.message,
       requestId: req.id,
       stack: error.stack,
@@ -164,7 +164,7 @@ export async function upsertSpark(req, res) {
 
     return res.status(500).json({
       code: SPARK_ERROR_CODE.SPARK_UPSERT_FAILED,
-      message: 'Failed to upsert tonka spark post',
+      message: 'Failed to upsert tonka spark',
       requestId: req.id,
     });
   }
