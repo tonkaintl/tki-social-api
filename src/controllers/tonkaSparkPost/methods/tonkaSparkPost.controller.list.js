@@ -119,14 +119,14 @@ export async function getTonkaSparkPostList(req, res) {
       requestId: req.id,
     });
   } catch (error) {
-    logger.error('Failed to get Tonka Spark Post list', {
+    logger.error('Failed to get Tonka Spark Posts list', {
       error: error.message,
       requestId: req.id,
       stack: error.stack,
     });
 
     return res.status(500).json({
-      code: 'TONKA_SPARK_POST_FETCH_FAILED',
+      code: 'TONKA_SPARK_POSTS_FETCH_FAILED',
       message: 'Failed to retrieve Tonka Spark Posts',
       requestId: req.id,
     });
