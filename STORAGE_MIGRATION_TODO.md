@@ -231,7 +231,7 @@ File: `api/services/smsService/messaging/incoming-twilio-sms/sendNotificationEma
 ```js
 // BEFORE (hardcoded Azure)
 function buildMediaUrl(blobPath) {
-  const baseUrl = "https://tkimediaprocessor.blob.core.windows.net/sms-media";
+  const baseUrl = 'https://tkimediaprocessor.blob.core.windows.net/sms-media';
   return `${baseUrl}/${blobPath}`;
 }
 
