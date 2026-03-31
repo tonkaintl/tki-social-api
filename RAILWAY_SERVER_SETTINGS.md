@@ -87,11 +87,11 @@ Social platform vars missing (not in local .env — add when credentials are pro
 
 Based on `RAILWAY_PROJECT_SERVICE_TOPOLOGY.md`:
 
-| Project        | Services                                          | Status         |
-| -------------- | ------------------------------------------------- | -------------- |
-| `public-apis`  | tki-social-api, tki-portal-api, tki-beehiv-api   | social-api ✅  |
-| `private-apis` | tki-binder-api, tki-priority-one-api             | binder ✅      |
-| `workers-jobs` | various background workers/functions             | ⬜ not created |
+| Project        | Services                                       | Status         |
+| -------------- | ---------------------------------------------- | -------------- |
+| `public-apis`  | tki-social-api, tki-portal-api, tki-beehiv-api | social-api ✅  |
+| `private-apis` | tki-binder-api, tki-priority-one-api           | binder ✅      |
+| `workers-jobs` | various background workers/functions           | ⬜ not created |
 
 ---
 
