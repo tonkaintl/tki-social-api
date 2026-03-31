@@ -6,7 +6,7 @@ const EMAIL_TEMPLATE = {
   CODE_BLOCK: content =>
     `<pre style="background: #f4f4f4; padding: 10px; border-radius: 4px; font-family: monospace; white-space: pre-wrap; word-wrap: break-word;">${content}</pre>`,
   SIGNATURE: '<p>Best regards,<br />TKI Social Media Team</p>',
-  SUPPORT_CONTACT: `<p>For support, contact the development team at <a href="mailto:stephen@tonkaintl.com">stephen@tonkaintl.com</a></p>`,
+  SUPPORT_CONTACT: `<p>For support, contact the development team at <a href="mailto:tki-agent@tonkaintl.com">tki-agent@tonkaintl.com</a></p>`,
   TIMESTAMP: timestamp =>
     `<p><small><strong>Timestamp:</strong> ${new Date(timestamp).toLocaleString()}</small></p>`,
 };

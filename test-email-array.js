@@ -1,5 +1,5 @@
 // Test email array transformation
-const emailString = 'stephen@tonkaintl.com,gary@tonkaintl.com';
+const emailString = 'tki-agent@tonkaintl.com,gary@tonkaintl.com';
 const emailArray = emailString.split(',').map(e => e.trim());
 
 console.log('Input string:', emailString);

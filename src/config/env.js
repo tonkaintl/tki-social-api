@@ -4,16 +4,25 @@ import { z } from 'zod';
 // Load environment variables
 dotenv.config();
 
+const defaultTonkaSparkRecipients =
+  process.env.TONKA_SPARK_RECIPIENTS ||
+  process.env.PRIORITY_QUEUE_ALERT_EMAILS ||
+  'tki-agent@tonkaintl.com';
+
 const envSchema = z.object({
   AZURE_API_AUDIENCE: z.string().optional(),
   AZURE_CLIENT_ID: z.string().optional(),
   AZURE_CLIENT_SECRET: z.string().optional(),
-  AZURE_EMAIL_CLIENT_ID: z.string().optional(),
-  AZURE_EMAIL_SENDER: z.string().email().optional(),
-  AZURE_GRAPH_API: z.string().url().default('https://graph.microsoft.com/v1.0'),
   AZURE_TENANT_ID: z.string().optional(),
   BINDER_API_URL: z.string().url().default('http://localhost:4100'),
   BINDER_INTERNAL_SECRET: z.string().min(1).default('test-binder-secret'),
+  GMAIL_FROM_EMAIL: z.string().email().optional(),
+  GMAIL_FROM_NAME: z.string().default('Tonka Agent'),
+  GMAIL_IMPERSONATED_USER: z.string().email().optional(),
+  GMAIL_SERVICE_ACCOUNT_FILE: z
+    .string()
+    .default('./app-notifier-service-account.json'),
+  GMAIL_SERVICE_ACCOUNT_JSON_BASE64: z.string().optional(),
   INSTAGRAM_ACCESS_TOKEN: z.string().optional(),
   INSTAGRAM_CLIENT_ID: z.string().optional(),
   INSTAGRAM_CLIENT_SECRET: z.string().optional(),
@@ -54,7 +63,7 @@ const envSchema = z.object({
   TIKTOK_PERSONAL_ACCESS_TOKEN: z.string().optional(),
   TIKTOK_PERSONAL_CLIENT_ID: z.string().optional(),
   TIKTOK_PERSONAL_CLIENT_SECRET: z.string().optional(),
-  TONKA_SPARK_RECIPIENTS: z.string().default('stephen@tonkaintl.com'),
+  TONKA_SPARK_RECIPIENTS: z.string().default(defaultTonkaSparkRecipients),
   TONKA_SPARK_SEND_EMAIL: z
     .string()
     .transform(val => val === 'true')

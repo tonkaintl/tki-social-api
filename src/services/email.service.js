@@ -1,49 +1,104 @@
-import { ClientSecretCredential } from '@azure/identity';
+import { readFile } from 'node:fs/promises';
+import path from 'node:path';
+
 import axios from 'axios';
+import { JWT } from 'google-auth-library';
 
 import { config } from '../config/env.js';
 import { ApiError, ERROR_CODES } from '../constants/errors.js';
 import { logger } from '../utils/logger.js';
 
 /**
- * Service for sending emails via Microsoft Graph API
- * Handles authentication and email delivery through Azure AD
+ * Service for sending emails via Gmail API delegated auth over SMTP.
  */
 class EmailService {
   constructor() {
-    this.graphApiUrl = config.AZURE_GRAPH_API;
-    this.senderEmail = config.AZURE_EMAIL_SENDER;
-    this.tenantId = config.AZURE_TENANT_ID;
-    this.clientId = config.AZURE_EMAIL_CLIENT_ID;
-    this.clientSecret = config.AZURE_CLIENT_SECRET;
+    this.fromEmail = config.GMAIL_FROM_EMAIL;
+    this.fromName = config.GMAIL_FROM_NAME;
+    this.impersonatedUser = config.GMAIL_IMPERSONATED_USER;
+    this.serviceAccountJsonBase64 = config.GMAIL_SERVICE_ACCOUNT_JSON_BASE64;
+    this.serviceAccountFile = config.GMAIL_SERVICE_ACCOUNT_FILE;
+    this.gmailScope = 'https://www.googleapis.com/auth/gmail.send';
   }
 
   /**
-   * Get Microsoft Graph API access token
+   * Read and parse the configured Google service account file.
    */
-  async getAccessToken() {
+  async getServiceAccountCredentials() {
     try {
-      if (!this.tenantId || !this.clientId || !this.clientSecret) {
+      let credentials;
+
+      if (this.serviceAccountJsonBase64) {
+        const decodedJson = Buffer.from(
+          this.serviceAccountJsonBase64,
+          'base64'
+        ).toString('utf8');
+        credentials = JSON.parse(decodedJson);
+      } else {
+        if (!this.serviceAccountFile) {
+          throw new Error(
+            'Missing Gmail credentials: set GMAIL_SERVICE_ACCOUNT_JSON_BASE64 or GMAIL_SERVICE_ACCOUNT_FILE'
+          );
+        }
+
+        const resolvedPath = path.resolve(
+          process.cwd(),
+          this.serviceAccountFile
+        );
+        const fileContent = await readFile(resolvedPath, 'utf8');
+        credentials = JSON.parse(fileContent);
+      }
+
+      if (!credentials.client_email || !credentials.private_key) {
         throw new Error(
-          'Missing Azure credentials: AZURE_TENANT_ID, AZURE_CLIENT_ID, or AZURE_CLIENT_SECRET'
+          'Service account file is missing client_email or private_key'
         );
       }
 
-      const credential = new ClientSecretCredential(
-        this.tenantId,
-        this.clientId,
-        this.clientSecret
-      );
-
-      const tokenResponse = await credential.getToken(
-        'https://graph.microsoft.com/.default'
-      );
-
-      logger.debug('Microsoft Graph access token obtained successfully');
-
-      return tokenResponse.token;
+      return credentials;
     } catch (error) {
-      logger.error('Failed to obtain Microsoft Graph access token', {
+      logger.error('Failed to read Gmail service account credentials', {
+        error: error.message,
+        serviceAccountFile: this.serviceAccountFile,
+        usingBase64: Boolean(this.serviceAccountJsonBase64),
+      });
+      throw new ApiError(
+        ERROR_CODES.EXTERNAL_SERVICE_ERROR,
+        'Failed to load Gmail service account credentials',
+        500
+      );
+    }
+  }
+
+  /**
+   * Get OAuth2 access token for Gmail delegated sending.
+   */
+  async getAccessToken() {
+    try {
+      if (!this.impersonatedUser) {
+        throw new Error('GMAIL_IMPERSONATED_USER not configured');
+      }
+
+      const credentials = await this.getServiceAccountCredentials();
+
+      const jwtClient = new JWT({
+        email: credentials.client_email,
+        key: credentials.private_key,
+        scopes: [this.gmailScope],
+        subject: this.impersonatedUser,
+      });
+
+      const tokenResponse = await jwtClient.authorize();
+
+      if (!tokenResponse.access_token) {
+        throw new Error('No Gmail access token returned by Google OAuth');
+      }
+
+      logger.debug('Gmail delegated access token obtained successfully');
+
+      return tokenResponse.access_token;
+    } catch (error) {
+      logger.error('Failed to obtain Gmail delegated access token', {
         error: error.message,
       });
       throw new ApiError(
@@ -55,7 +110,7 @@ class EmailService {
   }
 
   /**
-   * Send an email via Microsoft Graph API
+   * Send an email via Gmail SMTP using OAuth2 access token.
    * @param {Object} options - Email options
    * @param {string} options.to - Recipient email address
    * @param {string} options.subject - Email subject
@@ -64,52 +119,48 @@ class EmailService {
    */
   async sendEmail({ htmlBody, subject, to }) {
     try {
-      if (!this.senderEmail) {
-        throw new Error('AZURE_EMAIL_SENDER not configured');
+      if (!this.fromEmail) {
+        throw new Error('GMAIL_FROM_EMAIL not configured');
+      }
+      if (!this.impersonatedUser) {
+        throw new Error('GMAIL_IMPERSONATED_USER not configured');
       }
 
-      // Get fresh access token
+      const recipients = Array.isArray(to) ? to.join(', ') : to;
+
       const accessToken = await this.getAccessToken();
 
-      const emailData = {
-        message: {
-          body: {
-            content: htmlBody,
-            contentType: 'HTML',
-          },
-          from: {
-            emailAddress: {
-              address: this.senderEmail,
-            },
-          },
-          subject,
-          toRecipients: Array.isArray(to)
-            ? to.map(email => ({
-                emailAddress: {
-                  address: email,
-                },
-              }))
-            : [
-                {
-                  emailAddress: {
-                    address: to,
-                  },
-                },
-              ],
-        },
-        saveToSentItems: true,
-      };
+      const mimeMessage = [
+        `From: ${
+          this.fromName
+            ? `${this.fromName} <${this.fromEmail}>`
+            : this.fromEmail
+        }`,
+        `To: ${recipients}`,
+        `Subject: ${subject}`,
+        'MIME-Version: 1.0',
+        'Content-Type: text/html; charset=UTF-8',
+        '',
+        htmlBody,
+      ].join('\r\n');
 
-      logger.debug('Sending email via Microsoft Graph API', {
-        recipient: to,
-        sender: this.senderEmail,
+      const encodedMessage = Buffer.from(mimeMessage)
+        .toString('base64')
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=+$/g, '');
+
+      logger.debug('Sending email via Gmail delegated SMTP', {
+        recipient: recipients,
+        sender: this.fromEmail,
         subject,
       });
 
-      // Send email using Microsoft Graph API
       await axios.post(
-        `${this.graphApiUrl}/users/${this.senderEmail}/sendMail`,
-        emailData,
+        `https://gmail.googleapis.com/gmail/v1/users/${encodeURIComponent(this.impersonatedUser)}/messages/send`,
+        {
+          raw: encodedMessage,
+        },
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -118,8 +169,8 @@ class EmailService {
         }
       );
 
-      logger.info('Email sent successfully via Microsoft Graph API', {
-        recipient: to,
+      logger.info('Email sent successfully via Gmail API', {
+        recipient: recipients,
         subject,
       });
 
@@ -128,7 +179,7 @@ class EmailService {
         success: true,
       };
     } catch (error) {
-      logger.error('Failed to send email via Microsoft Graph API', {
+      logger.error('Failed to send email via Gmail API', {
         error: error.response?.data || error.message,
         recipient: to,
         subject,
@@ -136,7 +187,7 @@ class EmailService {
 
       throw new ApiError(
         ERROR_CODES.EXTERNAL_SERVICE_ERROR,
-        `Failed to send email: ${error.response?.data?.error?.message || error.message}`,
+        `Failed to send email: ${error.message}`,
         500
       );
     }
@@ -147,11 +198,10 @@ class EmailService {
    */
   async healthCheck() {
     try {
-      // Just verify we can get an access token
       await this.getAccessToken();
       return {
-        configured: true,
-        senderEmail: this.senderEmail,
+        configured: Boolean(this.fromEmail && this.impersonatedUser),
+        senderEmail: this.fromEmail,
         status: 'healthy',
       };
     } catch (error) {
