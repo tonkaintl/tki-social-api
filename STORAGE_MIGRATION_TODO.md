@@ -201,7 +201,7 @@ Decision needed per bucket: public access (direct URL works without signing) vs 
 - [x] Remove `@azure/storage-blob` from `package.json` — was never imported, dead dependency
 - [x] Swap hardcoded Azure media URL to `R2_SMS_MEDIA_BASE_URL` env var
 - [x] Deploy to Railway — service `tki-social-api` live at `https://tki-social-api-production.up.railway.app`
-- [x] All env vars set in Railway (Azure AD, MongoDB, social platform credentials, BINDER_API_URL)
+- [x] All env vars set in Railway (MongoDB, social platform credentials, BINDER_API_URL)
 - [x] Health check passing: `GET /api/health` returns 200
 - [x] Updated `TKISOCIAL_API_URL` in `tki-binder-api` Railway service to point to new URL
 - [ ] Wire GitHub `main` branch to Railway service for Git-based auto-deploy (Railway dashboard → Service → Settings → Source)

@@ -4,12 +4,10 @@ import { fileURLToPath } from 'url';
 import cors from 'cors';
 import express from 'express';
 import helmet from 'helmet';
-import passport from 'passport';
 
 import { config } from './config/env.js';
 import { errorHandler } from './middleware/error.handler.js';
 import { httpLogger } from './middleware/httpLogger.js';
-import configurePassport from './middleware/passport.js';
 import { rateLimiter } from './middleware/rateLimit.js';
 import { requestId } from './middleware/requestId.js';
 import {
@@ -37,13 +35,10 @@ const app = express();
 // Trust proxy - required when behind reverse proxy/load balancer
 app.set('trust proxy', true);
 
-// Configure passport for Azure AD authentication (if credentials are provided)
-if (config.AZURE_CLIENT_ID && config.AZURE_TENANT_ID) {
-  configurePassport();
-  app.use(passport.initialize());
-  logger.info('Azure AD Bearer authentication enabled');
+if (!config.CLERK_SECRET_KEY) {
+  logger.warn('CLERK_SECRET_KEY not set - protected bearer routes will fail');
 } else {
-  logger.warn('Azure AD credentials not configured - bearer auth disabled');
+  logger.info('Clerk bearer authentication enabled');
 }
 
 // Security middleware

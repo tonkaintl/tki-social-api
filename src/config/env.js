@@ -10,12 +10,13 @@ const defaultTonkaSparkRecipients =
   'tki-agent@tonkaintl.com';
 
 const envSchema = z.object({
-  AZURE_API_AUDIENCE: z.string().optional(),
-  AZURE_CLIENT_ID: z.string().optional(),
-  AZURE_CLIENT_SECRET: z.string().optional(),
-  AZURE_TENANT_ID: z.string().optional(),
   BINDER_API_URL: z.string().url().default('http://localhost:4100'),
   BINDER_INTERNAL_SECRET: z.string().min(1).default('test-binder-secret'),
+  CLERK_LONG_LIVED_ADMIN_EMAIL: z
+    .string()
+    .email()
+    .default('tki-agent@tonkaintl.com'),
+  CLERK_SECRET_KEY: z.string().optional(),
   GMAIL_FROM_EMAIL: z.string().email().optional(),
   GMAIL_FROM_NAME: z.string().default('Tonka Agent'),
   GMAIL_IMPERSONATED_USER: z.string().email().optional(),
