@@ -54,7 +54,7 @@ railway redeploy
 ### Env Vars Set
 
 All vars from `env.js` schema are set (29 total). Run `railway variable list` to audit.
-Key vars confirmed set: `MONGODB_TKISOCIAL_URI`, `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `BINDER_API_URL`, `NODE_ENV=production`.
+Key vars confirmed set: `MONGODB_TKISOCIAL_URI`, `BINDER_API_URL`, `NODE_ENV=production`.
 
 Social platform vars missing (not in local .env — add when credentials are provisioned):
 `INSTAGRAM_*`, `THREADS_*`, `TIKTOK_*`, `X_*`, `YOUTUBE_*`, `METRICOOL_TEAM_ID`

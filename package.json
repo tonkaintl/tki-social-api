@@ -24,7 +24,7 @@
   "author": "TKI Development Team",
   "license": "ISC",
   "dependencies": {
-    "@azure/identity": "^4.13.0",
+    "@clerk/backend": "^2.13.0",
     "axios": "^1.13.1",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
@@ -37,11 +37,6 @@
     "mongoose": "^8.19.1",
     "node-fetch": "^3.3.2",
     "nodemailer": "^8.0.4",
-    "passport": "^0.7.0",
-    "passport-azure-ad": "^4.3.5",
-    "pino": "^8.16.2",
-    "pino-http": "^8.5.1",
-    "pino-pretty": "^10.2.3",
     "zod": "^3.22.4"
   },
   "devDependencies": {
