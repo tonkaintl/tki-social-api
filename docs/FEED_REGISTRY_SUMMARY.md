@@ -10,7 +10,7 @@ A complete RSS Feed Registry API for Tonka Dispatch, following the TKI Social AP
 
 ### Components Created
 
-#### 1. Data Model
+#### 1. Data Models
 
 **File**: [src/models/tonkaDispatchRssLinks.model.js](../src/models/tonkaDispatchRssLinks.model.js)
 
