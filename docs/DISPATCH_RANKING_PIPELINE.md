@@ -55,6 +55,8 @@ After LLM ranking, a hard cap of `MAX_PER_CATEGORY_IN_RESULTS` (default **3**) p
 
 Writes final 10 to `tonka_dispatch_rankings` collection with a `batch_id` (UUID), rank, category, title, link, feed info, etc.
 
+> **"Used" tracking:** There is no flag on the article itself. An article is considered used once its `_id` appears as `dispatch_article_id` in any `tonka_dispatch_rankings` document. Step 1 queries that collection for all distinct `dispatch_article_id` values and excludes them from the candidate fetch.
+
 ### Step 6 — Email
 
 Sends an HTML digest email to `TONKA_DISPATCH_RECIPIENTS` (env var, comma-separated).  
