@@ -10,6 +10,8 @@ const defaultTonkaSparkRecipients =
   'tki-agent@tonkaintl.com';
 
 const envSchema = z.object({
+  ANTHROPIC_API_KEY: z.string().optional(),
+  ANTHROPIC_MODEL: z.string().default('claude-haiku-4-5'),
   BINDER_API_URL: z.string().url().default('http://localhost:4100'),
   BINDER_INTERNAL_SECRET: z.string().min(1).default('test-binder-secret'),
   CLERK_LONG_LIVED_ADMIN_EMAIL: z
@@ -17,6 +19,46 @@ const envSchema = z.object({
     .email()
     .default('tki-agent@tonkaintl.com'),
   CLERK_SECRET_KEY: z.string().optional(),
+  DISPATCH_CANDIDATE_EXCLUDE_USED: z
+    .string()
+    .transform(val => val === 'true')
+    .pipe(z.boolean())
+    .default(true),
+  DISPATCH_CANDIDATE_MAX_AGE_DAYS: z
+    .string()
+    .transform(Number)
+    .pipe(z.number().min(1).max(30))
+    .default(5),
+  DISPATCH_CANDIDATE_SCORE_MIN: z
+    .string()
+    .transform(Number)
+    .pipe(z.number().min(0).max(100))
+    .default(70),
+  DISPATCH_MAX_PER_CATEGORY_IN_RESULTS: z
+    .string()
+    .transform(Number)
+    .pipe(z.number().min(1))
+    .default(3),
+  DISPATCH_MAX_PER_CATEGORY_POOL: z
+    .string()
+    .transform(Number)
+    .pipe(z.number().min(1))
+    .default(8),
+  DISPATCH_MAX_PER_FEED: z
+    .string()
+    .transform(Number)
+    .pipe(z.number().min(1))
+    .default(5),
+  DISPATCH_MAX_POOL_TOTAL: z
+    .string()
+    .transform(Number)
+    .pipe(z.number().min(1))
+    .default(60),
+  DISPATCH_RANKINGS_TARGET_COUNT: z
+    .string()
+    .transform(Number)
+    .pipe(z.number().min(1))
+    .default(10),
   GMAIL_FROM_EMAIL: z.string().email().optional(),
   GMAIL_FROM_NAME: z.string().default('Tonka Agent'),
   GMAIL_IMPERSONATED_USER: z.string().email().optional(),
@@ -64,6 +106,7 @@ const envSchema = z.object({
   TIKTOK_PERSONAL_ACCESS_TOKEN: z.string().optional(),
   TIKTOK_PERSONAL_CLIENT_ID: z.string().optional(),
   TIKTOK_PERSONAL_CLIENT_SECRET: z.string().optional(),
+  TONKA_DISPATCH_RECIPIENTS: z.string().default('stephen@tonkaintl.com'),
   TONKA_SPARK_RECIPIENTS: z.string().default(defaultTonkaSparkRecipients),
   TONKA_SPARK_SEND_EMAIL: z
     .string()

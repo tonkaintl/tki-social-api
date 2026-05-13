@@ -1,0 +1,610 @@
+{
+  "name": "Tonka Dispatch",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 7
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1280,
+        96
+      ],
+      "id": "9bd4ed33-48f6-402a-aa24-a82a6561ec3d",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://socialapi.tonkaintl.com/api/dispatch/articles",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "sort",
+              "value": "-relevance.score"
+            },
+            {
+              "name": "limit",
+              "value": "0"
+            },
+            {
+              "name": "score_min",
+              "value": "95"
+            },
+            {
+              "name": "exclude_used",
+              "value": "true"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "timeout": 30000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1056,
+        112
+      ],
+      "id": "68fc5297-892b-46a5-81b6-f86cccfe416a",
+      "name": "HTTP Request",
+      "alwaysOutputData": true,
+      "notesInFlow": false,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "iZAVGjg3hstQcGYj",
+          "name": "Header Auth account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e82c8905-b9ce-48bb-95b5-2bca5384282c",
+              "name": "articles",
+              "value": "={{ $json.articles }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -832,
+        96
+      ],
+      "id": "d1f6684a-e6c7-41b5-a66f-2545aed597f6",
+      "name": "Cache RSS"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "articles",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -608,
+        96
+      ],
+      "id": "f07a72c1-ba60-4a52-a980-49933f9493fb",
+      "name": "Split Out RSS Array"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "/**\n * Code Node: Normalize Article + Synthesize feed_match\n *\n * Input: one item shaped like your API article record:\n *  - _id, tier, category, feedspot_feed_id, feedspot_folder_id, score,\n *    title, content_snippet, published_at_ms, pub_date, article_link\n *\n * Output: keeps original fields, adds:\n *  - link (normalized)\n *  - pub_date_ms (normalized)\n *  - article_host / article_root_domain\n *  - feed_match (object) + feed_match_status/reason/method\n *\n * Goal: Make downstream Pare nodes and Rank prompt work with minimal changes.\n */\n\nfunction safeString(v) {\n  return (v === null || v === undefined) ? \"\" : String(v);\n}\n\nfunction normalizeHost(host) {\n  host = safeString(host).trim().toLowerCase();\n  host = host.replace(/^\\.+|\\.+$/g, \"\");\n  host = host.replace(/^www\\./, \"\");\n  host = host.replace(/^amp\\./, \"\");\n  host = host.replace(/^rss\\./, \"\");\n  host = host.replace(/^feeds\\./, \"\");\n  return host;\n}\n\nfunction getRootDomain(host) {\n  host = normalizeHost(host);\n  if (!host) return \"\";\n  const parts = host.split(\".\").filter(Boolean);\n  if (parts.length <= 2) return host;\n  return parts.slice(-2).join(\".\");\n}\n\nfunction extractHostFromUrl(url) {\n  url = safeString(url).trim();\n  if (!url) return \"\";\n  if (url.startsWith(\"//\")) url = \"https:\" + url;\n  if (!/^https?:\\/\\//i.test(url)) return \"\";\n  const m = url.match(/^https?:\\/\\/([^\\/?#]+)(?:[\\/?#]|$)/i);\n  return m ? normalizeHost(m[1]) : \"\";\n}\n\nfunction toMsFromDateString(s) {\n  const str = safeString(s);\n  if (!str) return 0;\n  const d = new Date(str);\n  const ms = d.getTime();\n  return Number.isFinite(ms) ? ms : 0;\n}\n\n// Process THIS item only\nconst j = $json;\n\n// Normalize link + pub_date_ms\nconst link = safeString(j.article_link || j.link || j.canonical_id || \"\");\nconst pub_date_ms =\n  (typeof j.published_at_ms === \"number\" && Number.isFinite(j.published_at_ms) && j.published_at_ms > 0)\n    ? j.published_at_ms\n    : (typeof j.pub_date_ms === \"number\" && Number.isFinite(j.pub_date_ms) && j.pub_date_ms > 0)\n      ? j.pub_date_ms\n      : toMsFromDateString(j.pub_date);\n\n// Compute host/root domain for analytics + fallback grouping\nconst articleHost = extractHostFromUrl(link);\nconst articleRoot = getRootDomain(articleHost);\n\n// Build feed_match from the article’s own metadata\n// Keep properties aligned with the schema your Rank node expects.\nconst feed_match = {\n  _id: safeString(j._id) || null,\n  name: null, // not provided by API payload; keep null\n  tier: safeString(j.tier) || null,\n  category: safeString(j.category) || null,\n  rss_url: null, // no longer applicable in this articles-only pipeline\n  dinner_score: null, // not provided; keep null\n  feedspot_feed_id: safeString(j.feedspot_feed_id) || null,\n  feedspot_folder_id: safeString(j.feedspot_folder_id) || null,\n};\n\n// Determine match status (now “matched” means “has feed identifiers”)\nconst hasFeedId = !!feed_match.feedspot_feed_id || !!feed_match._id;\n\nreturn {\n  ...j,\n\n  // normalized fields expected downstream\n  link: link || null,\n  canonical_id: link || null, // optional convenience; harmless\n  pub_date_ms: pub_date_ms || 0,\n\n  // host/domain enrichment\n  article_host: articleHost || null,\n  article_root_domain: articleRoot || null,\n\n  // match metadata for downstream logic\n  feed_match_status: hasFeedId ? \"matched\" : \"unmatched\",\n  feed_match_reason: hasFeedId ? \"article already includes feed identifiers\" : \"missing_feed_identifiers\",\n  match_method: hasFeedId ? \"embedded\" : null,\n\n  // synthesized feed object\n  feed_match,\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -160,
+        96
+      ],
+      "id": "2c059d34-5476-4fd0-af24-8f5e9ab35bdc",
+      "name": "Code Merge RSS and Feed"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "97e61d10-23ba-4163-a95f-fabc9202cf5b",
+              "name": "_id",
+              "value": "={{ $json._id }}",
+              "type": "string"
+            },
+            {
+              "id": "f1841c27-cc6d-4f40-8495-8a47828b9d4c",
+              "name": "tier",
+              "value": "={{ $json.tier }}",
+              "type": "string"
+            },
+            {
+              "id": "fbe97b81-79f3-47c2-8b2b-b59bd3858993",
+              "name": "category",
+              "value": "={{ $json.category }}",
+              "type": "string"
+            },
+            {
+              "id": "0a250bfb-37d7-4022-ae49-328a44c97239",
+              "name": "feedspot_feed_id",
+              "value": "={{ $json.rss_link_id.feedspot_feed_id }}",
+              "type": "string"
+            },
+            {
+              "id": "e45bce4c-1631-467f-8100-cf1372646fa1",
+              "name": "feedspot_folder_id",
+              "value": "={{ $json.rss_link_id.feedspot_folder_id }}",
+              "type": "string"
+            },
+            {
+              "id": "c0cdb034-9435-432d-8736-e1a175a7b03d",
+              "name": "score",
+              "value": "={{ $json.relevance.score }}",
+              "type": "number"
+            },
+            {
+              "id": "ec70c8df-adb4-42b7-9a4c-9297ae9fdcb2",
+              "name": "title",
+              "value": "={{ $json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "4ae67a98-b600-4a70-b28e-da328a583203",
+              "name": "content_snippet",
+              "value": "={{ $json.content_snippet }}",
+              "type": "string"
+            },
+            {
+              "id": "2687534b-fd7f-429b-a1c3-5d17c93f4bbe",
+              "name": "published_at_ms",
+              "value": "={{ $json.published_at_ms }}",
+              "type": "number"
+            },
+            {
+              "id": "2a664d74-78d2-491c-87e8-74192d2347fc",
+              "name": "pub_date",
+              "value": "={{ $json.pub_date }}",
+              "type": "string"
+            },
+            {
+              "id": "278b8aa8-f756-4991-82a5-3725c20f5fb5",
+              "name": "article_link",
+              "value": "={{ $json.link }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -384,
+        96
+      ],
+      "id": "b630c047-d99f-4362-b7fb-50df0f5f2b67",
+      "name": "Cache RSS Feed Links"
+    },
+    {
+      "parameters": {
+        "content": "## Pare Down Results",
+        "height": 352,
+        "width": 896,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "23d562ca-3c75-400b-b3dd-f0f367576b54",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        960,
+        96
+      ],
+      "id": "5110566d-0b21-4304-b259-bfec8224b010",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-5-chat-latest",
+          "mode": "list",
+          "cachedResultName": "GPT-5-CHAT-LATEST"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "=You are a ranking engine for a daily trucking/logistics newsletter.\n\nReturn ONLY valid JSON matching the provided SCHEMA. No commentary. No markdown. No extra keys.\n\nDefinitions:\n- Each input item in ITEMS has a unique canonical_id field (URL string).\n- You MUST rank ALL items exactly once: no duplicates, no omissions.\n\nRules:\n1) rankings must include every input item exactly once.\n2) rankings must be sorted by rank ascending (rank 1 = best).\n3) canonical_id must be copied EXACTLY from the input item's canonical_id in ITEMS.\n4) For each rankings entry:\n   - article must be the EXACT item object from ITEMS for that canonical_id.\n   - Copy it verbatim: same keys, same values.\n5) selected_canonical_ids must be the first N canonical_ids from rankings, in order.\n6) Use only provided title, snippet, category, and context; do not add outside facts.\n7) If content_snippet is \"\" then search the link to parse out a snippet of text less than 300 characters long\n\nScoring:\n- score is an integer 0–100 for interest to trucking/logistics professionals.\n\nReason:\n- reason must be 6–12 words.\n- reason must contain only letters, numbers, and spaces.\n- No trailing punctuation."
+            },
+            {
+              "content": "=Rank these items for trucking/logistics professionals.\n\nReturn valid JSON that matches the provided SCHEMA.\n\nSelection size:\n- Let item_count = number of ITEMS.\n- If item_count >= 10: N = 10\n- If item_count is 8 or 9: N = item_count\n- If item_count < 8: N = item_count\n\nITEMS:\n{{ JSON.stringify(\n  ($json.data || []).map(a => ({\n    article_id: a._id,\n    canonical_id: a.canonical_id || a.link,\n    title: a.title,\n    snippet: a.content_snippet || a.content || \"\",\n    category: a.feed_match?.category || null,\n    pub_date_ms: a.published_at_ms || a.pub_date_ms || null,\n\n    link: a.link,\n    creator: a.creator || null,\n    article_host: a.article_host || null,\n    article_root_domain: a.article_root_domain || null,\n    feed_match_status: a.feed_match_status || null,\n    feed_match_reason: a.feed_match_reason || null,\n    match_method: a.match_method || null,\n    feed_match: a.feed_match || null\n  })), null, 2\n) }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "textFormat": {
+            "textOptions": {
+              "type": "json_schema",
+              "schema": "{\n  \"type\": \"object\",\n  \"additionalProperties\": false,\n  \"properties\": {\n    \"rankings\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"additionalProperties\": false,\n        \"properties\": {\n          \"rank\": { \"type\": \"integer\", \"minimum\": 1 },\n          \"canonical_id\": { \"type\": \"string\" },\n          \"score\": { \"type\": \"integer\", \"minimum\": 0, \"maximum\": 100 },\n          \"reason\": { \"type\": \"string\" },\n          \"article\": {\n            \"type\": \"object\",\n            \"additionalProperties\": false,\n            \"properties\": {\n              \"article_id\": { \"type\": \"string\" },\n              \"canonical_id\": { \"type\": \"string\" },\n              \"title\": { \"type\": \"string\" },\n              \"snippet\": { \"type\": \"string\" },\n              \"category\": { \"type\": [\"string\", \"null\"] },\n              \"source_name\": { \"type\": [\"string\", \"null\"] },\n              \"pub_date_ms\": { \"type\": [\"integer\", \"null\"] },\n              \"link\": { \"type\": \"string\" },\n              \"creator\": { \"type\": [\"string\", \"null\"] },\n              \"article_host\": { \"type\": [\"string\", \"null\"] },\n              \"article_root_domain\": { \"type\": [\"string\", \"null\"] },\n              \"feed_match_status\": { \"type\": [\"string\", \"null\"] },\n              \"feed_match_reason\": { \"type\": [\"string\", \"null\"] },\n              \"match_method\": { \"type\": [\"string\", \"null\"] },\n              \"feed_match\": {\n                \"type\": [\"object\", \"null\"],\n                \"additionalProperties\": false,\n                \"properties\": {\n                  \"_id\": { \"type\": [\"string\", \"null\"] },\n                  \"name\": { \"type\": [\"string\", \"null\"] },\n                  \"tier\": { \"type\": [\"string\", \"null\"] },\n                  \"category\": { \"type\": [\"string\", \"null\"] },\n                  \"rss_url\": { \"type\": [\"string\", \"null\"] },\n                  \"dinner_score\": { \"type\": [\"integer\", \"null\"] },\n                  \"feedspot_feed_id\": { \"type\": [\"string\", \"null\"] },\n                  \"feedspot_folder_id\": { \"type\": [\"string\", \"null\"] }\n                },\n                \"required\": [\n                  \"_id\",\n                  \"name\",\n                  \"tier\",\n                  \"category\",\n                  \"rss_url\",\n                  \"dinner_score\",\n                  \"feedspot_feed_id\",\n                  \"feedspot_folder_id\"\n                ]\n              }\n            },\n            \"required\": [\n              \"article_id\",\n              \"canonical_id\",\n              \"title\",\n              \"snippet\",\n              \"category\",\n              \"source_name\",\n              \"pub_date_ms\",\n              \"link\",\n              \"creator\",\n              \"article_host\",\n              \"article_root_domain\",\n              \"feed_match_status\",\n              \"feed_match_reason\",\n              \"match_method\",\n              \"feed_match\"\n            ]\n          }\n        },\n        \"required\": [\"rank\", \"canonical_id\", \"score\", \"reason\", \"article\"]\n      }\n    },\n    \"selected_canonical_ids\": {\n      \"type\": \"array\",\n      \"items\": { \"type\": \"string\" }\n    }\n  },\n  \"required\": [\"rankings\", \"selected_canonical_ids\"]\n}"
+            }
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        -352
+      ],
+      "id": "a21f25a9-d351-4f60-9e82-d20adb09561f",
+      "name": "Rank via LLM"
+    },
+    {
+      "parameters": {
+        "jsCode": "/**\n * Normalize Rankings (Code node)\n *\n * Input: raw \"Rank via LLM\" item (Responses API style payload),\n *        i.e. $json.output[0].content[0].text = { rankings: [...], selected_canonical_ids: [...] }\n *\n * Output:\n *  - rankings: normalized array\n *  - selected_canonical_ids: resolved array (never empty unless rankings empty)\n *  - selected_article_ids: resolved array (aligned with selected_canonical_ids when possible)\n *  - email_subject: string\n *  - email_body_text: string (plain text, email-safe)\n *  - webhook_payload: object (JSON-safe)\n */\n\nfunction pickRankingsPayload(root) {\n  // Preferred: Responses API shape\n  const t = root?.output?.[0]?.content?.[0]?.text;\n\n  // If model returned parsed object already\n  if (t && typeof t === \"object\") return t;\n\n  // If model returned JSON string\n  if (typeof t === \"string\" && t.trim()) {\n    try {\n      const parsed = JSON.parse(t);\n      if (parsed && typeof parsed === \"object\") return parsed;\n    } catch (e) {\n      // fall through\n    }\n  }\n\n  // Fallback: some nodes store model output directly\n  if (root?.rankings && Array.isArray(root.rankings)) return root;\n\n  return null;\n}\n\nfunction safeStr(v) {\n  return String(v ?? \"\").trim();\n}\n\nfunction truncate(s, max = 280) {\n  s = safeStr(s);\n  if (!s) return \"\";\n  if (s.length <= max) return s;\n  return s.slice(0, max - 1).trimEnd() + \"…\";\n}\n\nfunction coerceMs(v) {\n  if (typeof v === \"number\" && Number.isFinite(v)) return v;\n  // Sometimes ms sneaks in as a numeric string\n  if (typeof v === \"string\" && v.trim() && !Number.isNaN(Number(v))) {\n    const n = Number(v);\n    return Number.isFinite(n) ? n : null;\n  }\n  return null;\n}\n\nfunction getPubMs(article) {\n  // Prefer your normalized field\n  let ms = coerceMs(article?.pub_date_ms);\n  if (ms) return ms;\n\n  // Fallbacks (depending on upstream nodes)\n  ms = coerceMs(article?.published_at_ms);\n  if (ms) return ms;\n\n  return null;\n}\n\nfunction fmtDate(ms) {\n  ms = coerceMs(ms);\n  if (!ms || ms <= 0) return \"\";\n  const d = new Date(ms);\n  if (Number.isNaN(d.getTime())) return \"\";\n  return d.toLocaleDateString(\"en-US\", {\n    timeZone: \"America/Chicago\",\n    year: \"numeric\",\n    month: \"short\",\n    day: \"2-digit\",\n  });\n}\n\nconst payload = pickRankingsPayload($json);\nif (!payload) {\n  throw new Error(\"Normalize Rankings: cannot find rankings payload on input item\");\n}\n\nconst rawRankings = Array.isArray(payload.rankings) ? payload.rankings : [];\nconst rawSelected = Array.isArray(payload.selected_canonical_ids) ? payload.selected_canonical_ids : [];\n\n// Normalize rankings into a consistent, compact shape\nconst rankings = rawRankings\n  .map((r) => {\n    const a = r?.article || {};\n\n    const canonical = safeStr(r?.canonical_id || a?.canonical_id || a?.link);\n    const articleCanonical = safeStr(a?.canonical_id || a?.link);\n\n    // Prefer ranking-level article_id if present, else article.article_id\n    const articleId = safeStr(r?.article_id || a?.article_id) || null;\n\n    return {\n      rank: Number(r?.rank ?? 0),\n      canonical_id: canonical,\n      article_id: articleId,\n      score: Number(r?.score ?? 0),\n      reason: safeStr(r?.reason),\n      article: {\n        canonical_id: articleCanonical,\n        article_id: articleId,\n        title: safeStr(a?.title),\n        snippet: safeStr(a?.snippet),\n        category: a?.category ?? null,\n        source_name: a?.source_name ?? null,\n\n        // keep your field name, but fill it if you can\n        pub_date_ms: coerceMs(a?.pub_date_ms) ?? coerceMs(a?.published_at_ms) ?? null,\n\n        link: safeStr(a?.link || a?.canonical_id),\n        creator: a?.creator ?? null,\n        article_host: a?.article_host ?? null,\n        article_root_domain: a?.article_root_domain ?? null,\n        feed_match_status: a?.feed_match_status ?? null,\n        feed_match_reason: a?.feed_match_reason ?? null,\n        match_method: a?.match_method ?? null,\n        feed_match: a?.feed_match ?? null,\n      },\n    };\n  })\n  .filter((r) => r.rank > 0 && r.canonical_id);\n\n// Sort defensively\nrankings.sort((x, y) => x.rank - y.rank);\n\n// Resolve selected list (never empty if rankings exist)\nconst resolvedSelected =\n  rawSelected.length > 0\n    ? rawSelected.map((x) => safeStr(x)).filter(Boolean)\n    : rankings.slice(0, 10).map((r) => r.canonical_id);\n\nconst canonicalToArticleId = new Map();\nfor (const r of rankings) {\n  const aid = safeStr(r?.article_id || r?.article?.article_id);\n  if (r.canonical_id && aid) canonicalToArticleId.set(r.canonical_id, aid);\n}\n\nconst resolvedSelectedArticleIds = resolvedSelected\n  .map((cid) => canonicalToArticleId.get(cid) || null)\n  .filter(Boolean);\n\n// Build email subject + plain-text body\nconst tz = \"America/Chicago\";\nconst today = new Date().toLocaleDateString(\"en-US\", {\n  timeZone: tz,\n  weekday: \"short\",\n  year: \"numeric\",\n  month: \"short\",\n  day: \"2-digit\",\n});\n\nconst email_subject = `Daily Digest — ${today}`;\n\nconst lines = [];\nlines.push(`Daily Digest (${today})`);\nlines.push(\"\");\nlines.push(\"Top items:\");\nlines.push(\"\");\n\nfor (const r of rankings) {\n  const a = r.article;\n  const title = a.title || r.canonical_id;\n  const source = safeStr(a.source_name);\n  const cat = safeStr(a.category);\n  const date = fmtDate(getPubMs(a));\n  const meta = [source, cat, date].filter(Boolean).join(\" | \");\n\n  lines.push(`${r.rank}) ${title}`);\n  if (meta) lines.push(`   ${meta}`);\n  if (r.article_id) lines.push(`   Article ID: ${r.article_id}`);\n  if (r.reason) lines.push(`   Why: ${r.reason}`);\n  if (a.snippet) lines.push(`   ${truncate(a.snippet, 300)}`);\n  if (a.link) lines.push(`   Link: ${a.link}`);\n  lines.push(\"\");\n}\n\nconst email_body_text = lines.join(\"\\n\");\n\n// Build webhook payload (structured)\nconst webhook_payload = {\n  generated_at_iso: new Date().toISOString(),\n  subject: email_subject,\n  selected_canonical_ids: resolvedSelected,\n  selected_article_ids: resolvedSelectedArticleIds,\n  rankings,\n};\n\nreturn {\n  rankings,\n  selected_canonical_ids: resolvedSelected,\n  selected_article_ids: resolvedSelectedArticleIds,\n  email_subject,\n  email_body_text,\n  webhook_payload,\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1536,
+        96
+      ],
+      "id": "20276d1e-11d3-445f-b80c-ef56a360a163",
+      "name": "Normalize Rankings"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://socialapi.tonkaintl.com/api/webhooks/tonka-dispatch/rankings",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify($json.rankings) }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1760,
+        192
+      ],
+      "id": "b022f8d6-04d0-44cc-ad69-42fccf8fc6d0",
+      "name": "HTTP Request1",
+      "alwaysOutputData": true,
+      "notesInFlow": false,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "iZAVGjg3hstQcGYj",
+          "name": "Header Auth account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "/**\n * Pare 02 — Drop Low-Value Patterns (minimal, title+link centric)\n * Key rule: no link => drop\n */\n\nconst ENABLE_TITLE_FILTER = true;\nconst ENABLE_LINK_FILTER = true;\nconst CASE_INSENSITIVE = true;\n\nconst TITLE_DROP_PATTERNS = [\n  \"\\\\btrivia\\\\b\",\n  \"\\\\bslideshow\\\\b\",\n  \"\\\\bpodcast\\\\b\",\n  \"\\\\btop\\\\s+\\\\d+\\\\b\",\n  \"\\\\btop\\\\s+(stories|podcasts|roads|bridges|video interviews|cover stories)\\\\b\",\n  \"\\\\bawards\\\\b\",\n  \"\\\\broundup\\\\b\",\n];\n\nconst LINK_DROP_PATTERNS = [\n  \"\\\\bmedia-gallery\\\\b\",\n  \"\\\\bpodcast\\\\b\",\n  \"\\\\bslideshow\\\\b\",\n  \"\\\\bawards\\\\b\",\n];\n\nfunction makeRegexes(patterns) {\n  const flags = CASE_INSENSITIVE ? \"i\" : \"\";\n  return patterns.map((p) => new RegExp(p, flags));\n}\n\nconst titleRegexes = makeRegexes(TITLE_DROP_PATTERNS);\nconst linkRegexes = makeRegexes(LINK_DROP_PATTERNS);\n\nfunction matchesAny(str, regexes) {\n  if (!str) return false;\n  for (const r of regexes) if (r.test(str)) return true;\n  return false;\n}\n\nconst kept = [];\n\nfor (const item of items) {\n  const a = item.json || {};\n  const title = String(a.title || \"\");\n  const link = String(a.link || a.article_link || a.canonical_id || \"\").trim();\n\n  // Hard requirement: no link => no article\n  if (!link) continue;\n\n  const dropByTitle = ENABLE_TITLE_FILTER && matchesAny(title, titleRegexes);\n  const dropByLink = ENABLE_LINK_FILTER && matchesAny(link, linkRegexes);\n\n  if (dropByTitle || dropByLink) continue;\n\n  kept.push(item);\n}\n\nreturn kept;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        64,
+        96
+      ],
+      "id": "72eed6c8-8bb3-4f1a-be2c-2572ee46fcec",
+      "name": "Pare 01 - Drop Low-Value Patterns"
+    },
+    {
+      "parameters": {
+        "jsCode": "/**\n * n8n Code Node: Pare 03 — Cap Per Feed (v2)\n *\n * Groups by feed identifier and keeps the newest N per feed.\n *\n * Feed key priority (intended for your current contract):\n *  1) feedspot_feed_id (top-level or inside feed_match)\n *  2) feed_match.feedspot_feed_id\n *  3) feed_match._id (NOT ideal; but available)\n *  4) top-level feedspot_feed_id (again, as fallback)\n *\n * Date priority:\n *  1) published_at_ms\n *  2) pub_date_ms\n *  3) parse pub_date\n */\n\nconst MAX_PER_FEED = 8;          // <-- modify\nconst REQUIRE_FEED_MATCH = true; // <-- modify\nconst SORT_DESC = true;          // <-- modify (newest-first)\n\nfunction safeString(v) {\n  return (v === null || v === undefined) ? \"\" : String(v);\n}\n\nfunction toMsFromDateString(s) {\n  const str = safeString(s).trim();\n  if (!str) return -Infinity;\n  const d = new Date(str);\n  const ms = d.getTime();\n  return Number.isFinite(ms) ? ms : -Infinity;\n}\n\nfunction getMs(article) {\n  const p1 = article.published_at_ms;\n  if (typeof p1 === \"number\" && Number.isFinite(p1) && p1 > 0) return p1;\n\n  const p2 = article.pub_date_ms;\n  if (typeof p2 === \"number\" && Number.isFinite(p2) && p2 > 0) return p2;\n\n  return toMsFromDateString(article.pub_date);\n}\n\nfunction getFeedId(article) {\n  // Prefer top-level feedspot_feed_id first (your current payload has it)\n  const top = safeString(article.feedspot_feed_id).trim();\n  if (top) return top;\n\n  const fm = article.feed_match && typeof article.feed_match === \"object\" ? article.feed_match : null;\n  if (fm) {\n    const fmFeed = safeString(fm.feedspot_feed_id).trim();\n    if (fmFeed) return fmFeed;\n\n    const fmId = safeString(fm._id).trim();\n    if (fmId) return fmId;\n  }\n\n  return null;\n}\n\nfunction getStableItemKey(article) {\n  // Only used when REQUIRE_FEED_MATCH=false, to avoid collapsing all unmatched items into one group\n  return (\n    safeString(article.canonical_id).trim() ||\n    safeString(article.link).trim() ||\n    safeString(article.article_link).trim() ||\n    safeString(article._id).trim() ||\n    \"unknown\"\n  );\n}\n\n// Group items by feedId\nconst groups = new Map();\n\nfor (const item of items) {\n  const a = item.json || {};\n  const feedId = getFeedId(a);\n\n  if (!feedId) {\n    if (!REQUIRE_FEED_MATCH) {\n      const fallbackId = `__no_feed__:${getStableItemKey(a)}`;\n      if (!groups.has(fallbackId)) groups.set(fallbackId, []);\n      groups.get(fallbackId).push(item);\n    }\n    continue;\n  }\n\n  if (!groups.has(feedId)) groups.set(feedId, []);\n  groups.get(feedId).push(item);\n}\n\nconst kept = [];\n\nfor (const [, arr] of groups.entries()) {\n  arr.sort((x, y) => {\n    const ax = getMs(x.json || {});\n    const ay = getMs(y.json || {});\n    return SORT_DESC ? ay - ax : ax - ay;\n  });\n\n  kept.push(...arr.slice(0, Math.max(0, MAX_PER_FEED)));\n}\n\n// Optional: preserve global ordering (newest-first)\nkept.sort((x, y) => {\n  const ax = getMs(x.json || {});\n  const ay = getMs(y.json || {});\n  return SORT_DESC ? ay - ax : ax - ay;\n});\n\nreturn kept;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        288,
+        96
+      ],
+      "id": "22b9346f-7f4f-476d-8d90-aa827ec24c95",
+      "name": "Pare 02 - Cap Per Feed"
+    },
+    {
+      "parameters": {
+        "jsCode": "/**\n * n8n Code Node: Pare 04 — Cap Per Category (v2)\n *\n * Groups by category and keeps newest N per category.\n * Enforces \"no one category dominates the digest.\"\n *\n * Category priority:\n *  1) top-level category\n *  2) feed_match.category (fallback)\n *\n * Date priority:\n *  1) published_at_ms\n *  2) pub_date_ms\n *  3) parse pub_date\n */\n\nconst MAX_PER_CATEGORY = 8;        // <-- modify\nconst DEFAULT_CATEGORY = \"uncategorized\"; // <-- modify\nconst REQUIRE_CATEGORY = false;     // <-- modify (true = drop items where category missing/empty)\nconst SORT_DESC = true;             // <-- modify (newest-first)\n\nfunction safeString(v) {\n  return (v === null || v === undefined) ? \"\" : String(v);\n}\n\nfunction toMsFromDateString(s) {\n  const str = safeString(s).trim();\n  if (!str) return -Infinity;\n  const d = new Date(str);\n  const ms = d.getTime();\n  return Number.isFinite(ms) ? ms : -Infinity;\n}\n\nfunction getMs(article) {\n  const p1 = article.published_at_ms;\n  if (typeof p1 === \"number\" && Number.isFinite(p1) && p1 > 0) return p1;\n\n  const p2 = article.pub_date_ms;\n  if (typeof p2 === \"number\" && Number.isFinite(p2) && p2 > 0) return p2;\n\n  return toMsFromDateString(article.pub_date);\n}\n\nfunction getCategory(article) {\n  // Prefer top-level category (your current payload includes it)\n  const top = safeString(article.category).trim();\n  if (top) return top;\n\n  // Fallback: feed_match.category\n  const fm = article.feed_match && typeof article.feed_match === \"object\" ? article.feed_match : null;\n  const fmCat = fm ? safeString(fm.category).trim() : \"\";\n  if (fmCat) return fmCat;\n\n  return null;\n}\n\nconst groups = new Map();\n\nfor (const item of items) {\n  const a = item.json || {};\n  let cat = getCategory(a);\n\n  if (!cat) {\n    if (REQUIRE_CATEGORY) continue;\n    cat = DEFAULT_CATEGORY;\n  }\n\n  if (!groups.has(cat)) groups.set(cat, []);\n  groups.get(cat).push(item);\n}\n\nconst kept = [];\n\nfor (const [, arr] of groups.entries()) {\n  arr.sort((x, y) => {\n    const ax = getMs(x.json || {});\n    const ay = getMs(y.json || {});\n    return SORT_DESC ? ay - ax : ax - ay;\n  });\n\n  kept.push(...arr.slice(0, Math.max(0, MAX_PER_CATEGORY)));\n}\n\n// Optional: global newest-first ordering\nkept.sort((x, y) => {\n  const ax = getMs(x.json || {});\n  const ay = getMs(y.json || {});\n  return SORT_DESC ? ay - ax : ax - ay;\n});\n\nreturn kept;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        512,
+        96
+      ],
+      "id": "5d193fab-8542-4647-9ed2-85866af32d33",
+      "name": "Pare 03 - Cap Per Category"
+    },
+    {
+      "parameters": {
+        "jsCode": "/**\n * n8n Code Node: Pare 05 — Global Cap (v2)\n *\n * Final overall cap. Sorts newest-first and keeps top N.\n *\n * Date priority:\n *  1) published_at_ms\n *  2) pub_date_ms\n *  3) parse pub_date\n */\n\nconst MAX_TOTAL = 50; // <-- modify (you said 30 max)\nconst SORT_DESC = true; // <-- modify\n\nfunction safeString(v) {\n  return (v === null || v === undefined) ? \"\" : String(v);\n}\n\nfunction toMsFromDateString(s) {\n  const str = safeString(s).trim();\n  if (!str) return -Infinity;\n  const d = new Date(str);\n  const ms = d.getTime();\n  return Number.isFinite(ms) ? ms : -Infinity;\n}\n\nfunction getMs(article) {\n  const p1 = article.published_at_ms;\n  if (typeof p1 === \"number\" && Number.isFinite(p1) && p1 > 0) return p1;\n\n  const p2 = article.pub_date_ms;\n  if (typeof p2 === \"number\" && Number.isFinite(p2) && p2 > 0) return p2;\n\n  return toMsFromDateString(article.pub_date);\n}\n\nconst arr = [...items];\n\narr.sort((x, y) => {\n  const ax = getMs(x.json || {});\n  const ay = getMs(y.json || {});\n  return SORT_DESC ? ay - ax : ax - ay;\n});\n\nreturn arr.slice(0, Math.max(0, MAX_TOTAL));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        736,
+        96
+      ],
+      "id": "de86587c-d559-4b38-bb9e-8fcf62047608",
+      "name": "Pare 04 - Global Cap"
+    },
+    {
+      "parameters": {
+        "sendTo": "stephen@tonkaintl.com",
+        "subject": "Tonka Dispatch Dailies",
+        "message": "={{\n  (() => {\n    const r = $json.rankings || [];\n    const subject = $json.email_subject || 'Daily Digest';\n    const MAX_SNIPPET = 320; // tune this\n\n    const lines = [];\n    lines.push(subject);\n    lines.push('');\n    lines.push('Top items:');\n    lines.push('These are the randomly picked stories of the last few weeks.');\n    lines.push('To review more, go to:');\n    lines.push('https://social.tonkaintl.com/tonka-dispatch/rankings');\n    lines.push('Sign In');\n    lines.push('Under menu Tonka Dispatch, click on Daily Rankings');\n    lines.push('');\n\n    const fmtDate = (ms) => {\n      if (typeof ms !== 'number' || !isFinite(ms) || ms <= 0) return '';\n      const d = new Date(ms);\n      if (isNaN(d.getTime())) return '';\n      return d.toLocaleDateString('en-US', {\n        timeZone: 'America/Chicago',\n        year: 'numeric',\n        month: 'short',\n        day: '2-digit'\n      });\n    };\n\n    const clean = (s) => String(s || '').replace(/\\s+/g, ' ').trim();\n\n    const trunc = (s, max) => {\n      s = clean(s);\n      if (!s) return '';\n      if (s.length <= max) return s;\n      return s.slice(0, max - 1).trimEnd() + '…';\n    };\n\n    for (const item of r) {\n      const a = item.article || {};\n      const rank = item.rank ?? '';\n      const title = clean(a.title || item.canonical_id || '');\n      const link = clean(a.link || item.canonical_id || '');\n      const cat = clean(a.category || '');\n      const date = fmtDate(a.pub_date_ms);\n\n      // Prefer snippet; if empty, fall back to reason (optional)\n      const snippet = trunc(a.snippet, MAX_SNIPPET);\n      const reason = trunc(item.reason, MAX_SNIPPET);\n      const blurb = snippet || reason;\n\n      const meta = [cat, date].filter(Boolean).join(' | ');\n\n      lines.push(`${rank}) ${title}`);\n      if (meta) lines.push(`   ${meta}`);\n      if (blurb) lines.push(`   ${blurb}`);\n      if (link) lines.push(`   Link: ${link}`);\n      lines.push('');\n    }\n\n    return lines.join('\\n');\n  })()\n}}\n",
+        "options": {
+          "senderName": "TKI Agent"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1760,
+        16
+      ],
+      "id": "98fdd9e5-7782-44de-bac5-4c7cdc2c60aa",
+      "name": "Send a message",
+      "webhookId": "aa711434-f7a7-4487-b960-2b8e88e0ee6e",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "182DdjZlt05g1bwX",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "claude-sonnet-4-6",
+          "mode": "list",
+          "cachedResultName": "claude-sonnet-4-6"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Rank these items for trucking/logistics professionals.\n\nReturn valid JSON that matches the provided SCHEMA.\n\nSelection size:\n- Let item_count = number of ITEMS.\n- If item_count >= 10: N = 10\n- If item_count is 8 or 9: N = item_count\n- If item_count < 8: N = item_count\n\nITEMS:\n{{ JSON.stringify(\n  ($json.data || []).map(a => ({\n    article_id: a._id,\n    canonical_id: a.canonical_id || a.link,\n    title: a.title,\n    snippet: a.content_snippet || a.content || \"\",\n    category: a.feed_match?.category || null,\n    pub_date_ms: a.published_at_ms || a.pub_date_ms || null,\n\n    link: a.link,\n    creator: a.creator || null,\n    article_host: a.article_host || null,\n    article_root_domain: a.article_root_domain || null,\n    feed_match_status: a.feed_match_status || null,\n    feed_match_reason: a.feed_match_reason || null,\n    match_method: a.match_method || null,\n    feed_match: a.feed_match || null\n  })), null, 2\n) }}"
+            }
+          ]
+        },
+        "simplify": false,
+        "options": {
+          "system": "=You are a ranking engine for a daily trucking/logistics newsletter.\n\nReturn ONLY valid JSON matching the provided SCHEMA. No commentary. No markdown. No extra keys.\n\nDefinitions:\n- Each input item in ITEMS has a unique canonical_id field (URL string).\n- You MUST rank ALL items exactly once: no duplicates, no omissions.\n\nRules:\n1) rankings must include every input item exactly once.\n2) rankings must be sorted by rank ascending (rank 1 = best).\n3) canonical_id must be copied EXACTLY from the input item's canonical_id in ITEMS.\n4) For each rankings entry:\n   - article must be the EXACT item object from ITEMS for that canonical_id.\n   - Copy it verbatim: same keys, same values.\n5) selected_canonical_ids must be the first N canonical_ids from rankings, in order.\n6) Use only provided title, snippet, category, and context; do not add outside facts.\n7) If content_snippet is \"\" then search the link to parse out a snippet of text less than 300 characters long\n\nScoring:\n- score is an integer 0–100 for interest to trucking/logistics professionals.\n\nReason:\n- reason must be 6–12 words.\n- reason must contain only letters, numbers, and spaces.\n- No trailing punctuation.",
+          "codeExecution": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.anthropic",
+      "typeVersion": 1,
+      "position": [
+        1184,
+        96
+      ],
+      "id": "685f02e4-3f90-4cb3-9ee0-b60987e37908",
+      "name": "Message a model",
+      "credentials": {
+        "anthropicApi": {
+          "id": "EmsowfF8g3QAWKjo",
+          "name": "Anthropic account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Cache RSS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cache RSS": {
+      "main": [
+        [
+          {
+            "node": "Split Out RSS Array",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out RSS Array": {
+      "main": [
+        [
+          {
+            "node": "Cache RSS Feed Links",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code Merge RSS and Feed": {
+      "main": [
+        [
+          {
+            "node": "Pare 01 - Drop Low-Value Patterns",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cache RSS Feed Links": {
+      "main": [
+        [
+          {
+            "node": "Code Merge RSS and Feed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rank via LLM": {
+      "main": [
+        [
+          {
+            "node": "Normalize Rankings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Rankings": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pare 01 - Drop Low-Value Patterns": {
+      "main": [
+        [
+          {
+            "node": "Pare 02 - Cap Per Feed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pare 02 - Cap Per Feed": {
+      "main": [
+        [
+          {
+            "node": "Pare 03 - Cap Per Category",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pare 03 - Cap Per Category": {
+      "main": [
+        [
+          {
+            "node": "Pare 04 - Global Cap",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pare 04 - Global Cap": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Normalize Rankings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "9e94de6c-c6f3-4543-a598-64b9888e1ad3",
+  "meta": {
+    "instanceId": "162276b63273e7b8cbbc2d1bd76ec84991500f1000f36d3d8ed5f2ad0b071ef4"
+  },
+  "id": "cZvxJnDfgDgw1JTi",
+  "tags": []
+}

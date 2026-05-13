@@ -1,6 +1,7 @@
 import { app } from './app.js';
 import connectToDb from './config/database.js';
 import { config } from './config/env.js';
+import { startDispatchRankingCron } from './services/dispatchRanking.cron.js';
 import { logger } from './utils/logger.js';
 
 // Connect to TKI Social database
@@ -10,6 +11,7 @@ async function startServer() {
     if (config.MONGODB_TKISOCIAL_URI) {
       await connectToDb(config.MONGODB_TKISOCIAL_URI);
       logger.info('Connected to TKI Social database');
+      startDispatchRankingCron();
     } else {
       logger.warn(
         'MONGODB_TKISOCIAL_URI not configured - running without database'
