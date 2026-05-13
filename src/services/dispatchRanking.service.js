@@ -184,8 +184,8 @@ async function rankWithLLM(pool) {
     const idx = String(i + 1);
     indexMap.set(idx, a);
     return {
-      id: idx,
       category: a.category || null,
+      id: idx,
       pub_date_ms: a.published_at_ms || null,
       score: a.relevance?.score ?? -1,
       snippet: (a.content_snippet || a.content || '').slice(0, 200),
