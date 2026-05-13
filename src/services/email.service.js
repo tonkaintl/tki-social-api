@@ -126,25 +126,29 @@ class EmailService {
         throw new Error('GMAIL_IMPERSONATED_USER not configured');
       }
 
-      const recipients = Array.isArray(to) ? to.join(', ') : to;
+      const toList = Array.isArray(to) ? to.filter(Boolean) : [to];
+      const recipients = toList.map(v => String(v).trim()).join(', ');
 
       const accessToken = await this.getAccessToken();
 
-      const mimeMessage = [
-        `From: ${
-          this.fromName
-            ? `${this.fromName} <${this.fromEmail}>`
-            : this.fromEmail
-        }`,
-        `To: ${recipients}`,
-        `Subject: ${subject}`,
-        'MIME-Version: 1.0',
-        'Content-Type: text/html; charset=UTF-8',
-        '',
-        htmlBody,
-      ].join('\r\n');
+      const fromHeader = this.fromName
+        ? `${this.fromName} <${this.fromEmail}>`
+        : this.fromEmail;
 
-      const encodedMessage = Buffer.from(mimeMessage)
+      // RFC 2047 encoded-word: prevents garbled characters in subject
+      const encodedSubject = `=?utf-8?B?${Buffer.from(subject || '', 'utf8').toString('base64')}?=`;
+
+      const mimeMessage = [
+        `From: ${fromHeader}`,
+        `To: ${recipients}`,
+        'MIME-Version: 1.0',
+        'Content-Type: text/html; charset=utf-8',
+        `Subject: ${encodedSubject}`,
+        '',
+        htmlBody || '',
+      ].join('\n');
+
+      const encodedMessage = Buffer.from(mimeMessage, 'utf8')
         .toString('base64')
         .replace(/\+/g, '-')
         .replace(/\//g, '_')

@@ -47,10 +47,6 @@ export async function listArticles(req, res) {
         '[ARTICLES] Null IDs:',
         usedArticleIds.length - validIds.length
       );
-      console.log(
-        '[ARTICLES] IDs being excluded:',
-        validIds.map(id => id.toString())
-      );
       console.log('[ARTICLES] ========================================');
 
       if (validIds.length > 0) {

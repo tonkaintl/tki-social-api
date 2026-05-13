@@ -64,7 +64,6 @@ sparksSchema.index({ release_order: 1 });
 sparksSchema.index({ last_used: -1 });
 sparksSchema.index({ times_used: -1 });
 sparksSchema.index({ categories: 1 });
-sparksSchema.index({ group: 1 });
 
 const TonkaSparks = mongoose.model('TonkaSparks', sparksSchema, 'tonka_sparks');
 
