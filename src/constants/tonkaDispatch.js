@@ -127,6 +127,12 @@ export const RANKINGS_ERROR_CODE = {
   MISSING_SUBJECT: 'MISSING_SUBJECT',
   RANKINGS_LIST_FAILED: 'RANKINGS_LIST_FAILED',
   RANKINGS_SAVE_FAILED: 'RANKINGS_SAVE_FAILED',
+  // Enrichment
+  ENRICH_BATCH_TOO_LARGE: 'ENRICH_BATCH_TOO_LARGE',
+  ENRICH_FAILED: 'ENRICH_FAILED',
+  ENRICH_MISSING_IDS: 'ENRICH_MISSING_IDS',
+  ENRICH_NO_LINK: 'ENRICH_NO_LINK',
+  RANKING_NOT_FOUND: 'RANKING_NOT_FOUND',
 };
 
 // Rankings field names
@@ -181,6 +187,15 @@ export const RANKING_FIELDS = {
   SOURCE_NAME: 'source_name',
   TITLE: 'title',
   TONKA_DISPATCH_RSS_LINKS_ID: 'tonka_dispatch_rss_links_id',
+  // AI enrichment fields
+  AI_ENRICHMENT_ERROR: 'ai_enrichment_error',
+  AI_ENRICHMENT_STATUS: 'ai_enrichment_status',
+  AI_SUMMARY: 'ai_summary',
+  AI_SUMMARY_GENERATED_AT: 'ai_summary_generated_at',
+  AI_SUMMARY_MODEL: 'ai_summary_model',
+  OG_DESCRIPTION: 'og_description',
+  OG_IMAGE_URL: 'og_image_url',
+  OG_TITLE: 'og_title',
 };
 
 // Valid sort fields for rankings listing
@@ -208,6 +223,19 @@ export const FEED_MATCH_STATUS = {
 };
 
 export const FEED_MATCH_STATUS_VALUES = Object.values(FEED_MATCH_STATUS);
+
+// AI enrichment status values
+export const AI_ENRICHMENT_STATUS = {
+  FAILED: 'failed',
+  PENDING: 'pending',
+  SUCCESS: 'success',
+};
+
+export const AI_ENRICHMENT_STATUS_VALUES = Object.values(AI_ENRICHMENT_STATUS);
+
+// Batch enrichment limits
+export const ENRICH_BATCH_MAX = 20;
+export const ENRICH_BATCH_DELAY_MS = 500; // ms between sequential calls
 
 // ----------------------------------------------------------------------------
 // NEWSLETTER CONSTANTS

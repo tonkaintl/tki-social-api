@@ -151,9 +151,46 @@ export async function listRankings(req, res) {
       batches[ranking.batch_id]++;
     });
 
+    // Aggregate total rankings per batch_id and attach as a temporary response prop.
+    const batchIds = [
+      ...new Set(rankings.map(ranking => ranking.batch_id).filter(Boolean)),
+    ];
+    let batchCountMap = {};
+
+    if (batchIds.length > 0) {
+      const aggregatedBatchCounts = await TonkaDispatchRanking.aggregate([
+        {
+          $match: {
+            ...filter,
+            [RANKING_FIELDS.BATCH_ID]: { $in: batchIds },
+          },
+        },
+        {
+          $group: {
+            _id: `$${RANKING_FIELDS.BATCH_ID}`,
+            article_count: { $sum: 1 },
+          },
+        },
+      ]);
+
+      batchCountMap = aggregatedBatchCounts.reduce((acc, item) => {
+        acc[item._id] = item.article_count;
+        return acc;
+      }, {});
+    }
+
+    const rankingsWithBatchCount = rankings.map(ranking => {
+      const rankingObj = ranking.toObject();
+
+      return {
+        ...rankingObj,
+        temp_article_count: batchCountMap[ranking.batch_id] ?? 0,
+      };
+    });
+
     logger.info('Rankings retrieved successfully', {
       batches: Object.keys(batches).length,
-      count: rankings.length,
+      count: rankingsWithBatchCount.length,
       filter,
       page: pageNum,
       requestId: req.id,
@@ -162,7 +199,7 @@ export async function listRankings(req, res) {
 
     return res.status(200).json({
       batches: Object.keys(batches).length,
-      count: rankings.length,
+      count: rankingsWithBatchCount.length,
       filters: {
         ...(batch_id && { batch_id }),
         ...(category && { category }),
@@ -171,7 +208,7 @@ export async function listRankings(req, res) {
         ...(search && { search }),
       },
       page: pageNum,
-      rankings,
+      rankings: rankingsWithBatchCount,
       requestId: req.id,
       totalCount,
       totalPages,
