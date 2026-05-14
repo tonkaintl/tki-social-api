@@ -34,6 +34,19 @@ var tonkaDispatchRankingSchema = new Schema({
   source_name: String,
   title: String,
   tonka_dispatch_rss_links_id: String,
+  // AI enrichment
+  ai_enrichment_error: String,
+  ai_enrichment_status: {
+    default: 'pending',
+    enum: ['pending', 'success', 'failed'],
+    type: String,
+  },
+  ai_summary: String,
+  ai_summary_generated_at: Date,
+  ai_summary_model: String,
+  og_description: String,
+  og_image_url: String,
+  og_title: String,
 });
 
 // ----------------------------------------------------------
