@@ -57,7 +57,7 @@ All vars from `env.js` schema are set (29 total). Run `railway variable list` to
 Key vars confirmed set: `MONGODB_TKISOCIAL_URI`, `BINDER_API_URL`, `NODE_ENV=production`.
 
 Social platform vars missing (not in local .env — add when credentials are provisioned):
-`INSTAGRAM_*`, `THREADS_*`, `TIKTOK_*`, `X_*`, `YOUTUBE_*`, `METRICOOL_TEAM_ID`
+`INSTAGRAM_*`, `THREADS_*`, `TIKTOK_*`, `X_*`, `YOUTUBE_*`
 
 ### Health Check (set in Railway dashboard)
 

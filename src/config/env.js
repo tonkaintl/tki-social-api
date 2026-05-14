@@ -80,7 +80,6 @@ const envSchema = z.object({
   META_VERIFY_TOKEN: z.string().default('verify_me'),
   METRICOOL_API_TOKEN: z.string().optional(),
   METRICOOL_BLOG_ID: z.string().optional(),
-  METRICOOL_TEAM_ID: z.string().optional(),
   METRICOOL_USER_ID: z.string().optional(),
   MONGODB_TKIBINDER_URI: z.string().optional(),
   MONGODB_TKIPORTAL_URI: z.string().optional(),
@@ -113,9 +112,6 @@ const envSchema = z.object({
     .transform(val => val === 'true')
     .pipe(z.boolean())
     .default(true),
-  X_ACCESS_TOKEN: z.string().optional(),
-  X_CLIENT_ID: z.string().optional(),
-  X_CLIENT_SECRET: z.string().optional(),
   YOUTUBE_ACCESS_TOKEN: z.string().optional(),
   YOUTUBE_CLIENT_ID: z.string().optional(),
   YOUTUBE_CLIENT_SECRET: z.string().optional(),
