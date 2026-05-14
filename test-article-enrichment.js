@@ -42,7 +42,9 @@ async function testArticle({ label, title, url }) {
   const { ogDescription, ogImage, ogTitle } = parsePageMetadata(html);
   console.log('done');
   console.log(`       og:title       → ${ogTitle ?? '(none)'}`);
-  console.log(`       og:description → ${ogDescription ? ogDescription.slice(0, 100) + '…' : '(none)'}`);
+  console.log(
+    `       og:description → ${ogDescription ? ogDescription.slice(0, 100) + '…' : '(none)'}`
+  );
   console.log(`       og:image       → ${ogImage ?? '(none)'}`);
 
   // 3. Generate summary
