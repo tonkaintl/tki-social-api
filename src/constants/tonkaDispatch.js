@@ -244,6 +244,7 @@ export const ENRICH_BATCH_DELAY_MS = 500; // ms between sequential calls
 // Newsletter status values
 export const NEWSLETTER_STATUS = {
   DRAFT: 'draft',
+  GENERATED: 'generated',
   SCHEDULED: 'scheduled',
   SENT: 'sent',
 };
@@ -254,6 +255,7 @@ export const NEWSLETTER_STATUS_VALUES = Object.values(NEWSLETTER_STATUS);
 export const NEWSLETTER_ERROR_CODE = {
   ARTICLE_NOT_FOUND: 'ARTICLE_NOT_FOUND',
   DUPLICATE_ARTICLE: 'DUPLICATE_ARTICLE',
+  GENERATE_FAILED: 'GENERATE_FAILED',
   INVALID_ARTICLE_ORDER: 'INVALID_ARTICLE_ORDER',
   INVALID_PAGE: 'INVALID_PAGE',
   INVALID_SORT_FIELD: 'INVALID_SORT_FIELD',
@@ -272,6 +274,7 @@ export const NEWSLETTER_FIELDS = {
   ARTICLES: 'articles',
   CREATED_AT: 'created_at',
   HERO_IMAGE_URL: 'hero_image_url',
+  HTML_CONTENT: 'html_content',
   ID: '_id',
   SCHEDULED_DATE: 'scheduled_date',
   SENT_DATE: 'sent_date',

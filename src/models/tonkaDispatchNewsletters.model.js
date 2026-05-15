@@ -42,12 +42,16 @@ var tonkaDispatchNewsletterSchema = new Schema({
     type: Date,
   },
   hero_image_url: String,
+  html_content: {
+    default: '',
+    type: String,
+  },
   scheduled_date: Date,
   sent_date: Date,
   source_batch_id: String,
   status: {
     default: 'draft',
-    enum: ['draft', 'scheduled', 'sent'],
+    enum: ['draft', 'generated', 'scheduled', 'sent'],
     required: true,
     type: String,
   },
