@@ -6,8 +6,6 @@
 // inline styles. No CSS classes, no media queries, no <div> for layout.
 // ----------------------------------------------------------------------------
 
-const CONTAINER_WIDTH = 600;
-
 const STYLE = {
   body: [
     'margin:0',
@@ -100,7 +98,7 @@ function pickDisplayTitle(item) {
 function pickDisplaySnippet(item) {
   return item.custom_snippet && item.custom_snippet.trim().length > 0
     ? item.custom_snippet
-    : '';
+    : item.snippet || '';
 }
 
 function pickDisplayByline(item) {
@@ -200,43 +198,21 @@ function buildCardRow(item, isLast) {
 // Top-level renderer
 // ----------------------------------------------------------------------------
 
-export function generateNewsletterBroadcastHtml({
-  items,
-  preview_text,
-  subject_line,
-  title,
-} = {}) {
+export function generateNewsletterBroadcastHtml({ items } = {}) {
   if (!Array.isArray(items) || items.length === 0) {
     throw Object.assign(new Error('items must be a non-empty array'), {
       status: 400,
     });
   }
 
-  const cards = items
+  const rows = items
     .map((item, idx) => buildCardRow(item, idx === items.length - 1))
     .join('');
-  const previewSpan = preview_text
-    ? `<span style="display:none;font-size:0;line-height:0;color:#f4f4f5;` +
-      `mso-hide:all;max-height:0;overflow:hidden;">` +
-      `${escapeHtml(preview_text)}</span>`
-    : '';
-  const safeTitle = escapeHtml(title || subject_line || 'Newsletter');
 
+  // Wrap in a single outer table for 'stacked tables' output
   return (
-    `<!doctype html><html lang="en"><head><meta charset="utf-8" />` +
-    `<meta name="viewport" content="width=device-width,initial-scale=1" />` +
-    `<title>${safeTitle}</title></head>` +
-    `<body style="${STYLE.body}">${previewSpan}` +
-    `<table role="presentation" cellpadding="0" cellspacing="0" border="0" ` +
-    `width="100%" style="${STYLE.outerWrapper}">` +
-    `<tr><td style="${STYLE.spacerCell}">&nbsp;</td></tr>` +
-    `<tr><td align="center" style="padding:0">` +
-    `<table role="presentation" cellpadding="0" cellspacing="0" border="0" ` +
-    `width="${CONTAINER_WIDTH}" style="width:${CONTAINER_WIDTH}px;border-collapse:collapse">` +
-    `${cards}` +
-    `</table>` +
-    `</td></tr>` +
-    `<tr><td style="${STYLE.spacerCell}">&nbsp;</td></tr>` +
-    `</table></body></html>`
+    `<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="width:100%;border-collapse:collapse">` +
+    rows +
+    `</table>`
   );
 }
