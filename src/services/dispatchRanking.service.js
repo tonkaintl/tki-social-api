@@ -23,6 +23,7 @@ import {
   RANKINGS_TARGET_COUNT,
 } from '../constants/dispatchRanking.js';
 import DispatchArticle from '../models/dispatchArticle.model.js';
+import TonkaDispatchNewsletter from '../models/tonkaDispatchNewsletters.model.js';
 import TonkaDispatchRanking from '../models/tonkaDispatchRankings.model.js';
 // Must be imported so Mongoose registers the schema for populate()
 import '../models/tonkaDispatchRssLinks.model.js';
@@ -142,8 +143,44 @@ export async function runDispatchRetentionCleanup({
     };
   }
 
+  // Before deleting rankings, check if any are referenced in newsletters
+  const rankingsToDelete =
+    await TonkaDispatchRanking.find(oldRankingFilter).select('_id');
+  const rankingIdsToDelete = rankingsToDelete.map(r => r._id);
+
+  const referencedInNewsletters = await TonkaDispatchNewsletter.find({
+    'articles.tonka_dispatch_rankings_id': { $in: rankingIdsToDelete },
+  }).select('articles.tonka_dispatch_rankings_id');
+
+  // Extract ranking IDs that are referenced in newsletters
+  const referencedRankingIds = new Set();
+  referencedInNewsletters.forEach(newsletter => {
+    newsletter.articles.forEach(article => {
+      if (article.tonka_dispatch_rankings_id) {
+        referencedRankingIds.add(article.tonka_dispatch_rankings_id.toString());
+      }
+    });
+  });
+
+  // Only delete rankings that are NOT referenced in newsletters
+  const safeRankingFilter = {
+    ...oldRankingFilter,
+    _id: { $nin: Array.from(referencedRankingIds) },
+  };
+
   const articleResult = await DispatchArticle.deleteMany(oldArticleFilter);
-  const rankingResult = await TonkaDispatchRanking.deleteMany(oldRankingFilter);
+  const rankingResult =
+    await TonkaDispatchRanking.deleteMany(safeRankingFilter);
+
+  const protectedRankingsCount = referencedRankingIds.size;
+  if (protectedRankingsCount > 0) {
+    logger.info(
+      '[DispatchRanking] Protected rankings from deletion (referenced in newsletters)',
+      {
+        protected_rankings: protectedRankingsCount,
+      }
+    );
+  }
 
   logger.info('[DispatchRanking] Retention cleanup complete', {
     cutoff_iso: cutoffDate.toISOString(),

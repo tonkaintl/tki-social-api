@@ -90,12 +90,7 @@ export async function generateNewsletter(req, res) {
     );
     const items = orderedArticles.map(articleToItem);
 
-    const html = generateNewsletterBroadcastHtml({
-      items,
-      preview_text: '',
-      subject_line: newsletter.title,
-      title: newsletter.title,
-    });
+    const html = generateNewsletterBroadcastHtml({ items });
 
     newsletter.html_content = html;
     newsletter.status = NEWSLETTER_STATUS.GENERATED;
