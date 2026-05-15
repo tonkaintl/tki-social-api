@@ -6,12 +6,14 @@ import { updateArticle } from './methods/newsletters.controller.patch.article-up
 import { updateNewsletter } from './methods/newsletters.controller.patch.update.js';
 import { addArticle } from './methods/newsletters.controller.post.add-article.js';
 import { createNewsletter } from './methods/newsletters.controller.post.create.js';
+import { generateNewsletter } from './methods/newsletters.controller.post.generate.js';
 import { reorderArticles } from './methods/newsletters.controller.post.reorder.js';
 
 export {
   addArticle,
   createNewsletter,
   deleteNewsletter,
+  generateNewsletter,
   getNewsletter,
   listNewsletters,
   removeArticle,

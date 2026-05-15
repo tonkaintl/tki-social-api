@@ -4,6 +4,7 @@ import {
   addArticle,
   createNewsletter,
   deleteNewsletter,
+  generateNewsletter,
   getNewsletter,
   listNewsletters,
   removeArticle,
@@ -22,6 +23,7 @@ const router = express.Router();
 // POST Routes
 // ----------------------------------------------------------------------------
 router.post('/', verifyToken, createNewsletter);
+router.post('/:id/generate', verifyToken, generateNewsletter);
 router.post('/:id/articles', verifyToken, addArticle);
 router.post('/:id/articles/reorder', verifyToken, reorderArticles);
 
