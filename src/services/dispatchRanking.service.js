@@ -12,6 +12,7 @@ import {
   CANDIDATE_EXCLUDE_USED,
   CANDIDATE_MAX_AGE_DAYS,
   CANDIDATE_SCORE_MIN,
+  DISPATCH_BACKLOG_DAYS,
   DROP_LINK_PATTERNS,
   DROP_TITLE_PATTERNS,
   MAX_PER_CATEGORY_IN_RESULTS,
@@ -86,6 +87,78 @@ function buildEmailHtml({ batchId, rankings, today }) {
   </table>
 </body>
 </html>`;
+}
+
+// ── Retention cleanup (run before scheduled ranking) ────────────────────────
+
+export async function runDispatchRetentionCleanup({
+  dryRun = false,
+  retentionDays = DISPATCH_BACKLOG_DAYS,
+} = {}) {
+  const cutoffMs = Date.now() - retentionDays * 24 * 60 * 60 * 1000;
+  const cutoffDate = new Date(cutoffMs);
+
+  const oldArticleFilter = {
+    published_at_ms: { $lt: cutoffMs },
+  };
+
+  // Rankings mainly use pub_date_ms. If missing, fall back to created_at.
+  const oldRankingFilter = {
+    $or: [
+      { pub_date_ms: { $lt: cutoffMs } },
+      {
+        $and: [
+          {
+            $or: [{ pub_date_ms: { $exists: false } }, { pub_date_ms: null }],
+          },
+          { created_at: { $lt: cutoffDate } },
+        ],
+      },
+    ],
+  };
+
+  const oldArticlesCount =
+    await DispatchArticle.countDocuments(oldArticleFilter);
+  const oldRankingsCount =
+    await TonkaDispatchRanking.countDocuments(oldRankingFilter);
+
+  logger.info('[DispatchRanking] Retention cleanup pre-check', {
+    cutoff_iso: cutoffDate.toISOString(),
+    dry_run: dryRun,
+    old_dispatch_articles: oldArticlesCount,
+    old_rankings: oldRankingsCount,
+    retention_days: retentionDays,
+  });
+
+  if (dryRun) {
+    return {
+      cutoff_ms: cutoffMs,
+      deleted_dispatch_articles: 0,
+      deleted_rankings: 0,
+      dry_run: true,
+      retention_days: retentionDays,
+      would_delete_dispatch_articles: oldArticlesCount,
+      would_delete_rankings: oldRankingsCount,
+    };
+  }
+
+  const articleResult = await DispatchArticle.deleteMany(oldArticleFilter);
+  const rankingResult = await TonkaDispatchRanking.deleteMany(oldRankingFilter);
+
+  logger.info('[DispatchRanking] Retention cleanup complete', {
+    cutoff_iso: cutoffDate.toISOString(),
+    deleted_dispatch_articles: articleResult.deletedCount,
+    deleted_rankings: rankingResult.deletedCount,
+    retention_days: retentionDays,
+  });
+
+  return {
+    cutoff_ms: cutoffMs,
+    deleted_dispatch_articles: articleResult.deletedCount || 0,
+    deleted_rankings: rankingResult.deletedCount || 0,
+    dry_run: false,
+    retention_days: retentionDays,
+  };
 }
 
 // ── Step 1: Fetch candidates from MongoDB ─────────────────────────────────────

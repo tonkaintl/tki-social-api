@@ -11,7 +11,10 @@ import {
 } from '../constants/dispatchRanking.js';
 import { logger } from '../utils/logger.js';
 
-import { runDailyRanking } from './dispatchRanking.service.js';
+import {
+  runDailyRanking,
+  runDispatchRetentionCleanup,
+} from './dispatchRanking.service.js';
 
 let isRunning = false;
 
@@ -24,6 +27,7 @@ async function runWithGuard() {
   }
   isRunning = true;
   try {
+    await runDispatchRetentionCleanup();
     await runDailyRanking();
   } catch (err) {
     logger.error('[DispatchRanking] Cron run failed', {

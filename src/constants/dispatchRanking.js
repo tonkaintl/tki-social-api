@@ -22,6 +22,10 @@ export const CANDIDATE_MAX_AGE_DAYS = config.DISPATCH_CANDIDATE_MAX_AGE_DAYS;
 // Env: DISPATCH_CANDIDATE_EXCLUDE_USED (default true)
 export const CANDIDATE_EXCLUDE_USED = config.DISPATCH_CANDIDATE_EXCLUDE_USED;
 
+// Purge records older than this many days before each scheduled run.
+// Env: DISPATCH_BACKLOG_DAYS (default 28)
+export const DISPATCH_BACKLOG_DAYS = config.DISPATCH_BACKLOG_DAYS;
+
 // ── Pare: drop low-value patterns ───────────────────────────────────────────
 
 export const DROP_TITLE_PATTERNS = [
