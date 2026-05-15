@@ -74,10 +74,10 @@ export async function listCatalogArticles(req, res) {
         [RANKING_FIELDS.TITLE]: 1,
       })
       .sort({
-        [RANKING_FIELDS.RANK]: 1,
-        [RANKING_FIELDS.PUB_DATE_MS]: -1,
-        [RANKING_FIELDS.CREATED_AT]: -1,
         _id: 1,
+        [RANKING_FIELDS.CREATED_AT]: -1,
+        [RANKING_FIELDS.PUB_DATE_MS]: -1,
+        [RANKING_FIELDS.RANK]: 1,
       })
       .skip(skip)
       .limit(limitNum);
