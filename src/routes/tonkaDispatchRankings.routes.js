@@ -3,6 +3,8 @@ import express from 'express';
 import {
   enrichRankingById,
   enrichRankingsBatch,
+  listCatalogArticles,
+  listCatalogCategories,
   listRankings,
 } from '../controllers/tonkaDispatchRankings/methods.js';
 import { verifyEitherAuth } from '../middleware/auth.either.js';
@@ -15,6 +17,8 @@ const router = express.Router();
 // GET Routes
 // ----------------------------------------------------------------------------
 router.get('/', verifyEitherAuth, listRankings);
+router.get('/catalog/categories', verifyEitherAuth, listCatalogCategories);
+router.get('/catalog/articles', verifyEitherAuth, listCatalogArticles);
 
 // ----------------------------------------------------------------------------
 // POST Routes

@@ -1,3 +1,5 @@
+import { listCatalogArticles } from './methods/rankings.controller.get.catalog-articles.js';
+import { listCatalogCategories } from './methods/rankings.controller.get.catalog-categories.js';
 import { listRankings } from './methods/rankings.controller.get.list.js';
 import {
   enrichRankingById,
@@ -8,6 +10,8 @@ import { testDispatchEmail } from './methods/rankings.controller.post.test-email
 export {
   enrichRankingById,
   enrichRankingsBatch,
+  listCatalogArticles,
+  listCatalogCategories,
   listRankings,
   testDispatchEmail,
 };
