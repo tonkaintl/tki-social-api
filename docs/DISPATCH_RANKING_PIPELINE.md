@@ -16,14 +16,14 @@ Replaces the n8n workflow. Runs entirely in-process on this server.
 - Deduplicates articles
 - Scores each via Perplexity AI (`relevance.score`, 0–100)
 - Writes scored articles to `dispatch_articles` (MongoDB, TKISOCIAL DB)
-- Deletes articles older than **28 days** (collector-side shoulder; our pipeline only looks at 14 days)
+- Deletes old source articles using `DISPATCH_BACKLOG_DAYS` (collector-side behavior)
 
 ### Step 1 — Candidate Fetch
 
 Queries `dispatch_articles` for articles that:
 
 - Have `relevance.score ≥ CANDIDATE_SCORE_MIN` (default **70**)
-- Were published within the last `CANDIDATE_MAX_AGE_DAYS` (default **14** days)
+- Were published within the last `CANDIDATE_MAX_AGE_DAYS` (env-driven)
 - Have NOT already appeared in any previous ranking batch (controlled by `CANDIDATE_EXCLUDE_USED`)
 
 ### Step 2 — Pool Paring (~700 → 60)
@@ -81,7 +81,8 @@ All in **`src/constants/dispatchRanking.js`** — change here, redeploy, done.
 | Constant                      | Default             | What it controls                                         |
 | ----------------------------- | ------------------- | -------------------------------------------------------- |
 | `CANDIDATE_SCORE_MIN`         | `70`                | Minimum Perplexity score for an article to be considered |
-| `CANDIDATE_MAX_AGE_DAYS`      | `14`                | How many days back to look for articles                  |
+| `CANDIDATE_MAX_AGE_DAYS`      | env value           | How many days back to look for articles                  |
+| `DISPATCH_BACKLOG_DAYS`       | `28`                | Retention window used for old-record cleanup             |
 | `CANDIDATE_EXCLUDE_USED`      | `true`              | Skip articles already in any previous batch              |
 | `MAX_PER_FEED`                | `5`                 | Max articles from a single RSS feed in the LLM pool      |
 | `MAX_PER_CATEGORY_POOL`       | `8`                 | Max articles per category sent to the LLM                |
@@ -104,6 +105,7 @@ All in **`src/constants/dispatchRanking.js`** — change here, redeploy, done.
 | `ANTHROPIC_MODEL`           | Default: `claude-haiku-4-5`                                    |
 | `TONKA_DISPATCH_RECIPIENTS` | Default: `stephen@tonkaintl.com`. Comma-separate for multiple. |
 | `MONGODB_TKISOCIAL_URI`     | Already set. Required for everything.                          |
+| `DISPATCH_BACKLOG_DAYS`     | Default: `28`. Old records older than this are removed first.  |
 
 ---
 
@@ -137,7 +139,7 @@ node scripts/analyze-dispatch-db.js
 ## DB Notes (as of May 2026)
 
 - Total articles: ~5,967 (all scored)
-- Candidate pool at score ≥ 70, last 14 days: ~700
+- Candidate pool at score ≥ 70, window defined by `CANDIDATE_MAX_AGE_DAYS`: ~700
 - Logistics dominates raw candidates (37.8%) but is capped at 3 of 10 in final results
 - Score range in practice: 70–94 (no articles scoring ≥ 95 currently)
 - `medical` and `forestry` categories have articles in DB but rarely score ≥ 70 in recent window

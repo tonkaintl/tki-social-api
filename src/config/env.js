@@ -19,6 +19,11 @@ const envSchema = z.object({
     .email()
     .default('tki-agent@tonkaintl.com'),
   CLERK_SECRET_KEY: z.string().optional(),
+  DISPATCH_BACKLOG_DAYS: z
+    .string()
+    .transform(Number)
+    .pipe(z.number().min(1).max(365))
+    .default('28'),
   DISPATCH_CANDIDATE_EXCLUDE_USED: z
     .string()
     .transform(val => val === 'true')
