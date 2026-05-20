@@ -19,8 +19,11 @@ import { logger } from '../utils/logger.js';
 
 const FETCH_TIMEOUT_MS = 10_000;
 const BODY_TEXT_MAX_CHARS = 4_000;
+// Many publisher sites (Cloudflare/WAF) reject anything with "bot" in the UA
+// with a 403 before we ever see the page. Use a standard Chrome UA to pass
+// those checks; if it still gets blocked, we fall back to the RSS snippet.
 const USER_AGENT =
-  'Mozilla/5.0 (compatible; TonkaBot/1.0; +https://tonkaintl.com)';
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36';
 
 // ── HTML Helpers ──────────────────────────────────────────────────────────────
 
@@ -121,7 +124,12 @@ export function extractBodyText(html) {
 
 export async function fetchPage(url) {
   const response = await axios.get(url, {
-    headers: { 'User-Agent': USER_AGENT },
+    headers: {
+      Accept:
+        'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+      'Accept-Language': 'en-US,en;q=0.9',
+      'User-Agent': USER_AGENT,
+    },
     maxRedirects: 5,
     timeout: FETCH_TIMEOUT_MS,
     // Only accept HTML — avoid downloading large binaries
@@ -211,19 +219,59 @@ export async function enrichRanking(ranking, refresh = false) {
   let ogTitle = null;
   let summary = null;
   let summaryModel = null;
+  let fetchError = null;
+  let bodyText = null;
 
+  // Step 1: try to fetch the article page. If the publisher blocks us
+  // (403/Cloudflare/WAF) or the request fails, we'll fall back to the RSS
+  // snippet that's already on the ranking — partial enrichment is better
+  // than a hard failure.
   try {
     const html = await fetchPage(link);
     ({ ogDescription, ogImage, ogTitle } = parsePageMetadata(html));
-    const bodyText = extractBodyText(html);
+    bodyText = extractBodyText(html);
+  } catch (err) {
+    fetchError = err;
+    logger.warn(
+      '[ArticleEnrichment] Page fetch failed — falling back to snippet',
+      {
+        error: err.message,
+        link,
+        rankingId,
+        status: err.response?.status,
+      }
+    );
+  }
 
+  // Step 2: generate summary from whatever content we have. Prefer scraped
+  // body text; otherwise fall back to the RSS snippet on the ranking.
+  const snippet = ranking[RANKING_FIELDS.SNIPPET];
+  const summaryInput = bodyText || snippet;
+
+  if (!summaryInput) {
+    // Truly nothing to summarize — neither page fetch nor snippet usable.
+    const message = fetchError
+      ? `Article fetch failed (${fetchError.response?.status || 'network'}) and no snippet available`
+      : 'No content available to summarize';
+
+    await TonkaDispatchRanking.findByIdAndUpdate(rankingId, {
+      [RANKING_FIELDS.AI_ENRICHMENT_ERROR]: message,
+      [RANKING_FIELDS.AI_ENRICHMENT_STATUS]: AI_ENRICHMENT_STATUS.FAILED,
+    });
+
+    const err = new Error(message);
+    err.cause = fetchError;
+    throw err;
+  }
+
+  try {
     ({ model: summaryModel, summary } = await generateSummary({
-      bodyText,
-      ogDescription,
+      bodyText: summaryInput,
+      ogDescription: ogDescription || snippet,
       title: ranking[RANKING_FIELDS.TITLE] || ogTitle,
     }));
   } catch (err) {
-    logger.error('[ArticleEnrichment] Enrichment failed', {
+    logger.error('[ArticleEnrichment] Summary generation failed', {
       error: err.message,
       link,
       rankingId,
@@ -237,14 +285,22 @@ export async function enrichRanking(ranking, refresh = false) {
     throw err;
   }
 
+  // Record fetch failure as a non-fatal warning on the ranking so the UI can
+  // surface "summary from RSS snippet (article page blocked)" if it wants to.
+  const enrichmentNote = fetchError
+    ? `Page fetch blocked (${fetchError.response?.status || 'network error'}); summary generated from RSS snippet`
+    : null;
+
   const updated = await TonkaDispatchRanking.findByIdAndUpdate(
     rankingId,
     {
-      $unset: { [RANKING_FIELDS.AI_ENRICHMENT_ERROR]: '' },
       [RANKING_FIELDS.AI_ENRICHMENT_STATUS]: AI_ENRICHMENT_STATUS.SUCCESS,
       [RANKING_FIELDS.AI_SUMMARY]: summary,
       [RANKING_FIELDS.AI_SUMMARY_GENERATED_AT]: new Date(),
       [RANKING_FIELDS.AI_SUMMARY_MODEL]: summaryModel,
+      ...(enrichmentNote
+        ? { [RANKING_FIELDS.AI_ENRICHMENT_ERROR]: enrichmentNote }
+        : { $unset: { [RANKING_FIELDS.AI_ENRICHMENT_ERROR]: '' } }),
       ...(ogDescription && { [RANKING_FIELDS.OG_DESCRIPTION]: ogDescription }),
       ...(ogImage && { [RANKING_FIELDS.OG_IMAGE_URL]: ogImage }),
       ...(ogTitle && { [RANKING_FIELDS.OG_TITLE]: ogTitle }),
