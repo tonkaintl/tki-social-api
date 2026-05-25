@@ -1,0 +1,3283 @@
+{
+  "name": "Writer's Room",
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "// n8n Code node (plain JS)\n// Input Normalizer — minimal & maintainable\n// Assumes Spark form emits booleans, numbers, and enums you control.\n\nfunction val(v, def) {\n  return (v === undefined || v === null || v === \"\") ? def : v;\n}\n\nfunction num(v, def) {\n  if (typeof v === \"number\" && Number.isFinite(v)) return v;\n  const n = Number(v);\n  return Number.isFinite(n) ? n : def;\n}\n\nfunction bool(v, def) {\n  if (typeof v === \"boolean\") return v;\n  if (v === \"true\") return true;\n  if (v === \"false\") return false;\n  return def;\n}\n\nfunction pickLength(v, def) {\n  const s = String(val(v, def)).toLowerCase().trim();\n  return (s === \"short\" || s === \"medium\" || s === \"long\") ? s : def;\n}\n\nconst items = $input.all();\n\nfor (const item of items) {\n  const src = item.json || {};\n\n  item.json = {\n    // Optional receipt/debug payload\n    raw: src,\n    \n    notifier_email: val(src.notifier_email, \"\"),\n    story_seed: val(src.story_seed, \"\"),\n    project_mode: val(src.project_mode, \"blog_post\"),\n    target_brand: val(src.target_brand, \"tonka_blog\"),\n    target_audience: val(src.target_audience, \"\"),\n\n    sliders: {\n      fact_to_fiction: num(src.fact_to_fiction, 50),\n      creativity_to_reporter: num(src.creativity_to_reporter, 50),\n      tone_strictness: num(src.tone_strictness, 50),\n    },\n\n    draft: {\n      length: pickLength(src.draft_length, \"short\"),\n    },\n\n    research: {\n      enable_research: bool(src.enable_research, false),\n      facts: val(src.facts, null),\n    },\n\n    outputs: {\n      blog_post: bool(src.output_blog_post, true),\n      reference_doc: bool(src.output_reference_doc, false),\n      future_story_arc: bool(src.output_future_story_arc, false),\n      visual_prompts: bool(src.output_visual_prompts, false),\n      gdocs_folder_id: val(src.gdocs_folder_id, null),\n    },\n  };\n}\n\nreturn items;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2144,
+        1360
+      ],
+      "id": "c079c514-a159-41ae-a0e8-441a7642ffa3",
+      "name": "Input Normalizer"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "b5d7c257-070c-4934-8db9-1149daeffa2d",
+        "authentication": "headerAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -2592,
+        1456
+      ],
+      "id": "9d01e7c2-a063-44aa-a4bf-f60e6a9235c0",
+      "name": "Start Trigger (Webhook)",
+      "webhookId": "b5d7c257-070c-4934-8db9-1149daeffa2d"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5ccf2092-4b79-4052-843e-eb432ba7cdad",
+              "name": "story_seed",
+              "value": "={{ $json.story_seed }}",
+              "type": "string"
+            },
+            {
+              "id": "2377810e-1b24-40d9-992d-9f9d34999ec7",
+              "name": "project_mode",
+              "value": "={{ $json.project_mode }}",
+              "type": "string"
+            },
+            {
+              "id": "ccced148-5456-45f3-bd93-faa3cc6425ea",
+              "name": "target_brand",
+              "value": "={{ $json.target_brand }}",
+              "type": "string"
+            },
+            {
+              "id": "26575339-9397-4f49-be4c-31acff3330ac",
+              "name": "target_audience",
+              "value": "={{ $json.target_audience }}",
+              "type": "string"
+            },
+            {
+              "id": "dd7925ed-466a-4620-bbb9-ac047532d91c",
+              "name": "sliders",
+              "value": "={{ $json.sliders }}",
+              "type": "object"
+            },
+            {
+              "id": "e4e31425-a55e-421a-b1dd-38814915a275",
+              "name": "draft",
+              "value": "={{ $json.draft }}",
+              "type": "object"
+            },
+            {
+              "id": "81658b9a-6ac9-4b9f-801a-870ce5c270b5",
+              "name": "research",
+              "value": "={{ $json.research }}",
+              "type": "object"
+            },
+            {
+              "id": "f6f65100-83c9-4ac1-9806-7e5869f04c9a",
+              "name": "outputs",
+              "value": "={{ $json.outputs }}",
+              "type": "object"
+            },
+            {
+              "id": "b01d1dca-5966-410e-8cee-c3b42eae1045",
+              "name": "project.mode",
+              "value": "={{ $json.project_mode }}",
+              "type": "string"
+            },
+            {
+              "id": "b1dbd013-2cbb-4b03-a810-e3301865566d",
+              "name": "project.brand",
+              "value": "={{ $json.target_brand }}",
+              "type": "string"
+            },
+            {
+              "id": "de319dae-36fd-4ec8-81d2-38973f160733",
+              "name": "project.audience",
+              "value": "={{ $json.target_audience }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "dotNotation": true
+        }
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1920,
+        1360
+      ],
+      "id": "68121d8d-ce87-4e51-8e9c-73b5c777b1f5",
+      "name": "Project Mode Setter"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6f5932e9-bc10-4922-8e1f-e0d204eced53",
+              "name": "creative.fact_to_fiction",
+              "value": "={{ $json.sliders.fact_to_fiction }}",
+              "type": "number"
+            },
+            {
+              "id": "a51a76b0-72b1-4e66-8331-d4dbf04a316e",
+              "name": "creative.creativity_to_reporter",
+              "value": "={{ $json.sliders.creativity_to_reporter }}",
+              "type": "number"
+            },
+            {
+              "id": "cf6f6219-cd08-49a0-b79d-d94364752b70",
+              "name": "creative.tone_strictness",
+              "value": "={{ $json.sliders.tone_strictness }}",
+              "type": "number"
+            },
+            {
+              "id": "ae638b35-b22b-4b03-9cd2-56f5f717b1a3",
+              "name": "creative.length",
+              "value": "={{ $json.draft.length }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "include": "except",
+        "excludeFields": "sliders, draft",
+        "options": {
+          "dotNotation": true
+        }
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1696,
+        1360
+      ],
+      "id": "cfd602bf-aad7-4e62-ac59-f4515ce8a52a",
+      "name": "Creative Sliders Setter"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.0-flash-lite",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.0-flash-lite"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "Think like a showrunner deciding which specialist writers to lean on.\n\n- comedy = humor, lightness, story charm\n- historic = historical context or past patterns\n- biographer = character backstory and personal journey\n- scifi = speculative or futuristic angle\n- documentary = grounded, practical, factual guidance\n- action = tension, stakes, risk, and resolution\n\nUse the project mode and sliders to balance allegory vs practical advice.",
+              "role": "model"
+            },
+            {
+              "content": "==You are routing this story request to a panel of writers.\n\nContext:\n- story_seed: {{$json[\"story_seed\"]}}\n- project_mode: {{$json[\"project_mode\"]}}\n- target_brand: {{$json[\"project\"][\"brand\"] || $json[\"target_brand\"]}}\n- target_audience: {{$json[\"project\"][\"audience\"] || $json[\"target_audience\"]}}\n\nCreative sliders:\n- fact_to_fiction (0-100): {{$json[\"creative\"][\"fact_to_fiction\"]}}\n- creativity_to_reporter (0-100): {{$json[\"creative\"][\"creativity_to_reporter\"]}}\n- tone_strictness (0-100): {{$json[\"creative\"][\"tone_strictness\"]}}\n- length: {{$json[\"creative\"][\"length\"]}}\n\nResearch context:\n- research_enabled: {{$json[\"research\"][\"enable_research\"]}}\n- facts: {{$json[\"research\"][\"facts\"] || \"none provided\"}}\n\nGuidance:\n- When research_enabled is true OR facts is non-empty, you MUST give \"documentary\" a strong non-zero weight.\n- For reference_doc, blog_post, or straight_ad modes, documentary should usually be one of the highest weights.\n\nDecide which writer roles should be enabled and how strongly they should influence the piece.\n\nRemember: respond ONLY with JSON in the exact schema described in the system message."
+            }
+          ]
+        },
+        "simplify": false,
+        "jsonOutput": true,
+        "options": {
+          "systemMessage": "=You are a routing engine for a multi-writer AI writer's room. Your ONLY job is to look at the provided context and decide how much to use each writer role for this piece.\nThe writer roles are: comedy, historic, biographer, scifi, documentary, action. If the context indicates real-world data, numbers, or \"facts\", you MUST give \"documentary\" a non-zero weight, and it should usually be one of the stronger weights for practical, educational pieces.\n\nRespond ONLY with minified JSON matching this schema: \n{ \n  \"writers\": { \n    \"comedy\": { \"enabled\": boolean, \"weight\": number }, \n    \"historic\": { \"enabled\": boolean, \"weight\": number }, \n    \"biographer\": { \"enabled\": boolean, \"weight\": number }, \n    \"scifi\": { \"enabled\": boolean, \"weight\": number }, \n    \"documentary\": { \"enabled\": boolean, \"weight\": number }, \n    \"action\": { \"enabled\": boolean, \"weight\": number } \n  }\n}\n\nAll weights must be between 0.0 and 1.0.\nThe sum of all six weights MUST equal 1.0 (±0.01), even if some writers are disabled.\nDo not include any explanations or extra text.",
+          "codeExecution": false,
+          "frequencyPenalty": 0,
+          "maxOutputTokens": 256,
+          "candidateCount": 1,
+          "presencePenalty": 0,
+          "temperature": 0.3,
+          "topP": 0.9
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        -1248,
+        1296
+      ],
+      "id": "41cb2c6e-5869-4588-a616-4f890db66ff4",
+      "name": "Genre Tone Router (Gemini)"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Writer Branch Hub\n// Pass through everything as-is, optionally add a compact view of active writers for debugging.\n\nconst items = $input.all();\n\nfor (const item of items) {\n  const writers = item.json.writers || {};\n  item.json.writer_panel = Object.entries(writers)\n    .filter(([_, cfg]) => cfg && cfg.enabled)\n    .map(([role, cfg]) => ({\n      role,\n      weight: typeof cfg.weight === 'number' ? cfg.weight : 0,\n    }));\n}\n\nreturn items;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -448,
+        1360
+      ],
+      "id": "11a53ec7-2d40-4031-841d-dff6a12977d6",
+      "name": "Writer Branch Hub"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b87535d0-d825-45ec-ad3e-27d569044634",
+              "leftValue": "={{ $json.writers.comedy.enabled }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -224,
+        656
+      ],
+      "id": "f3569cb2-fb8e-4b2b-922b-b9313b57af11",
+      "name": "Writer Comedy Gate"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b87535d0-d825-45ec-ad3e-27d569044634",
+              "leftValue": "={{ $json.writers.historic.enabled }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -224,
+        1232
+      ],
+      "id": "9501be0d-22e8-4878-84a4-c431ce117469",
+      "name": "Writer Historic Gate"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b87535d0-d825-45ec-ad3e-27d569044634",
+              "leftValue": "={{ $json.writers.biographer.enabled }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -224,
+        368
+      ],
+      "id": "07845f43-92cf-4b64-96a1-9a68b596de07",
+      "name": "Writer Biographer Gate"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b87535d0-d825-45ec-ad3e-27d569044634",
+              "leftValue": "={{ $json.writers.scifi.enabled }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -224,
+        1632
+      ],
+      "id": "805735c6-c266-4eff-8416-85a9410f9852",
+      "name": "Writer SciFi Gate"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b87535d0-d825-45ec-ad3e-27d569044634",
+              "leftValue": "={{ $json.writers.documentary.enabled }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -224,
+        944
+      ],
+      "id": "2d21fa81-9fbb-4492-9f9d-abe9d4b162a7",
+      "name": "Writer Documentary Gate"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b87535d0-d825-45ec-ad3e-27d569044634",
+              "leftValue": "={{ $json.writers.action.enabled }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -224,
+        80
+      ],
+      "id": "7fb574fe-1fae-48a3-9a8b-b4802c824083",
+      "name": "Writer Action Gate"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-5-chat-latest",
+          "mode": "list",
+          "cachedResultName": "GPT-5-CHAT-LATEST"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "=You are the COMEDY writer in a multi-writer panel for a storytelling and content system.\n\nYou MUST output valid JSON ONLY in this exact shape:\n{\n  \"role\": \"comedy\",\n  \"notes\": string[],\n  \"weight\": number\n}\n\nRules:\n- NO markdown, NO code fences, NO prose outside of JSON.\n- \"role\" must always be \"comedy\".\n- \"notes\" must be short comedic beats: observational humor, ironic twists, awkward moments, or dry commentary.\n- Aim for 4–7 notes total.\n- Humor style should adapt to brand and audience (light sarcasm for business, playful absurdity for fiction, etc.).\n- If facts or real-world stakes are present, you may use them for contrast, irony, or witty exaggeration — without turning into slapstick.\n- Keep jokes tight, modern, and understated unless the context suggests otherwise.\n- \"weight\" must match the provided comedy writer weight.\n\nReturn ONLY valid JSON matching the schema above."
+            },
+            {
+              "content": "=Context:\n- Story seed: {{$json[\"story_seed\"]}}\n- Project mode: {{$json[\"project_mode\"] || $json[\"project\"][\"mode\"]}}\n- Brand: {{$json[\"project\"][\"brand\"] || $json[\"target_brand\"]}}\n- Audience: {{$json[\"project\"][\"audience\"] || $json[\"target_audience\"]}}\n- Research enabled: {{$json[\"research\"][\"enable_research\"]}}\n- Facts (if any): {{$json[\"research\"][\"facts\"] || \"none provided\"}}\n- Your comedy weight: {{$json[\"writers\"][\"comedy\"][\"weight\"]}}\n\nTask:\n1. Generate short comedic beats tailored to the story seed, project mode, brand, and audience.\n2. Use irony, contrast, understatement, or light absurdity. No slapstick unless context strongly suggests it.\n3. If facts or real stakes exist, you may:\n   - exaggerate them humorously,\n   - highlight contradictions,\n   - or create witty comparisons.\n4. Do NOT write full scenes or dialogue — only compact comedic beats.\n\nReturn ONLY valid JSON:\n\n{\n  \"role\": \"comedy\",\n  \"notes\": [\n    \"...\",\n    \"...\"\n  ],\n  \"weight\": {{$json[\"writers\"][\"comedy\"][\"weight\"]}}\n}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "textFormat": {
+            "textOptions": {
+              "type": "json_schema",
+              "name": "comedy_schema",
+              "schema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"role\": { \"type\": \"string\" },\n    \"notes\": {\n      \"type\": \"array\",\n      \"items\": { \"type\": \"string\" }\n    },\n    \"weight\": { \"type\": \"number\" }\n  },\n  \"required\": [\"role\", \"notes\", \"weight\"],\n  \"additionalProperties\": false\n}"
+            }
+          },
+          "temperature": 0.8,
+          "topP": 0.9
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2,
+      "position": [
+        0,
+        576
+      ],
+      "id": "4208cddc-f58e-4826-809c-0b9fe1e57ca2",
+      "name": "Writer Comedy Brainstorm (OpenAI)"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-3-flash-preview",
+          "mode": "list",
+          "cachedResultName": "models/gemini-3-flash-preview"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Adopt the mindset of a documentary narrator: objective, factual, concise, and grounded in real-world conditions.\n\nAvoid dramatization, emotional bias, fictional scenes, or creative embellishment.\n\nFocus on:\n- observable reality,\n- data-driven insights,\n- practical consequences,\n- and contextual explanations.\n\nAlways return clean JSON only.",
+              "role": "model"
+            },
+            {
+              "content": "=Context:\n- Story seed: {{$json[\"story_seed\"]}}\n- Project mode: {{$json[\"project_mode\"] || $json[\"project\"][\"mode\"]}}\n- Brand: {{$json[\"project\"][\"brand\"] || $json[\"target_brand\"]}}\n- Audience: {{$json[\"project\"][\"audience\"] || $json[\"target_audience\"]}}\n- Research enabled: {{$json[\"research\"][\"enable_research\"]}}\n- Facts (if any): {{$json[\"research\"][\"facts\"] || \"none provided\"}}\n- Your documentary weight: {{$json[\"writers\"][\"documentary\"][\"weight\"]}}\n\nTask:\n1. Generate concise documentary-style insights reflecting the factual, real-world dimension of the story seed.\n2. Emphasize:\n   - context,\n   - risk factors,\n   - real-world forces or constraints,\n   - data,\n   - practical cause–effect relationships.\n3. If research facts exist, integrate them directly as documentary observations.\n4. Do NOT write scenes, drama, opinions, or creative commentary — only observational documentary notes.\n\nReturn ONLY valid JSON:\n\n{\n  \"role\": \"documentary\",\n  \"notes\": [\n    \"...\",\n    \"...\"\n  ],\n  \"weight\": {{$json[\"writers\"][\"documentary\"][\"weight\"]}}\n}"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {
+          "systemMessage": "=You are the DOCUMENTARY writer in a multi-writer panel for a storytelling and content system.\n\nYou MUST output valid JSON ONLY in this exact shape:\n{\n  \"role\": \"documentary\",\n  \"notes\": string[],\n  \"weight\": number\n}\n\nRules:\n- NO markdown, NO code fences, NO explanations, NO prose outside of JSON.\n- \"role\" must always be \"documentary\".\n- \"notes\" must be short observational documentary beats: factual framing, real-world context, objective analysis, cause–effect, measurable outcomes.\n- Each note must be a single sentence or compact fragment.\n- Aim for 4–7 notes total.\n- Use research facts when available. Treat them as on-camera insights, not long commentary.\n- Tone must remain neutral, factual, and reportorial.\n- \"weight\" must match the provided documentary writer weight.\n- Output must be strictly valid JSON.\n\nReturn ONLY JSON matching the schema above.",
+          "temperature": 0.3,
+          "topP": 0.7,
+          "topK": 40
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        0,
+        864
+      ],
+      "id": "58e57a45-0817-4c31-9e60-33c17572d025",
+      "name": "Writer Documentary Brainstorm (Gemini)"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-3-flash-preview",
+          "mode": "list",
+          "cachedResultName": "models/gemini-3-flash-preview"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Think like a historian: analytical, precise, and grounded in real precedents.\nFocus on:\n- historical patterns,\n- origin points,\n- long-term trends,\n- parallels across time,\n- and the roots of current conditions.\n\nAvoid storytelling, dramatization, or fictional worldbuilding.\nMaintain neutrality and return clean JSON only.",
+              "role": "model"
+            },
+            {
+              "content": "=Context:\n- Story seed: {{$json[\"story_seed\"]}}\n- Project mode: {{$json[\"project_mode\"] || $json[\"project\"][\"mode\"]}}\n- Brand: {{$json[\"project\"][\"brand\"] || $json[\"target_brand\"]}}\n- Audience: {{$json[\"project\"][\"audience\"] || $json[\"target_audience\"]}}\n- Research enabled: {{$json[\"research\"][\"enable_research\"]}}\n- Facts (if any): {{$json[\"research\"][\"facts\"] || \"none provided\"}}\n- Your historic weight: {{$json[\"writers\"][\"historic\"][\"weight\"]}}\n\nTask:\n1. Generate concise historical insights that support or contextualize the story seed.\n2. Emphasize:\n   - precedent,\n   - cause–effect across time,\n   - historical parallels,\n   - roots of current conditions,\n   - shifts in culture, technology, or behavior relevant to the theme.\n3. If factual research exists, link it to historical patterns or similar events.\n4. Do NOT write fictional history, scenes, or dramatic retellings — only compact historical context beats.\n\nReturn ONLY valid JSON:\n\n{\n  \"role\": \"historic\",\n  \"notes\": [\n    \"...\",\n    \"...\"\n  ],\n  \"weight\": {{$json[\"writers\"][\"historic\"][\"weight\"]}}\n}"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {
+          "systemMessage": "=You are the HISTORIC writer in a multi-writer panel for a storytelling and content system.\n\nYou MUST output valid JSON ONLY in this exact shape:\n{\n  \"role\": \"historic\",\n  \"notes\": string[],\n  \"weight\": number\n}\n\nRules:\n- NO markdown, NO code fences, NO explanations, NO prose outside of JSON.\n- \"role\" must always be \"historic\".\n- \"notes\" must be short historical beats: context, precedent, origin, cause–effect, or comparisons across eras.\n- Each note must be a single sentence or compact fragment.\n- Aim for 4–7 notes total.\n- When research facts exist, connect them to relevant historical patterns or parallels.\n- Tone must be analytical, objective, and historically grounded.\n- \"weight\" must match the provided historic writer weight.\n- Output must be strictly valid JSON.\n\nReturn ONLY JSON matching the schema above.",
+          "temperature": 0.3,
+          "topP": 0.7,
+          "topK": 40
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        0,
+        1152
+      ],
+      "id": "7403934b-d416-495e-88d0-673c69262ca2",
+      "name": "Writer Historic Brainstorm (Gemini)"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b87535d0-d825-45ec-ad3e-27d569044634",
+              "leftValue": "={{ $json.research.enable_research }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -224,
+        1904
+      ],
+      "id": "661208ec-4a3e-4262-9a5a-96fab450f56d",
+      "name": "Writer Researcher Gate"
+    },
+    {
+      "parameters": {
+        "numberInputs": 6
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        576,
+        720
+      ],
+      "id": "57e044ce-39ca-4ee2-aefd-2942df263b24",
+      "name": "Merge Writer Notes"
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1024,
+        1408
+      ],
+      "id": "c1cc8500-952d-4742-97d2-ad9b494ac88d",
+      "name": "Attach Research To Notes"
+    },
+    {
+      "parameters": {
+        "messages": {
+          "message": [
+            {
+              "content": "=You are the RESEARCHER in a multi-writer panel for a storytelling and content system.\n\nYour ONLY job is to gather factual, verifiable information related to the story seed, topic, or real-world context. \nYou MUST output valid JSON ONLY in this exact shape:\n\n{\n  \"role\": \"researcher\",\n  \"findings\": string[],\n  \"weight\": number,\n  \"sources\": string[]\n}\n\nRules:\n- NO markdown, NO code fences, NO explanations, NO prose outside of JSON.\n- \"role\" must always be \"researcher\".\n- \"findings\" must be short, factual bullet points (NOT full paragraphs).\n- Each finding must be verifiable; avoid speculation or subjective language.\n- If you cannot verify something, DO NOT include it.\n- Include 3–7 findings maximum.\n- \"sources\" must list URLs or publication names where the info is verifiable.\n- Never invent or guess sources.\n- If no reliable sources are found, return empty arrays for findings and sources.\n- \"weight\" must match the provided researcher weight.\n- Always return ONLY clean JSON.\n\nOperate as a neutral, factual research assistant.\nPrioritize accuracy, verification, and data extraction.\nDo not generate opinions, creative commentary, narrative, or interpretation.\nSummaries must be concise and strictly informational.\nReturn only JSON in the required shape.",
+              "role": "system"
+            },
+            {
+              "content": "=Context:\n- Story seed: {{$json[\"story_seed\"]}}\n- Project mode: {{$json[\"project_mode\"] || $json[\"project\"][\"mode\"]}}\n- Brand: {{$json[\"project\"][\"brand\"] || $json[\"target_brand\"]}}\n- Audience: {{$json[\"project\"][\"audience\"] || $json[\"target_audience\"]}}\n- Facts provided by user (if any): {{$json[\"research\"][\"facts\"] || \"none provided\"}}\n- Research enabled: {{$json[\"research\"][\"enable_research\"]}}\n- Your researcher weight: {{$json[\"writers\"][\"documentary\"][\"weight\"]}}\n\nTask:\n1. When research is enabled, gather verifiable factual findings related to the topic implied by the story seed, brand, or audience context.\n2. Extract:\n   - relevant statistics,\n   - industry norms,\n   - mechanical or technical data (if applicable),\n   - historical background,\n   - safety considerations,\n   - regulatory or financial context,\n   - or any real-world insights connected to the story seed.\n3. Convert these into short factual findings (3–7 items).\n4. Collect reliable source identifiers:\n   - publication names,\n   - reputable websites,\n   - official documents.\n5. If no meaningful research is possible, return empty arrays.\n\nReturn ONLY valid JSON:\n\n{\n  \"role\": \"researcher\",\n  \"findings\": [\n    \"...\",\n    \"...\"\n  ],\n  \"weight\": {{$json[\"writers\"][\"documentary\"][\"weight\"]}},\n  \"sources\": [\n    \"...\",\n    \"...\"\n  ]\n}"
+            }
+          ]
+        },
+        "simplify": true,
+        "options": {
+          "temperature": 0.1,
+          "topK": 20,
+          "topP": 0.3
+        },
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.perplexity",
+      "typeVersion": 1,
+      "position": [
+        64,
+        1968
+      ],
+      "id": "6d742577-3f0c-46bc-8377-c2b199c24026",
+      "name": "Writer Researcher (Perplexity)"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "4579c817-2361-4a5b-93fd-7ef65295f32c",
+              "leftValue": "={{ $json.outputs.blog_post }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3520,
+        1040
+      ],
+      "id": "ea422721-f355-463a-8938-85dba86687e8",
+      "name": "If Blog Post"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f643b74c-ecef-4275-99dd-129ef11d503e",
+              "leftValue": "={{ $json.outputs.visual_prompts }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3808,
+        1520
+      ],
+      "id": "adefa997-46ed-4e9f-a9b9-0608aa63a9b7",
+      "name": "If Visual Prompts"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "7d680568-28f1-46aa-a363-4149d06b20a5",
+              "leftValue": "={{ $json.outputs.future_story_arc }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3520,
+        656
+      ],
+      "id": "730de635-27e8-4386-874b-6c78b8ffc3e4",
+      "name": "If Story Arc"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-5-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-5-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "=You are the Future Story Arc Generator for Tonka Blog.\n\nYour role is to generate FUTURE IDEA SPARKS only.\n\nHard rules:\n- Do NOT write a blog post.\n- Do NOT write a screenplay.\n- Do NOT write dialogue.\n- Do NOT expand into long outlines.\n- Keep each idea concise and practical.\n- Stay grounded in the real iron / trucking business.\n- No hashtags. No marketing fluff.\n\nTone:\nStraight-talking, reflective, practical. Long-term thinking for cautious buyers.\n\nOutput must match the JSON Schema exactly."
+            },
+            {
+              "content": "=Context:\n- Current article title: {{ $json.final_draft.title }}\n- Current thesis: {{ $json.final_draft.thesis }}\n- Target audience: cautious used Class 8 truck buyers\n- Brand voice: Tonka Blog — Dispatches from the iron business\n\nTask:\nGenerate 3 FUTURE STORY ARC IDEAS as sparks for possible follow-up content.\n\nEach arc should:\n- Explore a DIFFERENT angle, scenario, or buyer mindset\n- Be grounded in real-world truck buying, inspections, ownership, or risk\n- Feel like a natural continuation of the current article, not a remix\n\nKeep ideas short and usable.\nReturn JSON only."
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "textFormat": {
+            "textOptions": {
+              "type": "json_schema",
+              "schema": "{\n  \"type\": \"object\",\n  \"additionalProperties\": false,\n  \"required\": [\"future_story_arc_generator\"],\n  \"properties\": {\n    \"future_story_arc_generator\": {\n      \"type\": \"object\",\n      \"additionalProperties\": false,\n      \"required\": [\"arcs\"],\n      \"properties\": {\n        \"arcs\": {\n          \"type\": \"array\",\n          \"minItems\": 3,\n          \"maxItems\": 3,\n          \"items\": {\n            \"type\": \"object\",\n            \"additionalProperties\": false,\n            \"required\": [\n              \"arc_title\",\n              \"one_line_premise\",\n              \"why_it_matters\",\n              \"suggested_story_seed\"\n            ],\n            \"properties\": {\n              \"arc_title\": { \"type\": \"string\" },\n              \"one_line_premise\": { \"type\": \"string\" },\n              \"why_it_matters\": { \"type\": \"string\" },\n              \"suggested_story_seed\": { \"type\": \"string\" }\n            }\n          }\n        }\n      }\n    }\n  }\n}"
+            }
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2,
+      "position": [
+        3744,
+        464
+      ],
+      "id": "79c70a89-050d-4044-83d5-5d04810f4746",
+      "name": "Future Story Arc Generator"
+    },
+    {
+      "parameters": {
+        "numberInputs": 4
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        4896,
+        1264
+      ],
+      "id": "c47c228f-b405-47ba-b1de-023a3c03385c",
+      "name": "Merge Formatted Outputs"
+    },
+    {
+      "parameters": {
+        "jsCode": "let merged = {};\n\nfor (const item of $input.all()) {\n  const obj = item.json;\n  if (obj && typeof obj === \"object\" && !Array.isArray(obj)) {\n    merged = Object.assign(merged, obj);\n  }\n}\n\n// Force editor to accept the shape\nreturn [\n  {\n    json: JSON.parse(JSON.stringify(merged))\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5120,
+        1296
+      ],
+      "id": "0cd27b95-5f40-4a71-b89b-10022445a47d",
+      "name": "Cache Final Draft"
+    },
+    {
+      "parameters": {
+        "authentication": "basicAuth",
+        "formTitle": "Writing Spark",
+        "formDescription": "Add the spark that kicks off a story.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "story_seed",
+              "fieldType": "textarea",
+              "placeholder": "The gist of the story",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "project_mode",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "fiction"
+                  },
+                  {
+                    "option": "non-fiction"
+                  },
+                  {
+                    "option": "mixed_allegory"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "target_brand",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "generic"
+                  },
+                  {
+                    "option": "tonka_dispatch"
+                  },
+                  {
+                    "option": "diesel_kings"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "target_audience",
+              "placeholder": "voice and framing"
+            },
+            {
+              "fieldLabel": "fact_to_fiction",
+              "fieldType": "number",
+              "placeholder": "0 = pure fantasy, 100 = pure factual",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "creativity_to_reporter",
+              "fieldType": "number",
+              "placeholder": "0 = wild creative, 100 = dry reporter",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "tone_strictness",
+              "fieldType": "number",
+              "placeholder": "0 = loose, 100 = strict to brand rules",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "max_revisions",
+              "fieldType": "number",
+              "placeholder": "times to try",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "draft_length",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "short"
+                  },
+                  {
+                    "option": "medium"
+                  },
+                  {
+                    "option": "long"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "enable_research",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Yes, add references"
+                  },
+                  {
+                    "option": "No references needed"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "output_blog_post",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Add blog"
+                  },
+                  {
+                    "option": "No blog"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "output_screenplay",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Out a screenplay"
+                  },
+                  {
+                    "option": "No screenplay"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "output_reference_doc",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Out a ref doc"
+                  },
+                  {
+                    "option": "No ref doc needed"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "output_future_story_arc",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Out future story arcs"
+                  },
+                  {
+                    "option": "No future arc"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "output_story_prompts",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Out story prompts"
+                  },
+                  {}
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "output_visual_prompts",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "out visual prompts"
+                  },
+                  {
+                    "option": "no visual prompts"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "output_socials",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "out socials"
+                  },
+                  {
+                    "option": "no socials needed"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "output_gdocs",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Create gdoc logs"
+                  },
+                  {
+                    "option": "No gdoc logs needed"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "output_mongo_log",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Save to mongo db"
+                  },
+                  {
+                    "option": "No db hits"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "facts",
+              "placeholder": "Research Data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -2592,
+        1264
+      ],
+      "id": "c14e6f64-0e19-42f6-aa9f-5f5c5b0f62dc",
+      "name": "Spark Form (Submit Trigger)",
+      "webhookId": "b8a67dce-aca2-478c-b443-33a43e0163f3"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -672,
+        1360
+      ],
+      "id": "48b2813f-33f8-4377-b577-99c296929f4a",
+      "name": "Merge Router Context"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "dad196ca-fb99-4a80-975b-a979e1754f71",
+              "name": "writers",
+              "value": "={{ $json.candidates[0].content.parts[0].text.parseJson().writers }}",
+              "type": "object"
+            },
+            {
+              "id": "b6e25fcf-7b94-41e2-a95e-f1cb43b3ab8c",
+              "name": "tokens.writer_token_count",
+              "value": "={{ $json.usageMetadata.totalTokenCount }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -896,
+        1296
+      ],
+      "id": "f62cebae-3734-4cec-9e3a-3658b4dc6d67",
+      "name": "Parse Writers"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-3-flash-preview",
+          "mode": "list",
+          "cachedResultName": "models/gemini-3-flash-preview"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Context:\n- Story seed: {{$json[\"story_seed\"]}}\n- Project mode: {{$json[\"project_mode\"] || $json[\"project\"][\"mode\"]}}\n- Brand: {{$json[\"project\"][\"brand\"] || $json[\"target_brand\"]}}\n- Audience: {{$json[\"project\"][\"audience\"] || $json[\"target_audience\"]}}\n- Research enabled: {{$json[\"research\"][\"enable_research\"]}}\n- Facts (if any): {{$json[\"research\"][\"facts\"] || \"none provided\"}}\n- Your biographer weight: {{$json[\"writers\"][\"biographer\"][\"weight\"]}}\n\nTask:\n1. Generate compact biographical insights that align with the story seed, brand, audience, and project mode.\n2. Focus on:\n   - motivations,\n   - personal history,\n   - core traits,\n   - decision patterns,\n   - formative experiences relevant to the conflict or theme.\n3. If research facts are present, integrate them as grounding, not exposition.\n4. Do NOT write scenes, backstory paragraphs, or poetic commentary — only concise biographical notes.\n\nReturn ONLY valid JSON:\n\n{\n  \"role\": \"biographer\",\n  \"notes\": [\n    \"...\",\n    \"...\"\n  ],\n  \"weight\": {{$json[\"writers\"][\"biographer\"][\"weight\"]}}\n}",
+              "role": "model"
+            },
+            {
+              "content": "=Your task is to think like a biographer: analytical, observational, concise. \nAvoid storytelling, dialogue, scene description, or action. \nFocus on motivations, formative experiences, personal traits, and cause–effect patterns.\nMaintain neutrality and avoid dramatic embellishment.\nAlways return clean JSON."
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {
+          "systemMessage": "=You are the BIOGRAPHER in a multi-writer panel for a storytelling and content system.\n\nYou MUST output valid JSON ONLY in this exact shape:\n{\n  \"role\": \"biographer\",\n  \"notes\": string[],\n  \"weight\": number\n}\n\nRules:\n- NO markdown, NO code fences, NO explanations, NO prose outside JSON.\n- \"role\" must always be \"biographer\".\n- \"notes\" must be short, factual or character-driven biographical insights.\n- Each note must be a single sentence or compact fragment.\n- Focus on background, motivations, pivotal life moments, habits, patterns, or defining traits of key figures implied by the story seed.\n- Aim for 4–7 notes total.\n- If research or real-world facts exist, integrate them as grounding details.\n- \"weight\" must match the provided biographer writer weight.\n- Output must be strictly valid JSON.\n\nReturn ONLY JSON matching the schema above.",
+          "temperature": 0.4,
+          "topP": 0.8,
+          "topK": 40
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        0,
+        288
+      ],
+      "id": "4eb966fe-bab9-42b2-b337-41159b509a61",
+      "name": "Writer Biographer Brainstorm (Gemini)"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-5-chat-latest",
+          "mode": "list",
+          "cachedResultName": "GPT-5-CHAT-LATEST"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "=You are the ACTION writer in a multi-writer panel for a storytelling and content system.\n\nYou MUST output valid JSON ONLY in this exact shape:\n{\n  \"role\": \"action\",\n  \"notes\": string[],\n  \"weight\": number\n}\n\nRules:\n- NO markdown, NO code fences, NO prose outside of JSON.\n- \"role\" must always be \"action\".\n- \"notes\" must be short, bullet-style action beats (each note is a single, compact sentence or fragment).\n- Aim for 4–7 notes total.\n- Focus on movement, tension, risk, and decisive turning points.\n- When real-world facts or stakes are provided, you should reflect them in the action beats (e.g., money on the line, mechanical failure, legal or safety risk), but do not turn them into long explanations.\n- \"weight\" must exactly match the provided action writer weight from the context.\n- Outputs must be concise and punchy.\n\nReturn ONLY valid JSON matching the schema above."
+            },
+            {
+              "content": "=Context:\n- Story seed: {{$json[\"story_seed\"]}}\n- Project mode: {{$json[\"project_mode\"] || $json[\"project\"][\"mode\"]}}\n- Brand: {{$json[\"project\"][\"brand\"] || $json[\"target_brand\"]}}\n- Audience: {{$json[\"project\"][\"audience\"] || $json[\"target_audience\"]}}\n- Research enabled: {{$json[\"research\"][\"enable_research\"]}}\n- Facts (if any): {{$json[\"research\"][\"facts\"] || \"none provided\"}}\n- Your action weight: {{$json[\"writers\"][\"action\"][\"weight\"]}}\n\nTask:\n1. Generate intense, action-oriented story beats tailored to the story seed, project mode, brand, and audience.\n2. Emphasize:\n   - Risk, danger, or high stakes.\n   - Characters making decisive moves under pressure.\n   - Moments where things could go very wrong or narrowly succeed.\n3. If facts or real-world stakes are provided, weave them into the beats as concrete dangers or pressures (e.g., financial loss, equipment failure, safety issues), but keep each beat short and dynamic.\n4. Do NOT write full scenes, exposition, or dialogue — only sharp, compact action beats.\n\nReturn ONLY valid JSON:\n\n{\n  \"role\": \"action\",\n  \"notes\": [\n    \"...\",\n    \"...\"\n  ],\n  \"weight\": {{$json[\"writers\"][\"action\"][\"weight\"]}}\n}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "textFormat": {
+            "textOptions": {
+              "type": "json_schema",
+              "name": "action_schema",
+              "schema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"role\": { \"type\": \"string\" },\n    \"notes\": {\n      \"type\": \"array\",\n      \"items\": { \"type\": \"string\" }\n    },\n    \"weight\": { \"type\": \"number\" }\n  },\n  \"required\": [\"role\", \"notes\", \"weight\"],\n  \"additionalProperties\": false\n}"
+            }
+          },
+          "temperature": 0.5,
+          "topP": 1
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "254c1da6-7f40-44fc-bc9d-c4f96659790c",
+      "name": "Writer Action Brainstorm (OpenAI)"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nfor (const item of items) {\n  // OpenAI returns object directly, not string\n  const payload = item.json.output?.[0]?.content?.[0]?.text ?? item.json;\n\n  // If OpenAI returned an object, use it directly.\n  // If it returned a string, parse it.\n  const parsed =\n    typeof payload === 'string'\n      ? JSON.parse(payload)\n      : payload;\n\n  const role = parsed.role ?? 'action';\n  const notes = Array.isArray(parsed.notes) ? parsed.notes : [];\n\n  const weight =\n    typeof parsed.weight === 'number'\n      ? parsed.weight\n      : (item.json.writers?.action?.weight ?? 0);\n\n  item.json.writer_note = {\n    role,\n    notes,\n    weight,\n  };\n}\n\nreturn items;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        352,
+        944
+      ],
+      "id": "ae068c61-66c9-4a6b-9153-2d723c50c952",
+      "name": "Normalize Documentary Notes"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nfor (const item of items) {\n  // OpenAI returns object directly, not string\n  const payload = item.json.output?.[0]?.content?.[0]?.text ?? item.json;\n\n  // If OpenAI returned an object, use it directly.\n  // If it returned a string, parse it.\n  const parsed =\n    typeof payload === 'string'\n      ? JSON.parse(payload)\n      : payload;\n\n  const role = parsed.role ?? 'action';\n  const notes = Array.isArray(parsed.notes) ? parsed.notes : [];\n\n  const weight =\n    typeof parsed.weight === 'number'\n      ? parsed.weight\n      : (item.json.writers?.action?.weight ?? 0);\n\n  item.json.writer_note = {\n    role,\n    notes,\n    weight,\n  };\n}\n\nreturn items;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        352,
+        80
+      ],
+      "id": "ba3dc1df-b57d-4bf3-8f65-4c65cc994bda",
+      "name": "Normalize Action Notes"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Build a single payload from all writer_note items\nconst items = $input.all();\n\nconst writerPanel = [];\n/** @type {Record<string, { role: string; notes: any[]; weight: number }>} */\nconst byRole = {};\n\nfor (const item of items) {\n  const note = item.json.writer_note;\n\n  if (!note || !Array.isArray(note.notes)) continue;\n\n  const entry = {\n    role: note.role ?? 'unknown',\n    notes: note.notes,\n    weight: typeof note.weight === 'number' ? note.weight : 0,\n  };\n\n  writerPanel.push(entry);\n  byRole[entry.role] = entry;\n}\n\n// Return a SINGLE item downstream\nreturn [\n  {\n    json: {\n      writer_panel: writerPanel,\n      writers_by_role: byRole,\n    },\n  },\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        800,
+        784
+      ],
+      "id": "66798584-e8cb-4a58-bf92-10e4fe28a1a4",
+      "name": "Build Writer Panel"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nfor (const item of items) {\n  // Perplexity puts the JSON as a string in `message`\n  // (fallback to previous shapes just in case)\n  const payload =\n    item.json.message ??\n    item.json.output?.[0]?.content?.[0]?.text ??\n    item.json;\n\n  const parsed =\n    typeof payload === 'string'\n      ? JSON.parse(payload)\n      : payload;\n\n  const role = parsed.role || 'researcher';\n\n  const findings = Array.isArray(parsed.findings)\n    ? parsed.findings\n    : [];\n\n  const sources = Array.isArray(parsed.sources)\n    ? parsed.sources\n    : [];\n\n  // Default to 0 if weight is missing; you can tie this to documentary if you want\n  const weight =\n    typeof parsed.weight === 'number'\n      ? parsed.weight\n      : (item.json.writers?.documentary?.weight ?? 0);\n\n  // Normalized research object for Head Writer\n  item.json.research = {\n    role,\n    findings,\n    sources,\n    weight,\n    // NOTE: citations intentionally left top-level on item.json.citations\n  };\n}\n\nreturn items;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        352,
+        1856
+      ],
+      "id": "210558e9-67a7-40fd-b794-5f9a295c97e6",
+      "name": "Normalize Research"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Normalize Draft Context\n// Input: multiple items (writer notes, research, base context)\n// Output: single clean item for Head Writer / Switch Target Brand / Apply Project Mode Profile\n\nconst items = $input.all();\n\n// 1) Identify the \"base\" context item (story_seed + project etc.)\nconst baseItem =\n  items.find((i) => i.json && i.json.story_seed) ||\n  items[items.length - 1];\n\n/** @type {any} */\nconst base = (baseItem && baseItem.json) ? baseItem.json : {};\n\n// 2) Merge writer notes from any writer_panel / writers_by_role\n\n/**\n * @typedef {Object} WriterNote\n * @property {string} role\n * @property {string[]} notes\n * @property {number|undefined} weight\n */\n\n/** @type {Record<string, WriterNote>} */\nconst writerNotes = {};\n\n/**\n * @param {string} role\n * @param {string[]} notes\n * @param {number|undefined} weight\n */\nfunction addNotes(role, notes, weight) {\n  const validRole = typeof role === 'string' && role.trim().length > 0;\n  const validNotes = Array.isArray(notes) && notes.length > 0;\n\n  if (validRole && validNotes) {\n    if (!writerNotes[role]) {\n      writerNotes[role] = {\n        role,\n        notes: [],\n        weight: undefined,\n      };\n    }\n\n    writerNotes[role].notes.push(...notes);\n\n    if (typeof weight === 'number') {\n      writerNotes[role].weight = weight;\n    }\n  }\n}\n\n// Walk all items to collect notes from any panel or by_role\nfor (const item of items) {\n  /** @type {any} */\n  const j = item.json || {};\n\n  // writer_panel style: [{ role, notes?, weight }]\n  if (Array.isArray(j.writer_panel)) {\n    for (const wp of j.writer_panel) {\n      if (!wp || !wp.role) continue;\n      addNotes(\n        String(wp.role),\n        Array.isArray(wp.notes) ? wp.notes : [],\n        typeof wp.weight === 'number' ? wp.weight : undefined\n      );\n    }\n  }\n\n  // writers_by_role style: { action: { role, notes, weight }, ... }\n  if (j.writers_by_role && typeof j.writers_by_role === 'object') {\n    for (const roleKey of Object.keys(j.writers_by_role)) {\n      const wr = j.writers_by_role[roleKey];\n      if (!wr) continue;\n      addNotes(\n        String(wr.role || roleKey),\n        Array.isArray(wr.notes) ? wr.notes : [],\n        typeof wr.weight === 'number' ? wr.weight : undefined\n      );\n    }\n  }\n}\n\n// Backfill missing writerNotes weights from base.writers\n/** @type {any} */\nconst baseWriters = base.writers || {};\n\nfor (const role of Object.keys(writerNotes)) {\n  const noteObj = writerNotes[role];\n  if (typeof noteObj.weight !== 'number') {\n    const w = baseWriters[role] && typeof baseWriters[role].weight === 'number'\n      ? baseWriters[role].weight\n      : 0;\n    noteObj.weight = w;\n  }\n}\n\n// 2b) De-duplicate notes per writer (defensive clean-up)\nfor (const role of Object.keys(writerNotes)) {\n  const wn = writerNotes[role];\n  if (Array.isArray(wn.notes)) {\n    wn.notes = Array.from(new Set(wn.notes));\n  }\n}\n\n// 3) Unify research config (enable_research + facts) and research results (findings + sources + citations)\n\n/** @type {{ enable_research?: boolean; facts?: string }} */\nlet researchConfig = {};\n\n/** @type {{ role?: string; findings?: string[]; sources?: string[]; weight?: number }} */\nlet researchResult = {};\n\n/** @type {string[]} */\nlet citations = [];\n\nfor (const item of items) {\n  /** @type {any} */\n  const j = item.json || {};\n\n  // config: research.enable_research / research.facts\n  if (j.research && Object.prototype.hasOwnProperty.call(j.research, 'enable_research')) {\n    researchConfig = j.research;\n  }\n\n  // result: research.findings / research.sources / research.weight\n  if (j.research && Array.isArray(j.research.findings)) {\n    researchResult = j.research;\n  }\n\n  // citations from Perplexity\n  if (Array.isArray(j.citations) && j.citations.length > 0) {\n    citations = j.citations;\n  }\n}\n\n// Build unified research object\nconst unifiedResearch = {\n  enable_research:\n    typeof researchConfig.enable_research === 'boolean'\n      ? researchConfig.enable_research\n      : false,\n  facts:\n    typeof researchConfig.facts === 'string'\n      ? researchConfig.facts\n      : '',\n  role: researchResult.role || 'researcher',\n  findings: Array.isArray(researchResult.findings)\n    ? researchResult.findings\n    : [],\n  sources: Array.isArray(researchResult.sources)\n    ? researchResult.sources\n    : [],\n  weight:\n    typeof researchResult.weight === 'number'\n      ? researchResult.weight\n      : (\n        baseWriters.documentary && typeof baseWriters.documentary.weight === 'number'\n          ? baseWriters.documentary.weight\n          : 0\n      ),\n  citations,\n};\n\n// 4) Build a clean, final context object for the Head Writer\n\n/** @type {any} */\nconst project = base.project || {};\n\nconst final = {\n  // core narrative seed\n  story_seed: base.story_seed || '',\n\n  // project identity (normalized)\n  project: {\n    mode: project.mode || base.project_mode || null,\n    brand: project.brand || base.target_brand || null,\n    audience: project.audience || base.target_audience || null,\n  },\n\n  project_mode: project.mode || base.project_mode || null,\n  target_brand: project.brand || base.target_brand || null,\n  target_audience: project.audience || base.target_audience || null,\n\n  // sliders / meta\n  creative: base.creative || {},\n  revision: base.revision || {},\n  outputs: base.outputs || {},\n  tokens: base.tokens || {},\n\n  // writer weighting metadata from Genre Tone Router\n  writers: baseWriters,\n\n  // writer panel = role + weight only (no notes)\n  writer_panel: Array.isArray(base.writer_panel)\n    ? base.writer_panel.map((wp) => ({\n        role: wp.role,\n        weight: typeof wp.weight === 'number' ? wp.weight : 0,\n      }))\n    : [],\n\n  // merged brainstorm notes, keyed by role\n  writer_notes: writerNotes,\n\n  // unified research substrate\n  research: unifiedResearch,\n};\n\n// 5) Return a single clean item\nreturn [\n  {\n    json: final,\n  },\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1248,
+        1424
+      ],
+      "id": "c0e25887-c218-423f-a43f-5d3f210fae92",
+      "name": "Normalize Draft Context"
+    },
+    {
+      "parameters": {
+        "content": "## Platform Modes \nThese are the **platform_modes** that drive the system_message for the Head Writer\n- blog_post\n- future_story_arc\n- mixed_allegory\n- novella_chapter\n- reference_doc\n- screenplay\n- social_post\n- story_prompts\n- straight_ad\n- visual_prompts\n",
+        "height": 352,
+        "width": 288,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1856,
+        656
+      ],
+      "id": "4e9685c4-56ba-4470-8578-b4987ea52434",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Brand List\nThese are the platform_brands that can add targeted context\n- diesel_kings\n- echoloop\n- generic_brand\n- ketosis_lifestyle_project\n- purple_star\n- theater_404\n- tonka_blog\n- tonka_newsletter",
+        "height": 288,
+        "width": 256,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -2176,
+        704
+      ],
+      "id": "4fcba7d2-1bb2-4c00-8474-37075261675e",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\n/**\n * Central brand registry.\n * @type {{ [key: string]: any }}\n */\nconst BRAND_CONFIGS = {\n  diesel_kings: {\n    project: {\n      name: 'Diesel Kings',\n      slug: 'diesel_kings',\n      tagline: 'We sell steel, not stories.',\n      voice: 'Plainspoken, blue-collar smart, no hype',\n      guidelines: {\n        do: [\n          'Be direct about condition and risk',\n          'Emphasize steel, work, and real margins',\n          'Use simple, concrete language',\n        ],\n        dont: [\n          'No Instagram fantasy or lifestyle fluff',\n          \"No vague superlatives like 'premium' or 'best in class'\",\n        ],\n        style_examples: [\n          'We sell steel, not stories.',\n          'The right call for every deal.',\n        ],\n      },\n    },\n  },\n\n  echoloop: {\n    project: {\n      name: 'EchoLoop',\n      slug: 'echoloop',\n      tagline: 'Loops for late-night brains.',\n      voice: 'Moody, hypnotic, slightly cyberpunk',\n      guidelines: {\n        do: [\n          'Lean into atmosphere and texture',\n          'Keep copy minimal, almost haiku-like',\n          'Suggest a mood instead of explaining it',\n        ],\n        dont: [\n          'No corporate buzzwords',\n          'No detailed tech specs in the main hook',\n        ],\n        style_examples: [\n          'Neon hum, diesel heart.',\n          'Soundtracks for the in-between hours.',\n        ],\n      },\n    },\n  },\n\n  generic_brand: {\n    project: {\n      name: 'Generic Brand',\n      slug: 'generic_brand',\n      tagline: '',\n      voice: 'Neutral, clear, and informative',\n      guidelines: {\n        do: [\n          'Be clear and concrete',\n          'Explain only what’s needed',\n          'Avoid slang unless explicitly requested',\n        ],\n        dont: [\n          'No hard-sell hype',\n          'No niche references requiring extra context',\n        ],\n        style_examples: [\n          'Straight facts, clean language.',\n        ],\n      },\n    },\n  },\n\n  ketosis_lifestyle_project: {\n    project: {\n      name: 'Ketosis Lifestyle Project',\n      slug: 'ketosis_lifestyle_project',\n      tagline: 'Modern foraging, deep ketosis, real life.',\n      voice: 'Calm, grounded, reflective, science-aware but human first',\n      guidelines: {\n        do: [\n          'Connect practical tips to lived experience',\n          'Balance science with story and mindset',\n          'Use clear, non-guru language',\n        ],\n        dont: [\n          'No miracle claims or diet cult vibes',\n          'No shaming, no body panic language',\n        ],\n        style_examples: [\n          'This isn’t a diet. It’s a quieter way to eat.',\n          'Less noise, fewer carbs, more signal.',\n        ],\n      },\n    },\n  },\n\n  purple_star: {\n    project: {\n      name: 'Purple Star',\n      slug: 'purple_star',\n      tagline: 'Stories from inside the game.',\n      voice: 'Curious, adventurous, kid-smart but not babyish',\n      guidelines: {\n        do: [\n          'Keep it fun and story-driven',\n          'Use simple, visual language that feels like gameplay',\n          'Highlight choices, consequences, and discovery',\n        ],\n        dont: [\n          'No heavy jargon about dev stacks',\n          'No adult cynicism or bleakness',\n        ],\n        style_examples: [\n          'The map loads, the world glitches, and the real quest begins.',\n          'You don’t just play Purple Star—you fall into it.',\n        ],\n      },\n    },\n  },\n\n  theater_404: {\n    project: {\n      name: 'Theater 404',\n      slug: 'theater_404',\n      tagline: 'The show where the algorithm is the villain.',\n      voice: 'Wry, meta, MST3K-adjacent, self-aware',\n      guidelines: {\n        do: [\n          'Lean into meta commentary about media and algorithms',\n          'Mix dry humor with genuine curiosity',\n          'Treat the audience like co-conspirators, not followers',\n        ],\n        dont: [\n          'No mean-spirited dunking on real people',\n          'No inside baseball that requires deep tech knowledge to enjoy',\n        ],\n        style_examples: [\n          'Tonight’s feature: one part sci-fi, two parts “how did this get rendered?”',\n          'We watch the bots so you don’t have to.',\n        ],\n      },\n    },\n  },\n\n  tonka_blog: {\n    project: {\n      name: 'Tonka Blog',\n      slug: 'tonka_blog',\n      tagline: 'Dispatches from the iron business.',\n      voice: 'Straight-talking broker, reflective but practical',\n      guidelines: {\n        do: [\n          'Explain how the business actually works',\n          'Use real scenarios, deals, and shop-floor logic',\n          'Emphasize trust, transparency, and long-term thinking',\n        ],\n        dont: [\n          'No generic “content marketing” tone',\n          'No pretending every deal is perfect',\n        ],\n        style_examples: [\n          'We don’t sell the dream. We explain the work.',\n          'Every truck has a story. We care about the ones that start after you pay for it.',\n        ],\n      },\n    },\n  },\n\n  tonka_newsletter: {\n    project: {\n      name: 'Tonka Newsletter',\n      slug: 'tonka_newsletter',\n      tagline: 'A quick read for people who move heavy things.',\n      voice: 'Concise, useful, broker-to-broker conversational',\n      guidelines: {\n        do: [\n          'Keep it short and skimmable',\n          'Highlight what actually matters this week',\n          'Blend inventory, market notes, and practical tips',\n        ],\n        dont: [\n          'No long essays in the main body',\n          'No fluffy “community” filler with zero value',\n        ],\n        style_examples: [\n          'Three deals worth knowing about, one lesson we paid for.',\n          'If it doesn’t help you buy or sell, it doesn’t go in.',\n        ],\n      },\n    },\n  },\n};\n\nfor (const item of items) {\n  /** @type {any} */\n  const json = item.json || {};\n\n  const brandKey =\n    typeof json.target_brand === 'string'\n      ? json.target_brand\n      : (json.project && typeof json.project.brand === 'string'\n          ? json.project.brand\n          : 'generic_brand');\n\n  const brandConfig = BRAND_CONFIGS[brandKey] || BRAND_CONFIGS.generic_brand;\n\n  // Enriched brand object\n  json.target_brand = {\n    id: brandKey,\n    ...brandConfig,\n  };\n\n  let project = json.project || {};\n  project.brand = brandKey;\n  project.brand_meta = brandConfig.project;\n\n  json.project = project;\n  item.json = json;\n}\n\nreturn items;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1472,
+        1424
+      ],
+      "id": "4fffa601-6687-4f33-b6fd-4a61a51c925f",
+      "name": "Switch Target Brand"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\n/**\n * Project-mode registry.\n * @type {{ [key: string]: any }}\n */\nconst PROJECT_MODE_CONFIGS = {\n  // === CORE MODES FROM YOUR LIST ===\n\n  blog_post: {\n    label: 'Blog post',\n    description:\n      'Write a clear, engaging blog post that blends story, insight, and practical value for the reader.',\n    headWriterInstructions: [\n      'Open with a strong hook that makes the reader feel seen.',\n      'Blend real-world examples and clear explanations.',\n      'Focus on one main idea or lesson, not everything at once.',\n      'Use headings and short paragraphs so it is easy to skim.',\n    ],\n    structureHints: [\n      'Hook / problem the reader recognizes.',\n      'Context or a short anecdote that illustrates the issue.',\n      'Breakdown of what’s really going on.',\n      'Concrete recommendations or steps.',\n      'Short closing that reinforces the main takeaway.',\n    ],\n    taskLines: [\n      'Treat the story_seed and writer_notes as conceptual origin only, not as a literal fable you must retell.',\n      'Write a professional Tonka Blog article for working truck buyers, not a children’s story.',\n      'Keep any allegory or metaphor to at most 1–2 short lines of framing, then focus on clear, practical guidance.',\n      'Use the research findings to ground inspections, risk, and process details whenever you describe “what to do”.',\n      'Use headings and short paragraphs; prioritize clarity and usefulness over cleverness.',\n      'Avoid extended scenes about mice or characters; anchor the piece in inspections, deals, and shop-floor reality.',\n    ],\n  },\n\n  future_story_arc: {\n    label: 'Future story arc',\n    description:\n      'Outline future story beats or episodes, not a full draft. Focus on arcs, stakes, and evolving tension.',\n    headWriterInstructions: [\n      'Do NOT write full prose; focus on beats and arcs.',\n      'Show how stakes escalate over time.',\n      'Map character or concept evolution across installments.',\n      'Highlight key reveals, twists, or turning points.',\n    ],\n    structureHints: [\n      'Act I: setup beats and inciting incident.',\n      'Act II: complications, reversals, and rising stakes.',\n      'Act III: major confrontation or payoff.',\n      'Loose notes on sequels or follow-up arcs.',\n    ],\n  },\n\n  mixed_allegory: {\n    label: 'Mixed allegory (story + practical lesson)',\n    description:\n      'Blend a narrative allegory with clear, practical takeaways for the reader.',\n    headWriterInstructions: [\n      'Use the writer_panel notes as your internal outline.',\n      'Tell a short, focused story that makes the lesson obvious without being preachy.',\n      'Explicitly tie the allegory back to the real-world situation in plain language.',\n    ],\n    structureHints: [\n      'Open with tension or risk.',\n      'Show investigation / inspection phase.',\n      'Reveal the turning point where wisdom beats impulse.',\n      'End with a clear, memorable takeaway.',\n    ],\n    taskLines: [\n      'Use the writer_panel as your internal outline and weighting guide.',\n      'Write a single, coherent allegorical story in Markdown (return as plain text, no code fences).',\n      'Make the story and the practical lesson feel inseparable, not bolted on.',\n      'It is acceptable to have talking characters or narrative scenes in this mode.',\n    ],\n  },\n\n  novella_chapter: {\n    label: 'Novella chapter',\n    description:\n      'Write a self-contained chapter in an ongoing narrative, with strong scene work and character focus.',\n    headWriterInstructions: [\n      'Stay inside the story world; no out-of-character explanation.',\n      'Anchor the chapter around one central conflict or emotional beat.',\n      'Use sensory detail, dialogue, and action to carry the scene.',\n      'End at a natural beat that either resolves something or hooks the next chapter.',\n    ],\n    structureHints: [\n      'Opening situation or scene anchor.',\n      'Rising tension and complication.',\n      'Climax or emotional turning point.',\n      'Aftermath and a light hook toward what comes next.',\n    ],\n  },\n\n  reference_doc: {\n    label: 'Reference document',\n    description:\n      'Produce a structured reference document that explains a topic clearly and can be reused as a source.',\n    headWriterInstructions: [\n      'Organize content with clear headings and subheadings.',\n      'Use bullet points, tables, or lists where it helps clarity.',\n      'Define key terms and avoid unexplained jargon.',\n      'Prioritize accuracy, neutrality, and reusability over style.',\n    ],\n    structureHints: [\n      'Short overview / purpose.',\n      'Definitions / key concepts.',\n      'Core sections with clear headings.',\n      'Edge cases, caveats, or FAQs.',\n      'Summary or quick reference at the end.',\n    ],\n  },\n\n  screenplay: {\n    label: 'Screenplay-style scene',\n    description:\n      'Write a script-like scene with character dialogue and minimal but clear action lines.',\n    headWriterInstructions: [\n      'Focus on dialogue and visible action, not internal monologue.',\n      'Format in a screenplay-like style (CHARACTER NAME + dialogue, sparse action lines).',\n      'Keep descriptions tight and filmable.',\n      'Let conflict and subtext drive the scene.',\n    ],\n    structureHints: [\n      'Slugline or clear indication of setting (even if informal).',\n      'Establish who is present and what they want.',\n      'Build tension through dialogue and action.',\n      'Resolve or pivot the scene with a clear beat at the end.',\n    ],\n  },\n\n  social_post: {\n    label: 'Social post',\n    description:\n      'Short-form content for platforms like X, Facebook, LinkedIn, or Instagram captions.',\n    headWriterInstructions: [\n      'Be concise and punchy; assume short attention spans.',\n      'Lead with the hook or outcome, not the backstory.',\n      'Use line breaks and spacing to make it skimmable.',\n      'End with a soft CTA or thought that invites response when appropriate.',\n    ],\n    structureHints: [\n      'Hook line or bold statement.',\n      '1–3 short lines that add context or value.',\n      'Optional link or CTA.',\n      'Keep total length in a “scroll-stopping but not exhausting” range.',\n    ],\n  },\n\n  story_prompts: {\n    label: 'Story prompts',\n    description:\n      'Generate multiple prompts or seeds, not a full story. These are starting points for future writing.',\n    headWriterInstructions: [\n      'Do NOT write full scenes or prose.',\n      'Produce a list of prompts, each 1–3 sentences long.',\n      'Vary tone, stakes, and perspective so they don’t all feel the same.',\n      'Align prompts with the brand voice and audience when relevant.',\n    ],\n    structureHints: [\n      '5–10 distinct prompts.',\n      'Each prompt should imply conflict or mystery.',\n      'Mix character-driven and situation-driven prompts.',\n    ],\n  },\n\n  straight_ad: {\n    label: 'Straight ad / offer copy',\n    description:\n      'Direct, conversion-focused copy that clearly presents an offer, benefits, and next steps.',\n    headWriterInstructions: [\n      'Lead with the most relevant benefit or outcome.',\n      'State the offer, price/terms (if provided), and who it is for.',\n      'Use clear, concrete language—no vague hype.',\n      'End with a specific, reasonable call to action.',\n    ],\n    structureHints: [\n      'Headline or strong opening line.',\n      '1–3 short paragraphs or bullet lists with benefits and key details.',\n      'Credibility or risk-reducer (experience, guarantees, track record if available).',\n      'Clear CTA (what to do next).',\n    ],\n  },\n\n  visual_prompts: {\n    label: 'Visual prompts (image / video)',\n    description:\n      'Generate detailed visual descriptions that can be used for image or video generation prompts.',\n    headWriterInstructions: [\n      'Describe what should be visible: setting, subjects, mood, and key details.',\n      'Mention style, lighting, and composition when useful.',\n      'Avoid long narrative; think in snapshots or shots.',\n      'Keep each prompt self-contained and unambiguous.',\n    ],\n    structureHints: [\n      'Short title or label for each visual.',\n      '1–3 sentences describing the scene.',\n      'Optional extra line for style notes (e.g., “cinematic, high contrast, dusk”).',\n    ],\n  },\n\n  // === EXTRA MODE YOU ALREADY HAD (TONKA DISPATCH) ===\n\n  dispatch_essay: {\n    label: 'Tonka Dispatch essay',\n    description:\n      'Longer-form editorial piece for Tonka Dispatch: reflective, grounded, steel-first.',\n    headWriterInstructions: [\n      'Write as a thoughtful operator who has seen years of deals and mistakes.',\n      'Prioritize clarity, honesty, and specific concrete examples.',\n      'Weave in narrative beats, but keep the core as a grounded essay.',\n    ],\n    structureHints: [\n      'Hook with a real-feeling situation or observation.',\n      'Unpack the tension, stakes, or misconception.',\n      'Offer a grounded perspective and walk through the logic.',\n      'End with a simple, practical takeaway the reader can act on.',\n    ],\n  },\n\n  // === FALLBACK ===\n  default_mode: {\n    label: 'Generic narrative + explanation',\n    description:\n      'Fallback mode when project_mode is unknown; sensible mixed behavior.',\n    headWriterInstructions: [\n      'Tell a clear story.',\n      'Explain the lesson in plain language.',\n    ],\n    structureHints: ['Begin–middle–end, with one clear takeaway.'],\n    taskLines: [\n      'Use the writer_panel as your internal outline and weighting guide.',\n      'Write a single, coherent draft in Markdown (return as plain text, no code fences).',\n      'Align with the mode description and brand guidelines.',\n    ],\n  },\n};\n\nfunction buildHeadWriterSystemMessage(json, modeProfile, brandMeta) {\n  const mode = json.project_mode || 'default_mode';\n  const sliders = json.creative || {};\n  const panel = json.writer_panel || [];\n  const audience = json.project?.audience || json.target_audience || '';\n  const seed = json.story_seed || '';\n\n  const brandBlock = brandMeta\n    ? [\n        `Brand: ${brandMeta.name || brandMeta.slug || 'Unknown'}`,\n        brandMeta.tagline ? `Tagline: ${brandMeta.tagline}` : '',\n        brandMeta.voice ? `Voice: ${brandMeta.voice}` : '',\n        '',\n        'Brand guidelines:',\n        ...(brandMeta.guidelines?.do?.length\n          ? ['Do:', ...brandMeta.guidelines.do.map((d) => `- ${d}`)]\n          : []),\n        ...(brandMeta.guidelines?.dont?.length\n          ? ['Don’t:', ...brandMeta.guidelines.dont.map((d) => `- ${d}`)]\n          : []),\n        '',\n      ].filter(Boolean)\n    : [];\n\n  const sliderBlock = [\n    'Creative sliders:',\n    `- fact_to_fiction: ${sliders.fact_to_fiction ?? 'n/a'}`,\n    `- creativity_to_reporter: ${sliders.creativity_to_reporter ?? 'n/a'}`,\n    `- tone_strictness: ${sliders.tone_strictness ?? 'n/a'}`,\n    `- length: ${sliders.length ?? 'n/a'}`,\n    '',\n  ];\n\n  const writerPanelSummary = [\n    'Writer panel (roles + weighted notes):',\n    JSON.stringify(panel, null, 2),\n    '',\n  ];\n\n  const modeBlock = [\n    `Project mode: ${modeProfile.label} (${mode})`,\n    '',\n    'Mode description:',\n    modeProfile.description,\n    '',\n    'Head Writer instructions:',\n    ...(modeProfile.headWriterInstructions || []).map((i) => `- ${i}`),\n    '',\n    'Structural hints (not strict, but preferred):',\n    ...(modeProfile.structureHints || []).map((s) => `- ${s}`),\n    '',\n  ];\n\n  // 🔑 Generic task block, but content comes from modeProfile.taskLines\n  const defaultTaskLines = [\n    'Use the writer_panel as your internal outline and weighting guide.',\n    'Write a single, coherent draft in Markdown (return as plain text, no code fences).',\n    'Align with the project_mode description and brand guidelines above.',\n  ];\n\n  const taskLines = Array.isArray(modeProfile.taskLines) && modeProfile.taskLines.length\n    ? modeProfile.taskLines\n    : defaultTaskLines;\n\n  const taskBlock = [\n    'Task:',\n    ...taskLines.map((line) => `- ${line}`),\n  ];\n\n  return [\n    'You are the HEAD WRITER in a multi-writer room.',\n    '',\n    `Story seed: ${seed}`,\n    audience ? `Target audience: ${audience}` : '',\n    '',\n    ...brandBlock,\n    ...sliderBlock,\n    ...writerPanelSummary,\n    ...modeBlock,\n    ...taskBlock,\n  ].join('\\n');\n}\n\nfor (const item of items) {\n  /** @type {any} */\n  const json = item.json || {};\n\n  const modeKey =\n    typeof json.project_mode === 'string' ? json.project_mode : 'default_mode';\n\n  const modeProfile =\n    PROJECT_MODE_CONFIGS[modeKey] || PROJECT_MODE_CONFIGS.default_mode;\n\n  const brandMeta =\n    json.target_brand && json.target_brand.project\n      ? json.target_brand.project\n      : null;\n\n  json.project_mode_profile = modeProfile;\n  json.head_writer_system_message = buildHeadWriterSystemMessage(\n    json,\n    modeProfile,\n    brandMeta,\n  );\n\n  item.json = json;\n}\n\nreturn items;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1696,
+        1424
+      ],
+      "id": "442969da-31d7-4eb6-9618-dadbafd3ddca",
+      "name": "Apply Project Mode Profile"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nfor (const item of items) {\n  /** @type {any} */\n  const json = item.json || {};\n\n  // 1) Get raw model output as string\n  const rawOutput = String(json.output ?? '').trim();\n\n  // 2) Strip common code fences (```json ... ```, ``` ... ```)\n  let cleaned = rawOutput\n    // remove leading ```json / ```JSON / ``` etc at start of string\n    .replace(/^\\s*```[a-zA-Z]*\\s*/m, '')\n    // remove any trailing ``` at end\n    .replace(/```$/m, '')\n    // remove any remaining ``` blocks inside\n    .replace(/```[a-zA-Z]*\\s*/g, '')\n    .replace(/```/g, '')\n    .trim();\n\n  // 3) Try to isolate JSON between first { and last }\n  let parsed = null;\n  const firstBrace = cleaned.indexOf('{');\n  const lastBrace = cleaned.lastIndexOf('}');\n\n  if (firstBrace !== -1 && lastBrace > firstBrace) {\n    const jsonStr = cleaned.slice(firstBrace, lastBrace + 1);\n    try {\n      parsed = JSON.parse(jsonStr);\n    } catch (e) {\n      // leave parsed = null; we'll fall back below\n    }\n  }\n\n  // 4) Derive story text + meta from parsed JSON if available\n  let title = '';\n  let thesis = '';\n  let storyText = cleaned;\n  let summary = '';\n  let role = 'head_writer';\n\n  if (parsed && typeof parsed === 'object') {\n    if (typeof parsed.role === 'string') {\n      role = parsed.role;\n    }\n    if (typeof parsed.title === 'string') {\n      title = parsed.title;\n    }\n    if (typeof parsed.thesis === 'string') {\n      thesis = parsed.thesis;\n    }\n    if (typeof parsed.summary === 'string') {\n      summary = parsed.summary;\n    }\n\n    if (typeof parsed.story === 'string') {\n      storyText = parsed.story.trim();\n    } else if (typeof parsed.draft_markdown === 'string') {\n      // backward compatibility with older shape\n      storyText = parsed.draft_markdown.trim();\n    }\n  }\n\n  // 5) If storyText still looks like raw JSON, try one more inner parse\n  const trimmedStory = storyText.trim();\n  if (trimmedStory.startsWith('{') && trimmedStory.endsWith('}')) {\n    try {\n      const inner = JSON.parse(trimmedStory);\n      if (typeof inner.story === 'string') {\n        storyText = inner.story.trim();\n      } else if (typeof inner.draft_markdown === 'string') {\n        storyText = inner.draft_markdown.trim();\n      }\n    } catch {\n      // ignore, keep storyText as-is\n    }\n  }\n\n  // 6) Attach normalized head_draft\n  json.head_draft = {\n    role,\n    title,\n    thesis,\n    draft_markdown: storyText,\n    summary,\n    // keep raw for debugging / quality rater, but easy to remove later\n    raw_output: rawOutput,\n  };\n\n  item.json = json;\n}\n\nreturn items;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2272,
+        1248
+      ],
+      "id": "3ad8f5de-4d77-4b88-b00b-20afb348ec85",
+      "name": "Normalize Head Writer"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (const item of $input.all()) {\n  // -- Platform Modes --\n  item.json.platform_modes = \"blog_post\";\n  //item.json.platform_modes = \"future_story_arc\";\n  //item.json.platform_modes = \"mixed_allegory\";\n  //item.json.platform_modes = \"novella_chapter\";\n  //item.json.platform_modes = \"reference_doc\";\n  //item.json.platform_modes = \"screenplay\";\n  //item.json.platform_modes = \"social_post\";\n  //item.json.platform_modes = \"story_prompts\";\n  //item.json.platform_modes = \"straight_ad\";\n  //item.json.platform_modes = \"visual_prompts\";\n\n  // -- Target Brands --\n  //item.json.target_brand = \"diesel_kings\";\n  //item.json.target_brand = \"echoloop\";\n  //item.json.target_brand = \"generic_brand\";\n  //item.json.target_brand = \"ketosis_lifestyle_project\";\n  //item.json.target_brand = \"purple_star\";\n  //item.json.target_brand = \"theater_404\";\n  item.json.target_brand = \"tonka_blog\";\n  //item.json.target_brand = \"tonka_newsletter\";\n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2368,
+        1264
+      ],
+      "id": "6e88a273-a748-4a8b-8344-03f8e64e37a1",
+      "name": "Mode and Brand Overrides"
+    },
+    {
+      "parameters": {
+        "content": "## Writing Genres\nThese are the styles of writing inferred by the Genre Tone Router\n- Action\n- Biography\n- Comedy\n- Documentary\n- Historic\n- Research\n- SciFi",
+        "height": 288
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1536,
+        688
+      ],
+      "id": "8e11aafd-0e53-47b4-a5e5-15a8f5d5c75a",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nfor (const item of items) {\n  // OpenAI returns object directly, not string\n  const payload = item.json.output?.[0]?.content?.[0]?.text ?? item.json;\n\n  // If OpenAI returned an object, use it directly.\n  // If it returned a string, parse it.\n  const parsed =\n    typeof payload === 'string'\n      ? JSON.parse(payload)\n      : payload;\n\n  const role = parsed.role ?? 'action';\n  const notes = Array.isArray(parsed.notes) ? parsed.notes : [];\n\n  const weight =\n    typeof parsed.weight === 'number'\n      ? parsed.weight\n      : (item.json.writers?.action?.weight ?? 0);\n\n  item.json.writer_note = {\n    role,\n    notes,\n    weight,\n  };\n}\n\nreturn items;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        352,
+        368
+      ],
+      "id": "41f4e9ba-0700-4bca-a428-d30555f05ed5",
+      "name": "Normalize Biographer Notes"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nfor (const item of items) {\n  // OpenAI returns object directly, not string\n  const payload = item.json.output?.[0]?.content?.[0]?.text ?? item.json;\n\n  // If OpenAI returned an object, use it directly.\n  // If it returned a string, parse it.\n  const parsed =\n    typeof payload === 'string'\n      ? JSON.parse(payload)\n      : payload;\n\n  const role = parsed.role ?? 'action';\n  const notes = Array.isArray(parsed.notes) ? parsed.notes : [];\n\n  const weight =\n    typeof parsed.weight === 'number'\n      ? parsed.weight\n      : (item.json.writers?.action?.weight ?? 0);\n\n  item.json.writer_note = {\n    role,\n    notes,\n    weight,\n  };\n}\n\nreturn items;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        352,
+        656
+      ],
+      "id": "2a98262e-64c5-47e8-a519-6c34e950ed9d",
+      "name": "Normalize Comedy Notes"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nfor (const item of items) {\n  // OpenAI returns object directly, not string\n  const payload = item.json.output?.[0]?.content?.[0]?.text ?? item.json;\n\n  // If OpenAI returned an object, use it directly.\n  // If it returned a string, parse it.\n  const parsed =\n    typeof payload === 'string'\n      ? JSON.parse(payload)\n      : payload;\n\n  const role = parsed.role ?? 'action';\n  const notes = Array.isArray(parsed.notes) ? parsed.notes : [];\n\n  const weight =\n    typeof parsed.weight === 'number'\n      ? parsed.weight\n      : (item.json.writers?.action?.weight ?? 0);\n\n  item.json.writer_note = {\n    role,\n    notes,\n    weight,\n  };\n}\n\nreturn items;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        352,
+        1232
+      ],
+      "id": "f54c2ca9-ac0e-43b2-91e6-7b98f3a5ffe4",
+      "name": "Normalize Historic Notes"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nfor (const item of items) {\n  // OpenAI returns object directly, not string\n  const payload = item.json.output?.[0]?.content?.[0]?.text ?? item.json;\n\n  // If OpenAI returned an object, use it directly.\n  // If it returned a string, parse it.\n  const parsed =\n    typeof payload === 'string'\n      ? JSON.parse(payload)\n      : payload;\n\n  const role = parsed.role ?? 'action';\n  const notes = Array.isArray(parsed.notes) ? parsed.notes : [];\n\n  const weight =\n    typeof parsed.weight === 'number'\n      ? parsed.weight\n      : (item.json.writers?.action?.weight ?? 0);\n\n  item.json.writer_note = {\n    role,\n    notes,\n    weight,\n  };\n}\n\nreturn items;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        352,
+        1632
+      ],
+      "id": "a7333598-2ea9-4489-b93c-a37032cbace6",
+      "name": "Normalize SciFi Notes"
+    },
+    {
+      "parameters": {
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1472,
+        1360
+      ],
+      "id": "3b71b234-6601-4d6e-bd74-5d776b1815fb",
+      "name": "Cache Spark"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-5-chat-latest",
+          "mode": "list",
+          "cachedResultName": "GPT-5-CHAT-LATEST"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "=You are the SCIFI writer in a multi-writer panel for a storytelling and content system.\n\nYou MUST output valid JSON ONLY in this exact shape:\n{\n  \"role\": \"scifi\",\n  \"notes\": string[],\n  \"weight\": number\n}\n\nRules:\n- NO markdown, NO code fences, NO prose outside of JSON.\n- \"role\" must always be \"scifi\".\n- \"notes\" must be short speculative beats: futuristic tech, alternate realities, advanced systems, speculative dangers, or extrapolated world logic.\n- Aim for 4–7 notes total.\n- Tone can range from grounded near-future to high-concept, depending on brand and project mode.\n- If facts or real-world stakes are present, you must integrate them as scientific constraints, extrapolations, or “what-if” projections.\n- Never output full scenes, lore dumps, or exposition — keep beats tight.\n\nReturn ONLY valid JSON matching the schema above.\n"
+            },
+            {
+              "content": "=Context:\n- Story seed: {{$json[\"story_seed\"]}}\n- Project mode: {{$json[\"project_mode\"] || $json[\"project\"][\"mode\"]}}\n- Brand: {{$json[\"project\"][\"brand\"] || $json[\"target_brand\"]}}\n- Audience: {{$json[\"project\"][\"audience\"] || $json[\"target_audience\"]}}\n- Research enabled: {{$json[\"research\"][\"enable_research\"]}}\n- Facts (if any): {{$json[\"research\"][\"facts\"] || \"none provided\"}}\n- Your scifi weight: {{$json[\"writers\"][\"scifi\"][\"weight\"]}}\n\nTask:\n1. Generate short speculative beats inspired by the story seed and project mode.\n2. You may explore:\n   - futuristic analogies,\n   - technological parallels,\n   - alternate-world versions of the conflict,\n   - or predictive logic.\n3. When facts or real-world constraints exist, treat them as seeds for extrapolation.\n4. Do NOT write full scenes or explanations — only compact speculative beats.\n\nReturn ONLY valid JSON:\n\n{\n  \"role\": \"scifi\",\n  \"notes\": [\n    \"...\",\n    \"...\"\n  ],\n  \"weight\": {{$json[\"writers\"][\"scifi\"][\"weight\"]}}\n}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "textFormat": {
+            "textOptions": {
+              "type": "json_schema",
+              "name": "scifi_schema",
+              "schema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"role\": { \"type\": \"string\" },\n    \"notes\": {\n      \"type\": \"array\",\n      \"items\": { \"type\": \"string\" }\n    },\n    \"weight\": { \"type\": \"number\" }\n  },\n  \"required\": [\"role\", \"notes\", \"weight\"],\n  \"additionalProperties\": false\n}"
+            }
+          },
+          "temperature": 0.7,
+          "topP": 0.9
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2,
+      "position": [
+        0,
+        1568
+      ],
+      "id": "7b8e8faa-6290-4168-959a-fbbd46151dc2",
+      "name": "Writer SciFi Brainstorm (OpenAI)"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        352,
+        2096
+      ],
+      "id": "b673896f-5c1d-4d54-90cb-e349d90733f3",
+      "name": "Merge Citations"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5-chat-latest",
+          "mode": "list",
+          "cachedResultName": "gpt-5-chat-latest"
+        },
+        "builtInTools": {},
+        "options": {
+          "textFormat": {
+            "textOptions": {
+              "type": "json_schema",
+              "schema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"role\":   { \"type\": \"string\" },\n    \"title\":  { \"type\": \"string\" },\n    \"thesis\": { \"type\": \"string\" },\n    \"story\":  { \"type\": \"string\" },\n    \"summary\":{ \"type\": \"string\" }\n  },\n  \"required\": [\"role\", \"title\", \"thesis\", \"story\", \"summary\"],\n  \"additionalProperties\": false\n}"
+            }
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        2000,
+        1472
+      ],
+      "id": "ee849fe9-aeef-4a53-bb45-57f9a2d6ec01",
+      "name": "OpenAI Chat Model"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Story seed:\n{{$json[\"story_seed\"]}}\n\nWriter panel (roles + weights):\n{{ JSON.stringify($json[\"writer_panel\"] || [], null, 2) }}\n\nWriter notes (merged brainstorms by role):\n{{ JSON.stringify($json[\"writer_notes\"] || {}, null, 2) }}\n\nBrand profile:\n- Name: {{$json[\"target_brand\"].project.name || $json[\"project\"][\"brand\"]}}\n- Audience: {{$json[\"project\"][\"audience\"] || $json[\"target_audience\"] || \"\"}}\n\nBrand voice:\n- Core voice: {{ $json.target_brand.project.voice }}\n- Do:\n{{ ($json.target_brand.project.guidelines.do || []).map(d => \"- \" + d).join(\"\\n\") }}\n- Don’t:\n{{ ($json.target_brand.project.guidelines.dont || []).map(d => \"- \" + d).join(\"\\n\") }}\n- Reference lines:\n{{ ($json.target_brand.project.guidelines.style_examples || []).map(ex => \"- \" + ex).join(\"\\n\") }}\n\nCreative sliders:\n- fact_to_fiction: {{$json[\"creative\"][\"fact_to_fiction\"]}}\n- creativity_to_reporter: {{$json[\"creative\"][\"creativity_to_reporter\"]}}\n- tone_strictness: {{$json[\"creative\"][\"tone_strictness\"]}}\n- length: {{$json[\"creative\"][\"length\"]}}\n\nProject mode profile (for your internal use):\n{{ JSON.stringify($json[\"project_mode_profile\"] || {}, null, 2) }}\n\nResearch context:\n- enable_research: {{$json.research.enable_research}}\n- user_facts: {{$json.research.facts || \"\"}}\n\nResearch findings:\n{{ ($json.research.findings || []).map(f => \"- \" + f).join(\"\\n\") }}\n\nResearch requirements (non-negotiable when enable_research is true):\n1. If there are 1–3 findings, you MUST use every finding at least once in the story and/or practical explanation.\n2. If there are more than 3 findings, you MUST use at least 3 distinct findings as concrete details. You may use more if it feels natural.\n3. When you describe inspections, condition, safety, maintenance, or value, you MUST base those details on the findings above. You may paraphrase or compress, but do not contradict them or invent incompatible technical details.\n4. You may express findings inside the allegorical story, in the real-world explanation, or both, but they cannot be ignored while enable_research is true.\n\nTask:\n1. Use writer_notes and writer_panel as your internal outline and weighting guide.\n2. Follow the brand guidelines and project_mode_profile above.\n3. Use the research findings to ground any technical or practical details, respecting all research requirements.\n4. Produce a single JSON object with the following fields:\n   - \"role\": always \"head_writer\".\n   - \"title\": a short, optional title or headline (use \"\" if none).\n   - \"thesis\": one-sentence core idea or lesson.\n   - \"draft_text\": the full draft as plain text ONLY (no Markdown, no headings like ###, no bold markers like **, no code fences). Use normal paragraphs and simple lists like:\n       - item one\n       - item two\n     If you need section breaks, use a plain text line divider like: \"-----\"\n   - \"summary\": a 2–3 sentence prose recap of the main point.",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "={{(() => {\n  const base = String($json.head_writer_system_message || \"\");\n  const len = String($json.creative?.length || \"short\").toLowerCase().trim();\n\n  const policy =\n`You are the HEAD WRITER in a multi-writer room.\n\nLength policy (must follow):\nRequested length: ${len}\n\n- short: ~500–700 words, tight and skimmable\n- medium: ~900–1,200 words, standard depth\n- long: ~1,500–2,000+ words, deeper explanation (no padding)\n\nDo not mention word counts in the output.\nDo not add filler; stay useful and concrete.\n\n------------------------------------------------------------\n`;\n\n  return policy + base;\n})()}}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        1920,
+        1248
+      ],
+      "id": "31623ed1-57e7-4180-8be7-99b549569c5a",
+      "name": "Head Writer Agent (OpenAI)"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst results = [];\n\nfor (const item of items) {\n  const text = item.json?.output?.[0]?.content?.[0]?.text || {};\n\n  const role = text.role || 'final_editor';\n  const title = text.title || '';\n  const thesis = text.thesis || '';\n  const draft_markdown = text.story || '';\n  const summary = text.summary || '';\n\n  results.push({\n    json: {\n      final_draft: {\n        role,\n        title,\n        thesis,\n        draft_markdown,\n        summary,\n      }\n    }\n  });\n}\n\nreturn results;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2848,
+        1248
+      ],
+      "id": "39dbe83d-0998-4afd-9740-99bb53d18c2e",
+      "name": "Normalize Final Editor"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "=============================================================\nFINAL DRAFT LOG\nRun Timestamp: {{ $now }}\nDocument Name: {{ $json.name || \"n/a\" }}\nDocument ID: {{ $json.id || \"n/a\" }}\nProject Mode: {{ $json.project_mode || \"n/a\" }}\n------------------------------------------------------------\n\nTITLE\n{{ $json.final_draft.title || \"n/a\" }}\n\nTHESIS\n{{ $json.final_draft.thesis || \"n/a\" }}\n\n------------------------------------------------------------\n\nDRAFT\n{{ $json.final_draft.draft_markdown || \"n/a\" }}\n\n------------------------------------------------------------\n\nSUMMARY\n{{ $json.final_draft.summary || \"n/a\" }}\n\n============================================================"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        4672,
+        1808
+      ],
+      "id": "ddaab1c5-9c8b-427c-ab8b-de00f9e017b8",
+      "name": "Update Final gDoc"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "=============================================================\nRUN LOG (NOTES)\nRun ID: {{ $json.run_id || $json.id || \"n/a\" }}\nTimestamp: {{ $json.timestamp || $now }}\nProject Mode: {{ $json.project_mode || \"n/a\" }}\nSource: {{ $json.source || \"n/a\" }}\nEntry ID: {{ $json.entry_id || $json.id || \"n/a\" }}\n------------------------------------------------------------\n\nINPUT\n{{ $json.input_text || $json.subject || $json.prompt || \"n/a\" }}\n\n------------------------------------------------------------\n\nRESEARCH\nEnabled: {{ $json.research_enabled ?? \"n/a\" }}\nNotes:\n{{ $json.research_notes || \"n/a\" }}\n\nCitations:\n{{ Array.isArray($json.citations) && $json.citations.length\n  ? $json.citations.map((c,i)=>`${i+1}) ${typeof c === \"string\" ? c : (c.url || c.title || JSON.stringify(c))}`).join(\"\\n\")\n  : \"n/a\"\n}}\n\n------------------------------------------------------------\n\nWRITER PANEL (RAW NOTES)\n{{ Array.isArray($json.writer_panel) && $json.writer_panel.length\n  ? $json.writer_panel.map((n,i)=> {\n      const role = n.role || n.writer_role || \"unknown_role\";\n      const name = n.writer || n.writer_name || \"unknown_writer\";\n      const note = n.note || n.output || n.text || JSON.stringify(n);\n      return `(${i+1}) [${role}] ${name}\\n${note}\\n`;\n    }).join(\"\\n\")\n  : \"n/a\"\n}}\n\n============================================================"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1472,
+        2096
+      ],
+      "id": "ff351608-c6d0-4bd5-b07d-e6fd582fa9f3",
+      "name": "Update Notes gDoc"
+    },
+    {
+      "parameters": {
+        "folderId": "={{ $json.outputs.gdocs_folder_id }}",
+        "title": "={{ `${new Date().getMonth()+1}-${new Date().getDate()}-${new Date().getFullYear()}-${new Date().getTime()}-WR-Notes` }}"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1024,
+        2016
+      ],
+      "id": "64dcdae0-2cc1-40a2-900f-44fd7832361e",
+      "name": "Create Notes gDoc"
+    },
+    {
+      "parameters": {
+        "folderId": "={{ $json.outputs.gdocs_folder_id }}",
+        "title": "={{ `${new Date().getMonth()+1}-${new Date().getDate()}-${new Date().getFullYear()}-${new Date().getTime()}-WR-Final` }}"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        4160,
+        1664
+      ],
+      "id": "87466816-f543-4658-b1a4-1bbc8b36d729",
+      "name": "Create Final gDoc"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        4448,
+        1808
+      ],
+      "id": "9e4d2ad2-3cc7-4249-b213-1385eddfe801",
+      "name": "Merge Final for gDoc"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1248,
+        2096
+      ],
+      "id": "f4f91ebb-8229-4ea2-a528-620a5553cdfc",
+      "name": "Merge Notes for gDoc"
+    },
+    {
+      "parameters": {
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3808,
+        1808
+      ],
+      "id": "52715da6-46e1-4de4-bca9-7663f534beca",
+      "name": "Prep Final gDoc"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "92418165-5eb3-4d2a-bc14-2d690ddbefc6",
+              "name": "research.facts",
+              "value": "={{ $json.research.facts }}",
+              "type": "string"
+            },
+            {
+              "id": "e24fbfa3-bdb2-4aee-894d-f71af86d91c1",
+              "name": "message",
+              "value": "={{ $json.message }}",
+              "type": "string"
+            },
+            {
+              "id": "015dc9ed-86b1-41e1-aba7-afc4d64143a1",
+              "name": "citations",
+              "value": "={{ $json.citations }}",
+              "type": "array"
+            },
+            {
+              "id": "7f6967ca-478e-4a0e-8adf-b9812fb74fa3",
+              "name": "outputs.gdocs_folder_id",
+              "value": "={{ $json.outputs.gdocs_folder_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        800,
+        2096
+      ],
+      "id": "73f352cd-9b7d-4ad3-ba4a-8ff5249b59c4",
+      "name": "Prep Notes gDoc"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "a66a39b9-9b78-4fa2-bd61-063dc31ecd74",
+              "leftValue": "={{ $json.outputs.gdocs_folder_id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        576,
+        2096
+      ],
+      "id": "a4ef6994-ff68-4c78-a839-14b3995de558",
+      "name": "If Notes gDoc"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "a66a39b9-9b78-4fa2-bd61-063dc31ecd74",
+              "leftValue": "={{ $json.outputs.gdocs_folder_id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3520,
+        1808
+      ],
+      "id": "a832c4fd-9744-4188-bbaf-d2d5f6fcd895",
+      "name": "If Final gDoc"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        3072,
+        1424
+      ],
+      "id": "bb0f3054-89f5-4498-b74e-b5600a1e05b6",
+      "name": "Merge Final Spark"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "=SYSTEM\n\nYou are the FINAL EDITOR, not a rewrite model.\nYou DO NOT replace the draft.\nYou DO NOT change structure.\nYou DO NOT remove headings.\nYou DO NOT invent details.\nYou DO NOT add fictional elements.\nYou DO NOT shift the genre.\n\nYour job:\n\nImprove clarity, flow, and authority.\n\nStrengthen brand voice.\n\nFix tone drift.\n\nTighten weak transitions.\n\nMake the piece feel polished and consistent.\n\nKeep all meaning and research facts exactly intact.\n\nBe subtle, precise, and conservative.\nThis is a line edit, not a rewrite."
+            },
+            {
+              "content": "=Here is the draft from the Head Writer:\n\nTitle:\n{{$json.head_draft.title}}\n\nDraft:\n{{$json.head_draft.draft_markdown}}\n\nSummary:\n{{$json.head_draft.summary}}\n\nBrand guidelines:\n{{ JSON.stringify($json.target_brand.project.guidelines) }}\n\nProject mode:\n{{ $json.project.mode }}\n\nTone controls:\ntone_strictness: {{ $json.creative.tone_strictness }}\nfact_to_fiction: {{ $json.creative.fact_to_fiction }}\ncreativity_to_reporter: {{ $json.creative.creativity_to_reporter }}\n\nTask:\nReturn JSON ONLY"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "textFormat": {
+            "textOptions": {
+              "type": "json_schema",
+              "name": "final_schema",
+              "schema": "{\n  \"type\": \"object\",\n  \"additionalProperties\": false,\n  \"properties\": {\n    \"role\": {\n      \"type\": \"string\"\n    },\n    \"title\": {\n      \"type\": \"string\"\n    },\n    \"thesis\": {\n      \"type\": \"string\"\n    },\n    \"story\": {\n      \"type\": \"string\"\n    },\n    \"summary\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\": [\"role\", \"title\", \"thesis\", \"story\", \"summary\"]\n}"
+            }
+          },
+          "temperature": 0.2,
+          "topP": 1
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2,
+      "position": [
+        2496,
+        1248
+      ],
+      "id": "ee2faac5-e760-4ac3-83a1-4740b1fb1f46",
+      "name": "Final Editor (OpenAI)"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-5-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-5-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "=You are an ART DIRECTOR generating STILL IMAGE PROMPTS for industrial equipment content.\n\nSTRICT RULES (non-negotiable):\n- Output MUST match the JSON schema exactly.\n- Generate prompts ONLY for used Class 8 truck buying, inspection, yards, shops, and equipment.\n- NO people, faces, characters, engineers, workers, or human figures.\n  - Hands or gloves are allowed ONLY if explicitly relevant to inspection.\n- NO abstract symbolism (no flowers, metaphors, or conceptual imagery).\n- NO generic “industrial” scenes (factories, conveyor belts, fabrication shops).\n- NO cinematic, epic, dramatic, or artistic language.\n- NO model names, camera specs, or photography jargon.\n- NO text appearing inside images.\n\nSTYLE GUIDELINES:\n- Realistic, grounded, documentary-style still imagery.\n- Focus on trucks, components, tools, inspection details, yards, weather, wear.\n- Visuals should feel like they were captured during a real inspection or walkthrough.\n\nPROMPT SET:\n- Generate EXACTLY 5 prompts.\n- Intents must be exactly:\n  hero, detail, process, environment, metaphor\n- The “metaphor” must still be literal and grounded (e.g., visual contrast, not symbolism).\n\nIf unsure, choose realism over creativity."
+            },
+            {
+              "content": "=Create 5 still-image prompts based strictly on the final draft below.\n\nEach prompt must visually represent:\n- used Class 8 trucks\n- inspection, condition, wear, documentation, or yard context\n\nDo not introduce concepts, settings, or objects not present or implied in the article."
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "textFormat": {
+            "textOptions": {
+              "type": "json_schema",
+              "name": "art_directory_schema",
+              "schema": "{\n  \"type\": \"object\",\n  \"additionalProperties\": false,\n  \"properties\": {\n    \"visual_prompts\": {\n      \"type\": \"array\",\n      \"minItems\": 0,\n      \"maxItems\": 5,\n      \"items\": {\n        \"type\": \"object\",\n        \"additionalProperties\": false,\n        \"properties\": {\n          \"id\": { \"type\": \"string\" },\n          \"intent\": {\n            \"type\": \"string\",\n            \"enum\": [\"hero\", \"detail\", \"process\", \"environment\", \"metaphor\"]\n          },\n          \"prompt\": { \"type\": \"string\" }\n        },\n        \"required\": [\"id\", \"intent\", \"prompt\"]\n      }\n    }\n  },\n  \"required\": [\"visual_prompts\"]\n}"
+            }
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2,
+      "position": [
+        4096,
+        1328
+      ],
+      "id": "7b25a18f-3ab3-45e5-80a9-ebba8d59564e",
+      "name": "Art Director (OpenAI)"
+    },
+    {
+      "parameters": {
+        "jsCode": "const allowed = [\"hero\", \"detail\", \"process\", \"environment\", \"metaphor\"];\n\nfunction asArray(v) {\n  return Array.isArray(v) ? v : [];\n}\n\nfunction clean(s) {\n  return String(s ?? \"\").replace(/[ \\t]{2,}/g, \" \").trim();\n}\n\n// n8n Code node: get all incoming items via $input\nconst inItems = $input.all();\n\nreturn inItems.map((it) => {\n  const j = it.json;\n\n  // Primary: OpenAI wrapper shape you've shown\n  let vp =\n    j?.output?.[0]?.content?.[0]?.text?.visual_prompts ??\n    j?.visual_prompts ??\n    [];\n\n  vp = asArray(vp)\n    .map((p) => ({\n      intent: clean(p?.intent).toLowerCase(),\n      prompt: clean(p?.prompt),\n    }))\n    .filter((p) => allowed.includes(p.intent) && p.prompt);\n\n  // Deduplicate intents\n  const seen = new Set();\n  vp = vp.filter((p) => (seen.has(p.intent) ? false : (seen.add(p.intent), true)));\n\n  // Order + cap\n  vp.sort((a, b) => allowed.indexOf(a.intent) - allowed.indexOf(b.intent));\n  vp = vp.slice(0, 5);\n\n  // Deterministic IDs\n  const finalPrompts = vp.map((p, i) => ({\n    id: `vp-${String(i + 1).padStart(2, \"0\")}`,\n    intent: p.intent,\n    prompt: p.prompt,\n  }));\n\n  const { output, ...rest } = j;\n  \n  return {\n    json: {\n      ...rest,\n      visual_prompts: finalPrompts,\n    },\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4448,
+        1328
+      ],
+      "id": "afcb8d20-e69f-43ea-a5b6-a9044aa2a65b",
+      "name": "Normalize Art Director"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "622b877e-ccf0-475f-851e-800d2c8b881e",
+              "name": "visual_prompts",
+              "value": "[]",
+              "type": "array"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4448,
+        1520
+      ],
+      "id": "1d26ea99-356d-430d-a3fd-5c33e8f23e0b",
+      "name": "Set Default Visual Prompts"
+    },
+    {
+      "parameters": {
+        "jsCode": "// n8n Code node (plain JS)\n\n// Pull the structured output object from OpenAI Responses output\nreturn $input.all().map((item) => {\n  const text = item.json.output[0].content[0].text;\n\n  const out = {};\n  out.final_draft = text.final_draft;\n\n  out.format_blog_post_generator = {};\n  out.format_blog_post_generator.title_variations = null;\n  out.format_blog_post_generator.platform_summaries = null;\n\n  // Titles: force exactly 5\n  const baseTitle = String(out.final_draft.title || \"\").trim();\n\n  let titles = Array.isArray(text.format_blog_post_generator && text.format_blog_post_generator.title_variations)\n    ? text.format_blog_post_generator.title_variations.slice(0, 5).map((t) => String(t || \"\").trim())\n    : [];\n\n  // remove empties\n  titles = titles.filter((t) => t);\n\n  while (titles.length < 5) {\n    titles.push(baseTitle);\n  }\n\n  out.format_blog_post_generator.title_variations = titles.slice(0, 5);\n\n  // Platform summaries: force keys\n  const ps =\n    (text.format_blog_post_generator && text.format_blog_post_generator.platform_summaries) || {};\n\n  out.format_blog_post_generator.platform_summaries = {\n    youtube: String(ps.youtube || \"\").trim(),\n    linkedin: String(ps.linkedin || \"\").trim(),\n    x: String(ps.x || \"\").trim(),\n    meta: String(ps.meta || \"\").trim(),\n    tonkaintl: String(ps.tonkaintl || \"\").trim()\n  };\n\n  return { json: out };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4160,
+        848
+      ],
+      "id": "add47e8c-f07a-4c85-91b7-ff97f4ea7cd6",
+      "name": "Normalize Blog Post Generator"
+    },
+    {
+      "parameters": {
+        "jsCode": "// n8n Code node (plain JS)\n\n// Pull the structured output object from OpenAI Responses output\nreturn $input.all().map((item) => {\n  const text = item.json.output[0].content[0].text;\n\n  const out = {};\n  out.future_story_arc_generator = {};\n  out.future_story_arc_generator.arcs = null;\n\n  const arcsRaw =\n    (text.future_story_arc_generator && text.future_story_arc_generator.arcs) || [];\n\n  // Normalize arcs: ensure array, ensure 3 items, trim strings, drop empties\n  let arcs = Array.isArray(arcsRaw) ? arcsRaw.slice(0, 3) : [];\n\n  arcs = arcs\n    .map((a) => {\n      const arc = a && typeof a === \"object\" ? a : {};\n      return {\n        arc_title: String(arc.arc_title || \"\").trim(),\n        one_line_premise: String(arc.one_line_premise || \"\").trim(),\n        why_it_matters: String(arc.why_it_matters || \"\").trim(),\n        suggested_story_seed: String(arc.suggested_story_seed || \"\").trim()\n      };\n    })\n    .filter((a) => a.arc_title || a.one_line_premise || a.why_it_matters || a.suggested_story_seed);\n\n  // Backfill to exactly 3 arcs with empty objects if needed (merge-safe)\n  while (arcs.length < 3) {\n    arcs.push({\n      arc_title: \"\",\n      one_line_premise: \"\",\n      why_it_matters: \"\",\n      suggested_story_seed: \"\"\n    });\n  }\n\n  out.future_story_arc_generator.arcs = arcs.slice(0, 3);\n\n  return { json: out };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4160,
+        464
+      ],
+      "id": "a42694b4-7214-41e2-9199-0603ea2ace1a",
+      "name": "Normalize Future Story Arc Generator"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "37bcbd38-3a37-4eea-8922-6b69e5898ded",
+              "name": "format_blog_post_generator.title_variations",
+              "value": "[]",
+              "type": "array"
+            },
+            {
+              "id": "69856138-5446-48a2-8c06-7843f31e35ee",
+              "name": "format_blog_post_generator.platform_summaries.linkedin",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "fe3210be-1cd1-414b-bc14-c48c88355e32",
+              "name": "format_blog_post_generator.platform_summaries.x",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "9b82d5a7-225d-45e2-9734-da3dbecfb81e",
+              "name": "format_blog_post_generator.platform_summaries.meta",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "cb54e04a-101f-40bc-bfd9-eb21485e96e5",
+              "name": "format_blog_post_generator.platform_summaries.tonkaintl",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4448,
+        1040
+      ],
+      "id": "58a33bcc-422f-447a-8090-2ef81dac91d3",
+      "name": "Set Default Blog Post Generator"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5119fde3-44ef-44e0-8c86-c22382aa5729",
+              "name": "future_story_arc_generator.arcs",
+              "value": "[]",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4448,
+        656
+      ],
+      "id": "dc375479-ba75-4c73-9924-bd1e39792718",
+      "name": "Set Default Future Story Arc Generator"
+    },
+    {
+      "parameters": {
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3296,
+        1424
+      ],
+      "id": "81e3249a-9159-483f-a0f6-fdffd40aa2bd",
+      "name": "Cache Final Spark"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1-mini-2025-04-14",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1-MINI-2025-04-14"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "=You are a formatter/packager for Tonka Blog.\n\nHard rules:\n- Do NOT change any final_draft fields.\n- Add exactly 5 title variations.\n- Add platform summaries for youtube, linkedin, x, meta, tonkaintl.\n- No hashtags.\n- Output must match the JSON Schema exactly."
+            },
+            {
+              "content": "=INPUT (JSON):\n{{ JSON.stringify($json, null, 2) }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "textFormat": {
+            "textOptions": {
+              "type": "json_schema",
+              "schema": "{\n  \"type\": \"object\",\n  \"additionalProperties\": false,\n  \"required\": [\"final_draft\", \"format_blog_post_generator\"],\n  \"properties\": {\n    \"final_draft\": {\n      \"type\": \"object\",\n      \"additionalProperties\": false,\n      \"required\": [\"role\", \"title\", \"thesis\", \"draft_markdown\", \"summary\"],\n      \"properties\": {\n        \"role\": { \"type\": \"string\" },\n        \"title\": { \"type\": \"string\" },\n        \"thesis\": { \"type\": \"string\" },\n        \"draft_markdown\": { \"type\": \"string\" },\n        \"summary\": { \"type\": \"string\" }\n      }\n    },\n    \"format_blog_post_generator\": {\n      \"type\": \"object\",\n      \"additionalProperties\": false,\n      \"required\": [\"title_variations\", \"platform_summaries\"],\n      \"properties\": {\n        \"title_variations\": {\n          \"type\": \"array\",\n          \"minItems\": 5,\n          \"maxItems\": 5,\n          \"items\": { \"type\": \"string\" }\n        },\n        \"platform_summaries\": {\n          \"type\": \"object\",\n          \"additionalProperties\": false,\n          \"required\": [\"youtube\", \"linkedin\", \"x\", \"meta\", \"tonkaintl\"],\n          \"properties\": {\n            \"youtube\": { \"type\": \"string\" },\n            \"linkedin\": { \"type\": \"string\" },\n            \"x\": { \"type\": \"string\" },\n            \"meta\": { \"type\": \"string\" },\n            \"tonkaintl\": { \"type\": \"string\" }\n          }\n        }\n      }\n    }\n  }\n}"
+            }
+          },
+          "temperature": 0.2
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2,
+      "position": [
+        3744,
+        848
+      ],
+      "id": "3619fc5c-5088-4bee-a897-5ebf782b20b1",
+      "name": "Social Media Director (OpenAI)"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6096c899-9f36-4d94-beac-28fa28f04161",
+              "name": "title_variations",
+              "value": "={{ $json.format_blog_post_generator.title_variations }}",
+              "type": "array"
+            },
+            {
+              "id": "7c53b6a8-abe8-4c4f-886e-cfd997883d86",
+              "name": "platform_summaries",
+              "value": "={{ $json.format_blog_post_generator.platform_summaries }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4448,
+        848
+      ],
+      "id": "af434cc5-b24a-44ab-9e66-29d414f08eb0",
+      "name": "Prune Summaries"
+    },
+    {
+      "parameters": {
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4448,
+        464
+      ],
+      "id": "0a8f6e26-eb29-4cfe-aff1-77da68fa96a7",
+      "name": "Prune Future Arcs"
+    },
+    {
+      "parameters": {
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        5344,
+        1152
+      ],
+      "id": "21082c75-b2af-4bee-8567-e9e7a3bfb3e0",
+      "name": "Prep Outputs gDoc"
+    },
+    {
+      "parameters": {
+        "folderId": "={{ $json.outputs.gdocs_folder_id }}",
+        "title": "={{ `${new Date().getMonth()+1}-${new Date().getDate()}-${new Date().getFullYear()}-${new Date().getTime()}-WR-Final` }}"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        5568,
+        1008
+      ],
+      "id": "fd262aa7-580f-485f-8d95-463eb0a94a5e",
+      "name": "Create Outputs gDoc"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        5792,
+        1152
+      ],
+      "id": "b7e063e8-cd18-475c-a10a-b3b7246b0b95",
+      "name": "Merge Outputs for gDoc1"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "=============================================================\nFINAL DRAFT LOG\nRun Timestamp: {{ $now }}\nDocument Name: {{ $json.name || \"n/a\" }}\nDocument ID: {{ $json.id || \"n/a\" }}\nProject Mode: {{ $json.project_mode || $json.project?.mode || \"n/a\" }}\nBrand: {{ $json.target_brand?.project?.name || $json.project?.brand_meta?.name || \"n/a\" }}\nTarget Audience: {{ $json.target_audience || $json.project?.audience || \"n/a\" }}\n------------------------------------------------------------\n\nTITLE\n{{ $json.final_draft?.title || \"n/a\" }}\n\nTHESIS\n{{ $json.final_draft?.thesis || \"n/a\" }}\n\n------------------------------------------------------------\n\nARTICLE BODY (FINAL DRAFT)\n{{ $json.final_draft?.draft_markdown || \"n/a\" }}\n\n------------------------------------------------------------\n\nSUMMARY\n{{ $json.final_draft?.summary || \"n/a\" }}\n\n============================================================\n\nWRITER NOTES (CREATIVE INPUTS)\n------------------------------------------------------------\n\nACTION NOTES\n{{ ($json.writer_notes?.action?.notes || []).join(\"\\n- \") ? \"- \" + ($json.writer_notes.action.notes.join(\"\\n- \")) : \"n/a\" }}\n\n------------------------------------------------------------\n\nCOMEDY NOTES\n{{ ($json.writer_notes?.comedy?.notes || []).join(\"\\n- \") ? \"- \" + ($json.writer_notes.comedy.notes.join(\"\\n- \")) : \"n/a\" }}\n\n============================================================\n\nFORMAT BLOG POST GENERATOR\n------------------------------------------------------------\n\nTITLE VARIATIONS\n1) {{ $json.title_variations?.[0] || \"n/a\" }}\n2) {{ $json.title_variations?.[1] || \"n/a\" }}\n3) {{ $json.title_variations?.[2] || \"n/a\" }}\n4) {{ $json.title_variations?.[3] || \"n/a\" }}\n5) {{ $json.title_variations?.[4] || \"n/a\" }}\n\n------------------------------------------------------------\n\nPLATFORM SUMMARIES\nYouTube:\n{{ $json.platform_summaries?.youtube || \"n/a\" }}\n\nLinkedIn:\n{{ $json.platform_summaries?.linkedin || \"n/a\" }}\n\nX:\n{{ $json.platform_summaries?.x || \"n/a\" }}\n\nMeta:\n{{ $json.platform_summaries?.meta || \"n/a\" }}\n\nTonkaIntl:\n{{ $json.platform_summaries?.tonkaintl || \"n/a\" }}\n\n============================================================\n\nFUTURE STORY ARC GENERATOR\n------------------------------------------------------------\nArc 1 Title:\n{{ $json.future_story_arc_generator?.arcs?.[0]?.arc_title || \"n/a\" }}\n\nPremise:\n{{ $json.future_story_arc_generator?.arcs?.[0]?.one_line_premise || \"n/a\" }}\n\nWhy It Matters:\n{{ $json.future_story_arc_generator?.arcs?.[0]?.why_it_matters || \"n/a\" }}\n\nSuggested Story Seed:\n{{ $json.future_story_arc_generator?.arcs?.[0]?.suggested_story_seed || \"n/a\" }}\n\n------------------------------------------------------------\nArc 2 Title:\n{{ $json.future_story_arc_generator?.arcs?.[1]?.arc_title || \"n/a\" }}\n\nPremise:\n{{ $json.future_story_arc_generator?.arcs?.[1]?.one_line_premise || \"n/a\" }}\n\nWhy It Matters:\n{{ $json.future_story_arc_generator?.arcs?.[1]?.why_it_matters || \"n/a\" }}\n\nSuggested Story Seed:\n{{ $json.future_story_arc_generator?.arcs?.[1]?.suggested_story_seed || \"n/a\" }}\n\n------------------------------------------------------------\nArc 3 Title:\n{{ $json.future_story_arc_generator?.arcs?.[2]?.arc_title || \"n/a\" }}\n\nPremise:\n{{ $json.future_story_arc_generator?.arcs?.[2]?.one_line_premise || \"n/a\" }}\n\nWhy It Matters:\n{{ $json.future_story_arc_generator?.arcs?.[2]?.why_it_matters || \"n/a\" }}\n\nSuggested Story Seed:\n{{ $json.future_story_arc_generator?.arcs?.[2]?.suggested_story_seed || \"n/a\" }}\n\n============================================================\n\nVISUAL PROMPTS\n------------------------------------------------------------\n{{ ($json.visual_prompts || []).map(vp => `(${vp.id || \"n/a\"}) [${vp.intent || \"n/a\"}]\\n${vp.prompt || \"n/a\"}`).join(\"\\n\\n-----\\n\\n\") || \"n/a\" }}\n\n============================================================\nRESEARCH RECEIPT\n------------------------------------------------------------\nResearch Enabled: {{ $json.research?.enable_research ?? \"n/a\" }}\nResearch Claim: {{ $json.research?.facts || \"n/a\" }}\n\nSources:\n{{ ($json.research?.sources || []).join(\"\\n\") || \"n/a\" }}\n\nCitations:\n{{ ($json.research?.citations || []).join(\"\\n\") || \"n/a\" }}\n\n============================================================\nOUTPUT FLAGS\n------------------------------------------------------------\n{{ JSON.stringify($json.outputs || {}, null, 2) }}\n\n============================================================"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        6016,
+        1152
+      ],
+      "id": "ca030dc8-f37b-4470-a1c1-857ecf29d286",
+      "name": "Update Outputs gDoc"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://socialapi.tonkaintl.com/api/webhooks/tonka-spark-post",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        5344,
+        1344
+      ],
+      "id": "528aeff0-c5bf-4d7d-a5b9-e6d61fe88aa8",
+      "name": "HTTP Request",
+      "alwaysOutputData": true,
+      "notesInFlow": false,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "content": "## Length Policy\nBaked in story goal length\n• short: ~500–700 words, tight and skimmable\n• medium: ~900–1,200 words, standard depth\n• long: ~1,500–2,000+ words, deeper explanation (no padding)",
+        "height": 288,
+        "width": 272,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1248,
+        704
+      ],
+      "typeVersion": 1,
+      "id": "0ed640db-e0a1-43b9-aa3b-c4d6488da5d2",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "jsCode": "// n8n Code node (plain JS)\n// IF-safe union: returns whichever branch produced items.\n// If both produce items (unexpected), it returns both (dedup optional).\n\nconst items = $input.all();\n\n// If nothing arrives (also unexpected), emit one empty item so downstream doesn't hang.\nif (!items || items.length === 0) {\n  return [{ json: {} }];\n}\n\nreturn items;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4672,
+        656
+      ],
+      "id": "06fadef3-3027-4fe9-b4d9-fea81cdfac41",
+      "name": "Join Future Story Arc Output"
+    },
+    {
+      "parameters": {
+        "jsCode": "// n8n Code node (plain JS)\n// IF-safe union: returns whichever branch produced items.\n// If both produce items (unexpected), it returns both (dedup optional).\n\nconst items = $input.all();\n\n// If nothing arrives (also unexpected), emit one empty item so downstream doesn't hang.\nif (!items || items.length === 0) {\n  return [{ json: {} }];\n}\n\nreturn items;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4672,
+        1040
+      ],
+      "id": "f3dea567-58d9-46b2-9fbc-5a87182eeae5",
+      "name": "Join Visual Blog Post Output"
+    },
+    {
+      "parameters": {
+        "jsCode": "// n8n Code node (plain JS)\n// IF-safe union: returns whichever branch produced items.\n// If both produce items (unexpected), it returns both (dedup optional).\n\nconst items = $input.all();\n\n// If nothing arrives (also unexpected), emit one empty item so downstream doesn't hang.\nif (!items || items.length === 0) {\n  return [{ json: {} }];\n}\n\nreturn items;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4672,
+        1520
+      ],
+      "id": "e0ed188e-7e90-4d95-a07f-5ed8c6df8236",
+      "name": "Join Visual Prompts Output"
+    },
+    {
+      "parameters": {
+        "content": "\n[\n  \n{\n  \n\"notifier_email\": \"stephen@tonkaintl.com\",  \n\"story_seed\": \n\"Write a Tonka Blog article for cautious used Class 8 truck buyers that uses the mousetrap and 'free cheese' only as a light metaphor for risky, rushed deals. Focus mainly on practical inspection steps, research-based checklists, and how patience and a proper inspection process prevent expensive mistakes.\",\n  \n  \n\"project_mode\": \n\"blog_post\",\n  \n  \n\"target_brand\": \n\"tonka_blog\",\n  \n  \n\"target_audience\": \n\"truck buyers who are cautious about getting burned on a used semi truck\",\n  \n  \n\"fact_to_fiction\": \n15,\n  \n  \n\"creativity_to_reporter\": \n90,\n  \n  \n\"tone_strictness\": \n30,\n  \n  \n\"draft_length\": \n\"short\",\n  \n  \n\"enable_research\": \ntrue,\n  \n  \n\"gdocs_folder_id\": \n\"1EFwmu8YdaRT-yGGGm1kFv_8DIcVZ07re\",\n  \n  \n\"output_blog_post\": \ntrue,\n  \n  \n\"output_future_story_arc\": \ntrue,\n  \n  \n\"output_visual_prompts\": \ntrue,\n  \n  \n\"facts\": \n\"Most buyers do not take time to fully inspect their purchase\"\n  \n}\n]"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2656,
+        976
+      ],
+      "typeVersion": 1,
+      "id": "ea2148d3-e7aa-4e98-9e7c-a477ff5e32b7",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "jsCode": "// n8n Code node (plain JS)\n// Lift webhook body to top-level JSON for downstream nodes\n\nconst items = $input.all();\n\nfor (const item of items) {\n  const src = item.json || {};\n\n  // If body exists, replace json with body\n  if (src.body && typeof src.body === 'object') {\n    item.json = src.body;\n  } else {\n    // Fallback: leave json untouched\n    item.json = src;\n  }\n}\n\nreturn items;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2368,
+        1456
+      ],
+      "id": "7070fbc0-e190-43ce-bae9-e75bb3759bbe",
+      "name": "Code in JavaScript"
+    }
+  ],
+  "pinData": {
+    "Spark Form (Submit Trigger)": [
+      {
+        "json": {
+          "notifier_email": "stephen@tonkaintl.com",
+          "story_seed": "Write a Tonka Blog article for cautious used Class 8 truck buyers that uses the mousetrap and 'free cheese' only as a light metaphor for risky, rushed deals. Focus mainly on practical inspection steps, research-based checklists, and how patience and a proper inspection process prevent expensive mistakes.",
+          "project_mode": "blog_post",
+          "target_brand": "tonka_blog",
+          "target_audience": "truck buyers who are cautious about getting burned on a used semi truck",
+          "fact_to_fiction": 15,
+          "creativity_to_reporter": 90,
+          "tone_strictness": 30,
+          "draft_length": "short",
+          "enable_research": true,
+          "gdocs_folder_id": "1EFwmu8YdaRT-yGGGm1kFv_8DIcVZ07re",
+          "output_blog_post": true,
+          "output_future_story_arc": true,
+          "output_visual_prompts": true,
+          "facts": "Most buyers do not take time to fully inspect their purchase"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Start Trigger (Webhook)": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Input Normalizer": {
+      "main": [
+        [
+          {
+            "node": "Project Mode Setter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Project Mode Setter": {
+      "main": [
+        [
+          {
+            "node": "Creative Sliders Setter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Creative Sliders Setter": {
+      "main": [
+        [
+          {
+            "node": "Cache Spark",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Genre Tone Router (Gemini)": {
+      "main": [
+        [
+          {
+            "node": "Parse Writers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Writer Branch Hub": {
+      "main": [
+        [
+          {
+            "node": "Writer Comedy Gate",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Writer Historic Gate",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Writer Biographer Gate",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Writer SciFi Gate",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Writer Documentary Gate",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Writer Action Gate",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Writer Researcher Gate",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge Citations",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "Attach Research To Notes",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Writer Comedy Gate": {
+      "main": [
+        [
+          {
+            "node": "Writer Comedy Brainstorm (OpenAI)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Normalize Comedy Notes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Writer Documentary Gate": {
+      "main": [
+        [
+          {
+            "node": "Writer Documentary Brainstorm (Gemini)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Normalize Documentary Notes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Writer Historic Gate": {
+      "main": [
+        [
+          {
+            "node": "Writer Historic Brainstorm (Gemini)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Normalize Historic Notes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Writer Biographer Gate": {
+      "main": [
+        [
+          {
+            "node": "Writer Biographer Brainstorm (Gemini)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Normalize Biographer Notes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Writer SciFi Gate": {
+      "main": [
+        [
+          {
+            "node": "Writer SciFi Brainstorm (OpenAI)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Normalize SciFi Notes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Writer Action Gate": {
+      "main": [
+        [
+          {
+            "node": "Writer Action Brainstorm (OpenAI)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Normalize Action Notes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Writer Researcher Gate": {
+      "main": [
+        [
+          {
+            "node": "Writer Researcher (Perplexity)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Normalize Research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Writer Comedy Brainstorm (OpenAI)": {
+      "main": [
+        [
+          {
+            "node": "Normalize Comedy Notes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Writer Historic Brainstorm (Gemini)": {
+      "main": [
+        [
+          {
+            "node": "Normalize Historic Notes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Writer Documentary Brainstorm (Gemini)": {
+      "main": [
+        [
+          {
+            "node": "Normalize Documentary Notes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Writer Notes": {
+      "main": [
+        [
+          {
+            "node": "Build Writer Panel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Attach Research To Notes": {
+      "main": [
+        [
+          {
+            "node": "Normalize Draft Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Writer Researcher (Perplexity)": {
+      "main": [
+        [
+          {
+            "node": "Normalize Research",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge Citations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Visual Prompts": {
+      "main": [
+        [
+          {
+            "node": "Art Director (OpenAI)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set Default Visual Prompts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Blog Post": {
+      "main": [
+        [
+          {
+            "node": "Social Media Director (OpenAI)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set Default Blog Post Generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Story Arc": {
+      "main": [
+        [
+          {
+            "node": "Future Story Arc Generator",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set Default Future Story Arc Generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Future Story Arc Generator": {
+      "main": [
+        [
+          {
+            "node": "Normalize Future Story Arc Generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Formatted Outputs": {
+      "main": [
+        [
+          {
+            "node": "Cache Final Draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cache Final Draft": {
+      "main": [
+        [
+          {
+            "node": "Prep Outputs gDoc",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Spark Form (Submit Trigger)": {
+      "main": [
+        [
+          {
+            "node": "Mode and Brand Overrides",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Router Context": {
+      "main": [
+        [
+          {
+            "node": "Writer Branch Hub",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Writers": {
+      "main": [
+        [
+          {
+            "node": "Merge Router Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Writer Biographer Brainstorm (Gemini)": {
+      "main": [
+        [
+          {
+            "node": "Normalize Biographer Notes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Writer Action Brainstorm (OpenAI)": {
+      "main": [
+        [
+          {
+            "node": "Normalize Action Notes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Documentary Notes": {
+      "main": [
+        [
+          {
+            "node": "Merge Writer Notes",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Normalize Action Notes": {
+      "main": [
+        [
+          {
+            "node": "Merge Writer Notes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Writer Panel": {
+      "main": [
+        [
+          {
+            "node": "Attach Research To Notes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Research": {
+      "main": [
+        [
+          {
+            "node": "Attach Research To Notes",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Normalize Draft Context": {
+      "main": [
+        [
+          {
+            "node": "Switch Target Brand",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch Target Brand": {
+      "main": [
+        [
+          {
+            "node": "Apply Project Mode Profile",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apply Project Mode Profile": {
+      "main": [
+        [
+          {
+            "node": "Head Writer Agent (OpenAI)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge Final Spark",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Normalize Head Writer": {
+      "main": [
+        [
+          {
+            "node": "Final Editor (OpenAI)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mode and Brand Overrides": {
+      "main": [
+        [
+          {
+            "node": "Input Normalizer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Biographer Notes": {
+      "main": [
+        [
+          {
+            "node": "Merge Writer Notes",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Normalize Comedy Notes": {
+      "main": [
+        [
+          {
+            "node": "Merge Writer Notes",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Normalize Historic Notes": {
+      "main": [
+        [
+          {
+            "node": "Merge Writer Notes",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "Normalize SciFi Notes": {
+      "main": [
+        [
+          {
+            "node": "Merge Writer Notes",
+            "type": "main",
+            "index": 5
+          }
+        ]
+      ]
+    },
+    "Cache Spark": {
+      "main": [
+        [
+          {
+            "node": "Genre Tone Router (Gemini)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge Router Context",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Writer SciFi Brainstorm (OpenAI)": {
+      "main": [
+        [
+          {
+            "node": "Normalize SciFi Notes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Citations": {
+      "main": [
+        [
+          {
+            "node": "If Notes gDoc",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Head Writer Agent (OpenAI)",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Head Writer Agent (OpenAI)": {
+      "main": [
+        [
+          {
+            "node": "Normalize Head Writer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Final Editor": {
+      "main": [
+        [
+          {
+            "node": "Merge Final Spark",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Notes gDoc": {
+      "main": [
+        [
+          {
+            "node": "Merge Notes for gDoc",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Final gDoc": {
+      "main": [
+        [
+          {
+            "node": "Merge Final for gDoc",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Final for gDoc": {
+      "main": [
+        [
+          {
+            "node": "Update Final gDoc",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Notes for gDoc": {
+      "main": [
+        [
+          {
+            "node": "Update Notes gDoc",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prep Final gDoc": {
+      "main": [
+        [
+          {
+            "node": "Create Final gDoc",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge Final for gDoc",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Prep Notes gDoc": {
+      "main": [
+        [
+          {
+            "node": "Create Notes gDoc",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge Notes for gDoc",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "If Notes gDoc": {
+      "main": [
+        [
+          {
+            "node": "Prep Notes gDoc",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Final gDoc": {
+      "main": [
+        [
+          {
+            "node": "Prep Final gDoc",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Final Spark": {
+      "main": [
+        [
+          {
+            "node": "Cache Final Spark",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Final Editor (OpenAI)": {
+      "main": [
+        [
+          {
+            "node": "Normalize Final Editor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Art Director (OpenAI)": {
+      "main": [
+        [
+          {
+            "node": "Normalize Art Director",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Art Director": {
+      "main": [
+        [
+          {
+            "node": "Join Visual Prompts Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Default Visual Prompts": {
+      "main": [
+        [
+          {
+            "node": "Join Visual Prompts Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Blog Post Generator": {
+      "main": [
+        [
+          {
+            "node": "Prune Summaries",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Future Story Arc Generator": {
+      "main": [
+        [
+          {
+            "node": "Prune Future Arcs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Default Blog Post Generator": {
+      "main": [
+        [
+          {
+            "node": "Join Visual Blog Post Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Default Future Story Arc Generator": {
+      "main": [
+        [
+          {
+            "node": "Join Future Story Arc Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cache Final Spark": {
+      "main": [
+        [
+          {
+            "node": "If Final gDoc",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "If Blog Post",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "If Visual Prompts",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "If Story Arc",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge Formatted Outputs",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Social Media Director (OpenAI)": {
+      "main": [
+        [
+          {
+            "node": "Normalize Blog Post Generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prune Summaries": {
+      "main": [
+        [
+          {
+            "node": "Join Visual Blog Post Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prune Future Arcs": {
+      "main": [
+        [
+          {
+            "node": "Join Future Story Arc Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prep Outputs gDoc": {
+      "main": [
+        [
+          {
+            "node": "Create Outputs gDoc",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge Outputs for gDoc1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Create Outputs gDoc": {
+      "main": [
+        [
+          {
+            "node": "Merge Outputs for gDoc1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Outputs for gDoc1": {
+      "main": [
+        [
+          {
+            "node": "Update Outputs gDoc",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Join Future Story Arc Output": {
+      "main": [
+        [
+          {
+            "node": "Merge Formatted Outputs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Join Visual Blog Post Output": {
+      "main": [
+        [
+          {
+            "node": "Merge Formatted Outputs",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Join Visual Prompts Output": {
+      "main": [
+        [
+          {
+            "node": "Merge Formatted Outputs",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Input Normalizer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "99028b73-4ec0-4646-bdb6-76fa0a35172d",
+  "meta": {
+    "instanceId": "162276b63273e7b8cbbc2d1bd76ec84991500f1000f36d3d8ed5f2ad0b071ef4"
+  },
+  "id": "DvbqxYDCW4AlEI8j",
+  "tags": []
+}

@@ -1,0 +1,12 @@
+{
+  "n8nNodeName": "Writer Biographer Brainstorm (Gemini)",
+  "n8nNodeType": "@n8n/n8n-nodes-langchain.googleGemini",
+  "provider": "gemini",
+  "model": null,
+  "temperature": 0.4,
+  "maxOutputTokens": null,
+  "topP": 0.8,
+  "jsonOutput": true,
+  "hasStructuredOutput": false,
+  "structuredOutputName": null
+}

@@ -1,0 +1,23 @@
+{
+  "type": "object",
+  "properties": {
+    "role": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "weight": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "role",
+    "notes",
+    "weight"
+  ],
+  "additionalProperties": false
+}

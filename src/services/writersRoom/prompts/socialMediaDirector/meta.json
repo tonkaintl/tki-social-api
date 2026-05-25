@@ -1,0 +1,12 @@
+{
+  "n8nNodeName": "Social Media Director (OpenAI)",
+  "n8nNodeType": "@n8n/n8n-nodes-langchain.openAi",
+  "provider": "openai",
+  "model": "gpt-4.1-mini-2025-04-14",
+  "temperature": 0.2,
+  "maxOutputTokens": null,
+  "topP": null,
+  "jsonOutput": false,
+  "hasStructuredOutput": true,
+  "structuredOutputName": null
+}

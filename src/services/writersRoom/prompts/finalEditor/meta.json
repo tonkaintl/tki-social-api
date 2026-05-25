@@ -1,0 +1,12 @@
+{
+  "n8nNodeName": "Final Editor (OpenAI)",
+  "n8nNodeType": "@n8n/n8n-nodes-langchain.openAi",
+  "provider": "openai",
+  "model": "gpt-4.1-mini",
+  "temperature": 0.2,
+  "maxOutputTokens": null,
+  "topP": 1,
+  "jsonOutput": false,
+  "hasStructuredOutput": true,
+  "structuredOutputName": "final_schema"
+}

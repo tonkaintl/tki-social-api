@@ -1,0 +1,41 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "visual_prompts": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "intent": {
+            "type": "string",
+            "enum": [
+              "hero",
+              "detail",
+              "process",
+              "environment",
+              "metaphor"
+            ]
+          },
+          "prompt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "intent",
+          "prompt"
+        ]
+      }
+    }
+  },
+  "required": [
+    "visual_prompts"
+  ]
+}

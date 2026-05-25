@@ -1,0 +1,12 @@
+{
+  "n8nNodeName": "Writer Researcher (Perplexity)",
+  "n8nNodeType": "n8n-nodes-base.perplexity",
+  "provider": "perplexity",
+  "model": "sonar-pro",
+  "temperature": 0.2,
+  "maxOutputTokens": 1200,
+  "topP": null,
+  "jsonOutput": true,
+  "hasStructuredOutput": false,
+  "structuredOutputName": null
+}

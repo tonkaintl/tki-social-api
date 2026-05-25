@@ -1,0 +1,12 @@
+{
+  "n8nNodeName": "Writer Historic Brainstorm (Gemini)",
+  "n8nNodeType": "@n8n/n8n-nodes-langchain.googleGemini",
+  "provider": "gemini",
+  "model": null,
+  "temperature": 0.3,
+  "maxOutputTokens": null,
+  "topP": 0.7,
+  "jsonOutput": true,
+  "hasStructuredOutput": false,
+  "structuredOutputName": null
+}
