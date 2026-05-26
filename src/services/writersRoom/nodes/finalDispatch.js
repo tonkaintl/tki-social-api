@@ -15,6 +15,11 @@ export function finalDispatch(ctx) {
   const blogPackage = ctx.blog_post_package || {};
 
   return {
+    ai_tells: ctx.ai_tells || {
+      severity_score: 0,
+      tells_count: 0,
+      tells_found: [],
+    },
     creative: ctx.creative || null,
     final_draft: {
       draft_markdown: finalDraft.draft_markdown || finalDraft.story || '',
