@@ -40,8 +40,16 @@ export const PLATFORM_BRANDS = {
 export const PLATFORM_BRANDS_VALUES = Object.values(PLATFORM_BRANDS);
 
 // Platform modes (drive the system_message for the Head Writer)
+// NOTE: keep in sync with PROJECT_MODE_CONFIGS in
+// services/writersRoom/profiles/projectModes.js — the Writer's Room
+// pipeline accepts any key from there, and the TonkaSparkPosts mongoose
+// model validates against this enum. A drift between the two causes
+// "is not a valid enum value" errors on spark-post save (the pipeline
+// runs but the production forward fails).
 export const PLATFORM_MODES = {
   BLOG_POST: 'blog_post',
+  DEFAULT_MODE: 'default_mode',
+  DISPATCH_ESSAY: 'dispatch_essay',
   FUTURE_STORY_ARC: 'future_story_arc',
   MIXED_ALLEGORY: 'mixed_allegory',
   NOVELLA_CHAPTER: 'novella_chapter',
@@ -76,6 +84,7 @@ export const WRITING_GENRES_VALUES = Object.values(WRITING_GENRES);
 // run a single node in isolation. Each value matches an export in
 // src/services/writersRoom/nodes/.
 export const PIPELINE_NODE = {
+  AI_TELLS_CHECK: 'aiTellsCheck',
   ART_DIRECTOR: 'artDirector',
   BUILD_WRITER_PANEL: 'buildWriterPanel',
   DRAFT_CONTEXT: 'draftContext',
@@ -220,6 +229,59 @@ export const RUN_PAGINATION = {
   DEFAULT_LIMIT: 25,
   DEFAULT_PAGE: 1,
   MAX_LIMIT: 100,
+};
+
+// ----------------------------------------------------------------------------
+// AI-tells admin — user-managed dictionary of patterns that flag AI slop
+// (em-dash inspirational closes, "long haul", semicolon-metaphors) or
+// brand-forbidden words ("yellow iron", "fluff"). Runs as a pipeline step
+// after finalEditor; tells_count >= threshold downgrades the run to
+// `partial` and skips the spark-post forward.
+// ----------------------------------------------------------------------------
+
+export const TELL_CATEGORY = {
+  // Generic LLM giveaways (em-dash pivots, semicolon-metaphors, etc.)
+  AI_TELL: 'ai_tell',
+  // Words a real broker / Tonka buyer never says
+  BRAND_FORBIDDEN: 'brand_forbidden',
+  // Response preamble bleed-through ("Here is the JSON", "Certainly!")
+  PREAMBLE: 'preamble',
+  // Writer-talking-about-writing meta language ("fluff", "long-form content")
+  WEASEL_WORDS: 'weasel_words',
+};
+
+export const TELL_CATEGORY_VALUES = Object.values(TELL_CATEGORY);
+
+export const TELL_PATTERN_TYPE = {
+  REGEX: 'regex',
+  SUBSTRING: 'substring',
+};
+
+export const TELL_PATTERN_TYPE_VALUES = Object.values(TELL_PATTERN_TYPE);
+
+export const TELL_SEVERITY = {
+  HIGH: 'high', // 5 points — definite slop ("a buyer I knew")
+  LOW: 'low', //  1 point — borderline ("yellow iron")
+  MEDIUM: 'medium', // 3 points — strong tell ("the long haul")
+};
+
+export const TELL_SEVERITY_VALUES = Object.values(TELL_SEVERITY);
+
+export const TELL_SEVERITY_SCORE = {
+  high: 5,
+  low: 1,
+  medium: 3,
+};
+
+// Default threshold — when the sum of severity scores for found tells
+// reaches this, the run is downgraded to `partial` and not forwarded to
+// tonka_spark_posts. Override via WRITERS_ROOM_TELLS_THRESHOLD.
+export const TELL_DEFAULT_THRESHOLD = 10;
+
+export const TELL_PAGINATION = {
+  DEFAULT_LIMIT: 50,
+  DEFAULT_PAGE: 1,
+  MAX_LIMIT: 200,
 };
 
 // Schema field names (for consistent referencing)

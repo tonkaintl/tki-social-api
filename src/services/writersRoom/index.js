@@ -35,6 +35,7 @@
 // Returns: { ok, output, trace, runId, sparkPostDocumentId?, error? }
 // ----------------------------------------------------------------------------
 
+import { config } from '../../config/env.js';
 import {
   PIPELINE_ERROR_CODE,
   RUN_STATUS,
@@ -44,6 +45,7 @@ import { logger } from '../../utils/logger.js';
 import { saveTonkaSparkPost } from '../tonkaSparkPost.service.js';
 
 import { activeWriterRoles } from './decisions.js';
+import { aiTellsCheck } from './nodes/aiTellsCheck.js';
 import { defaultVisualPrompts, artDirector } from './nodes/artDirector.js';
 import { buildWriterPanel } from './nodes/buildWriterPanel.js';
 import { draftContext } from './nodes/draftContext.js';
@@ -202,6 +204,14 @@ export async function runPipeline(input = {}, options = {}) {
     ctx = await step(trace, runId, 'finalEditor', () => finalEditor(ctx));
     await recordSnapshot(runId, { final_draft: ctx.final_draft });
 
+    // 8.5. AI-tells check — scans the edited draft against the admin-
+    //      managed tells dictionary. Attaches ctx.ai_tells = { tells_found,
+    //      tells_count, severity_score }. Never throws; if the dictionary
+    //      is empty or Mongo isn't connected, returns zero matches.
+    //      Threshold-driven downgrade happens after finalDispatch below.
+    ctx = await step(trace, runId, 'aiTellsCheck', () => aiTellsCheck(ctx));
+    await recordSnapshot(runId, { ai_tells: ctx.ai_tells });
+
     // 9. Optional output fans. Each is gated by the input flag.
     if (ctx.outputs?.visual_prompts) {
       ctx = await step(trace, runId, 'artDirector', () => artDirector(ctx));
@@ -234,14 +244,38 @@ export async function runPipeline(input = {}, options = {}) {
     );
 
     // 11. Forward to tonka_spark_posts (saves doc + sends notification
-    //     email). Skipped if the caller asked us not to (e.g. dry runs).
-    //     Forwarding failure does NOT fail the whole run — we still
-    //     consider the pipeline succeeded and surface the spark-post
-    //     error in the trace as PARTIAL status.
+    //     email). Skipped if:
+    //       - the caller asked us not to (forwardToSparkPost: false), OR
+    //       - the AI-tells severity score is >= the configured threshold,
+    //         in which case we downgrade to PARTIAL and skip the email so
+    //         slop drafts don't get auto-published at 6am.
     let sparkPostDocId = null;
     let finalStatus = RUN_STATUS.SUCCEEDED;
 
-    if (forwardToSparkPost) {
+    const tellsScore = ctx.ai_tells?.severity_score || 0;
+    const tellsThreshold = config.WRITERS_ROOM_TELLS_THRESHOLD;
+    const tellsTrippedThreshold = tellsScore >= tellsThreshold;
+
+    if (tellsTrippedThreshold) {
+      logger.warn(
+        '[WritersRoom] AI-tells threshold tripped — downgrading run to partial',
+        {
+          runId: runId?.toString(),
+          tells_count: ctx.ai_tells?.tells_count,
+          tells_score: tellsScore,
+          threshold: tellsThreshold,
+        }
+      );
+      finalStatus = RUN_STATUS.PARTIAL;
+      const skipEntry = {
+        ms: 0,
+        name: 'forwardToSparkPost',
+        ok: false,
+        skipReason: `ai_tells_threshold (score ${tellsScore} >= ${tellsThreshold})`,
+      };
+      trace.push(skipEntry);
+      await appendTrace(runId, skipEntry);
+    } else if (forwardToSparkPost) {
       try {
         const sparkPostStart = Date.now();
         const doc = await saveTonkaSparkPost(payload, {
