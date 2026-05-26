@@ -14,9 +14,11 @@ import {
   replaceProposedPostMedia,
   updateCampaign,
   updateProposedPosts,
+  uploadCampaignMedia,
 } from '../controllers/campaigns/methods.js';
 import { platformsControllerGetPlatforms } from '../controllers/platforms/methods.js';
 import { verifyToken } from '../middleware/auth.bearer.js';
+import { uploadMedia } from '../middleware/upload.js';
 
 // ----------------------------------------------------------------------------
 const router = express.Router();
@@ -33,6 +35,7 @@ router.use(verifyToken);
 // ----------------------------------------------------------------------------
 router.post('/', createSocialCampaign);
 router.post('/:stockNumber/media', addCampaignMedia);
+router.post('/:stockNumber/media/upload', uploadMedia, uploadCampaignMedia);
 
 // ----------------------------------------------------------------------------
 // GET Routes

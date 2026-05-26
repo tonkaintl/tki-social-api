@@ -8,6 +8,7 @@ import { deleteProposedPosts } from './methods/campaigns.controller.patch.propos
 // Methods index for campaign controllers
 import { createSocialCampaign } from './methods/campaigns.controller.post.create.js';
 import { addCampaignMedia } from './methods/campaigns.controller.post.media.add.js';
+import { uploadCampaignMedia } from './methods/campaigns.controller.post.media.upload.js';
 import { replaceProposedPostMedia } from './methods/campaigns.controller.post.proposed.posts.media.replace.js';
 import { updateProposedPosts } from './methods/campaigns.controller.post.proposed.posts.update.js';
 import { updateCampaign } from './methods/campaigns.controller.post.update.js';
@@ -29,4 +30,5 @@ export {
   replaceProposedPostMedia,
   updateCampaign,
   updateProposedPosts,
+  uploadCampaignMedia,
 };
