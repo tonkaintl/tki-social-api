@@ -36,7 +36,7 @@ const bodySchema = z.object({
 // using it inside an R2 key. Keep extension intact.
 function sanitizeFilename(name) {
   if (!name) return 'file';
-  return name.replace(/[^\w.\-]+/g, '_').slice(0, 120);
+  return name.replace(/[^\w.-]+/g, '_').slice(0, 120);
 }
 
 export const uploadCampaignMedia = async (req, res) => {

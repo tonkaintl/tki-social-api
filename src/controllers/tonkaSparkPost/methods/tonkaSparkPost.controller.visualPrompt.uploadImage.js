@@ -31,7 +31,7 @@ const bodySchema = z.object({
 
 function sanitizeFilename(name) {
   if (!name) return 'image';
-  return name.replace(/[^\w.\-]+/g, '_').slice(0, 120);
+  return name.replace(/[^\w.-]+/g, '_').slice(0, 120);
 }
 
 export const uploadVisualPromptImage = async (req, res) => {
