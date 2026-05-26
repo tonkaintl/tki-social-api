@@ -1,0 +1,12 @@
+{
+  "n8nNodeName": "Writer Comedy Brainstorm (OpenAI)",
+  "n8nNodeType": "@n8n/n8n-nodes-langchain.openAi",
+  "provider": "openai",
+  "model": "gpt-5-chat-latest",
+  "temperature": 0.8,
+  "maxOutputTokens": null,
+  "topP": 0.9,
+  "jsonOutput": false,
+  "hasStructuredOutput": true,
+  "structuredOutputName": "comedy_schema"
+}

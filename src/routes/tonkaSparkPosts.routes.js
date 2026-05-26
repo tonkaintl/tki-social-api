@@ -5,8 +5,11 @@ import {
   deleteVisualPromptImage,
   getTonkaSparkPostById,
   getTonkaSparkPostList,
+  updateFinalDraft,
+  uploadVisualPromptImage,
 } from '../controllers/tonkaSparkPost/methods.js';
 import { verifyToken } from '../middleware/auth.bearer.js';
+import { uploadImage } from '../middleware/upload.js';
 
 // ----------------------------------------------------------------------------
 const router = express.Router();
@@ -22,9 +25,19 @@ router.get('/', getTonkaSparkPostList);
 router.get('/:id', getTonkaSparkPostById);
 
 // ----------------------------------------------------------------------------
+// Final Draft Routes
+// ----------------------------------------------------------------------------
+router.patch('/:id/final-draft', updateFinalDraft);
+
+// ----------------------------------------------------------------------------
 // Visual Prompts Routes
 // ----------------------------------------------------------------------------
 router.post('/:id/visual-prompts/:promptId/images', addVisualPromptImage);
+router.post(
+  '/:id/visual-prompts/:promptId/images/upload',
+  uploadImage,
+  uploadVisualPromptImage
+);
 router.delete(
   '/:id/visual-prompts/:promptId/images/:imageUrl',
   deleteVisualPromptImage

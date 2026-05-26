@@ -24,6 +24,7 @@ import {
   tonkaSparksRoutes,
   webhooksRoutes,
   writersRoomAdsRoutes,
+  writersRoomRoutes,
 } from './routes/index.js';
 import { logger } from './utils/logger.js';
 
@@ -80,6 +81,7 @@ app.use('/api/platforms', platformsRoutes);
 app.use('/api/tonka-spark', tonkaSparksRoutes);
 app.use('/api/tonka-spark-posts', tonkaSparkPostsRoutes);
 app.use('/api/webhooks', webhooksRoutes);
+app.use('/api/writers-room', writersRoomRoutes);
 app.use('/api/writers-room-ads', writersRoomAdsRoutes);
 
 // 404 handler

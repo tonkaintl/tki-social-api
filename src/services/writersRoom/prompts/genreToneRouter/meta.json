@@ -1,0 +1,12 @@
+{
+  "n8nNodeName": "Genre Tone Router (Gemini)",
+  "n8nNodeType": "@n8n/n8n-nodes-langchain.googleGemini",
+  "provider": "gemini",
+  "model": null,
+  "temperature": 0.3,
+  "maxOutputTokens": 1024,
+  "topP": 0.9,
+  "jsonOutput": true,
+  "hasStructuredOutput": false,
+  "structuredOutputName": null
+}

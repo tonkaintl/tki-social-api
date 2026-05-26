@@ -9,9 +9,22 @@ const defaultTonkaSparkRecipients =
   process.env.PRIORITY_QUEUE_ALERT_EMAILS ||
   'tki-agent@tonkaintl.com';
 
+// zod's `.default()` only fires when the value is `undefined` — but dotenv
+// loads `KEY=` (empty assignment) as an empty string, which would pass
+// through z.string() validation as a valid value and slip past the default.
+// Anywhere we want "missing or blank both fall back to the default," use
+// this helper instead of plain `.default()`.
+const nonEmptyStringWithDefault = defaultVal =>
+  z.preprocess(
+    v => (typeof v === 'string' && v.length === 0 ? undefined : v),
+    z.string().default(defaultVal)
+  );
+
 const envSchema = z.object({
   ANTHROPIC_API_KEY: z.string().optional(),
-  ANTHROPIC_MODEL: z.string().default('claude-haiku-4-5'),
+  // Default Anthropic model. Not currently used by the Writer's Room
+  // pipeline (which is OpenAI/Gemini/Perplexity); kept for other services.
+  ANTHROPIC_MODEL: nonEmptyStringWithDefault('claude-haiku-4-5'),
   BINDER_API_URL: z.string().url().default('http://localhost:4100'),
   BINDER_INTERNAL_SECRET: z.string().min(1).default('test-binder-secret'),
   CLERK_LONG_LIVED_ADMIN_EMAIL: z
@@ -64,6 +77,13 @@ const envSchema = z.object({
     .transform(Number)
     .pipe(z.number().min(1))
     .default(10),
+  GEMINI_API_KEY: z.string().optional(),
+  // Default Gemini model the Writer's Room router falls back to when a
+  // prompt's meta.json doesn't specify one. Per-prompt model in meta.json
+  // wins — this is only the floor.
+  // gemini-2.5-flash is the current cheap/fast tier. gemini-2.0-flash-lite
+  // was retired for new users in 2025.
+  GEMINI_MODEL: nonEmptyStringWithDefault('gemini-2.5-flash'),
   GMAIL_FROM_EMAIL: z.string().email().optional(),
   GMAIL_FROM_NAME: z.string().default('Tonka Agent'),
   GMAIL_IMPERSONATED_USER: z.string().email().optional(),
@@ -94,6 +114,15 @@ const envSchema = z.object({
   NODE_ENV: z
     .enum(['development', 'production', 'test'])
     .default('development'),
+  OPENAI_API_KEY: z.string().optional(),
+  // Default OpenAI model the Writer's Room router falls back to when a
+  // prompt's meta.json doesn't specify one. Per-prompt model in meta.json
+  // wins — this is only the floor.
+  OPENAI_MODEL: nonEmptyStringWithDefault('gpt-4o-mini'),
+  PERPLEXITY_API_KEY: z.string().optional(),
+  // Default Perplexity model the researcher node uses. sonar-pro gives
+  // broader coverage with citations; swap to sonar for cheaper/faster runs.
+  PERPLEXITY_MODEL: nonEmptyStringWithDefault('sonar-pro'),
   PORT: z
     .string()
     .transform(Number)
@@ -101,6 +130,11 @@ const envSchema = z.object({
     .default(8080),
   PORTAL_API_URL: z.string().url().default('http://localhost:4200'),
   PORTAL_INTERNAL_SECRET: z.string().min(1).default('test_portal_secret'),
+  R2_ACCESS_KEY_ID: z.string().optional(),
+  R2_ACCOUNT_ID: z.string().optional(),
+  R2_BUCKET: z.string().optional(),
+  R2_PUBLIC_BASE_URL: z.string().url().optional(),
+  R2_SECRET_ACCESS_KEY: z.string().optional(),
   THREADS_ACCESS_TOKEN: z.string().optional(),
   THREADS_CLIENT_ID: z.string().optional(),
   THREADS_CLIENT_SECRET: z.string().optional(),
@@ -117,6 +151,13 @@ const envSchema = z.object({
     .transform(val => val === 'true')
     .pipe(z.boolean())
     .default(true),
+  // Writers Room pipeline (n8n replacement) — feature flag for the cron job.
+  // Set false in non-prod env to keep the cron from triggering pipeline runs.
+  WRITERS_ROOM_CRON_ENABLED: z
+    .string()
+    .transform(val => val === 'true')
+    .pipe(z.boolean())
+    .default('false'),
   YOUTUBE_ACCESS_TOKEN: z.string().optional(),
   YOUTUBE_CLIENT_ID: z.string().optional(),
   YOUTUBE_CLIENT_SECRET: z.string().optional(),

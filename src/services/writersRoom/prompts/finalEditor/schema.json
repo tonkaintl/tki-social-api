@@ -1,0 +1,28 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "role": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "thesis": {
+      "type": "string"
+    },
+    "story": {
+      "type": "string"
+    },
+    "summary": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "role",
+    "title",
+    "thesis",
+    "story",
+    "summary"
+  ]
+}

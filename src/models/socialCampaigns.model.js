@@ -33,6 +33,7 @@ var socialCampaignsSchema = new Schema({
         enum: MEDIA_TYPE_VALUES,
         type: String,
       },
+      r2_key: { type: String },
       size: { type: Number },
       tags: [{ type: String }],
       url: { required: true, type: String },

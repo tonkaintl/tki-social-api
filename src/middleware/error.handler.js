@@ -56,6 +56,23 @@ export function errorHandler(error, req, res, _next) {
       message: 'Request validation failed',
       requestId: req.id,
     };
+  } else if (error.name === 'MulterError') {
+    // Multer's built-in errors: LIMIT_FILE_SIZE, LIMIT_UNEXPECTED_FILE, etc.
+    statusCode = 400;
+    errorResponse = {
+      code: error.code || 'UPLOAD_ERROR',
+      field: error.field,
+      message: error.message,
+      requestId: req.id,
+    };
+  } else if (error.name === 'MulterUploadError') {
+    // Our fileFilter rejections (unsupported mime, etc.)
+    statusCode = 400;
+    errorResponse = {
+      code: error.code || 'UPLOAD_ERROR',
+      message: error.message,
+      requestId: req.id,
+    };
   } else if (
     error.name === 'SyntaxError' &&
     error.type === 'entity.parse.failed'

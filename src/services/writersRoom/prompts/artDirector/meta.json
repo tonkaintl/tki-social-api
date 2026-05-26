@@ -1,0 +1,12 @@
+{
+  "n8nNodeName": "Art Director (OpenAI)",
+  "n8nNodeType": "@n8n/n8n-nodes-langchain.openAi",
+  "provider": "openai",
+  "model": "gpt-5-mini",
+  "temperature": null,
+  "maxOutputTokens": null,
+  "topP": null,
+  "jsonOutput": false,
+  "hasStructuredOutput": true,
+  "structuredOutputName": "art_directory_schema"
+}

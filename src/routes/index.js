@@ -10,6 +10,7 @@ import tonkaDispatchRankingsRoutes from './tonkaDispatchRankings.routes.js';
 import tonkaSparkPostsRoutes from './tonkaSparkPosts.routes.js';
 import tonkaSparksRoutes from './tonkaSparks.routes.js';
 import webhooksRoutes from './webhooks.routes.js';
+import writersRoomRoutes from './writersRoom.routes.js';
 import writersRoomAdsRoutes from './writersRoomAds.routes.js';
 
 // ----------------------------------------------------------------------------
@@ -28,4 +29,5 @@ export {
   tonkaSparksRoutes,
   webhooksRoutes,
   writersRoomAdsRoutes,
+  writersRoomRoutes,
 };
