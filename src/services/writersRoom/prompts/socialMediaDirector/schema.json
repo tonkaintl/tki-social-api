@@ -1,21 +1,12 @@
 {
   "type": "object",
   "additionalProperties": false,
-  "required": [
-    "final_draft",
-    "format_blog_post_generator"
-  ],
+  "required": ["final_draft", "format_blog_post_generator"],
   "properties": {
     "final_draft": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "role",
-        "title",
-        "thesis",
-        "draft_markdown",
-        "summary"
-      ],
+      "required": ["role", "title", "thesis", "draft_markdown", "summary"],
       "properties": {
         "role": {
           "type": "string"
@@ -37,10 +28,7 @@
     "format_blog_post_generator": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "title_variations",
-        "platform_summaries"
-      ],
+      "required": ["title_variations", "platform_summaries"],
       "properties": {
         "title_variations": {
           "type": "array",
@@ -53,13 +41,7 @@
         "platform_summaries": {
           "type": "object",
           "additionalProperties": false,
-          "required": [
-            "youtube",
-            "linkedin",
-            "x",
-            "meta",
-            "tonkaintl"
-          ],
+          "required": ["youtube", "linkedin", "x", "meta", "tonkaintl"],
           "properties": {
             "youtube": {
               "type": "string"

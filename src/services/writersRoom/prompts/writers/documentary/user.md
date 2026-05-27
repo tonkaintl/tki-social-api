@@ -1,4 +1,5 @@
 Context:
+
 - Story seed: {{story_seed}}
 - Project mode: {{project_mode}}
 - Brand: {{project.brand}}
@@ -8,6 +9,7 @@ Context:
 - Your documentary weight: {{writers.documentary.weight}}
 
 Task:
+
 1. Generate concise documentary-style insights reflecting the factual, real-world dimension of the story seed.
 2. Emphasize:
    - context,
@@ -21,10 +23,10 @@ Task:
 Return ONLY valid JSON:
 
 {
-  "role": "documentary",
-  "notes": [
-    "...",
-    "..."
-  ],
-  "weight": {{writers.documentary.weight}}
+"role": "documentary",
+"notes": [
+"...",
+"..."
+],
+"weight": {{writers.documentary.weight}}
 }

@@ -1,16 +1,12 @@
 {
   "type": "object",
   "additionalProperties": false,
-  "required": [
-    "future_story_arc_generator"
-  ],
+  "required": ["future_story_arc_generator"],
   "properties": {
     "future_story_arc_generator": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "arcs"
-      ],
+      "required": ["arcs"],
       "properties": {
         "arcs": {
           "type": "array",

@@ -7,10 +7,7 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        -2144,
-        1360
-      ],
+      "position": [-2144, 1360],
       "id": "c079c514-a159-41ae-a0e8-441a7642ffa3",
       "name": "Input Normalizer"
     },
@@ -23,10 +20,7 @@
       },
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
-      "position": [
-        -2592,
-        1456
-      ],
+      "position": [-2592, 1456],
       "id": "9d01e7c2-a063-44aa-a4bf-f60e6a9235c0",
       "name": "Start Trigger (Webhook)",
       "webhookId": "b5d7c257-070c-4934-8db9-1149daeffa2d"
@@ -109,10 +103,7 @@
       },
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
-      "position": [
-        -1920,
-        1360
-      ],
+      "position": [-1920, 1360],
       "id": "68121d8d-ce87-4e51-8e9c-73b5c777b1f5",
       "name": "Project Mode Setter"
     },
@@ -155,10 +146,7 @@
       },
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
-      "position": [
-        -1696,
-        1360
-      ],
+      "position": [-1696, 1360],
       "id": "cfd602bf-aad7-4e62-ac59-f4515ce8a52a",
       "name": "Creative Sliders Setter"
     },
@@ -196,10 +184,7 @@
       },
       "type": "@n8n/n8n-nodes-langchain.googleGemini",
       "typeVersion": 1,
-      "position": [
-        -1248,
-        1296
-      ],
+      "position": [-1248, 1296],
       "id": "41cb2c6e-5869-4588-a616-4f890db66ff4",
       "name": "Genre Tone Router (Gemini)"
     },
@@ -209,10 +194,7 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        -448,
-        1360
-      ],
+      "position": [-448, 1360],
       "id": "11a53ec7-2d40-4031-841d-dff6a12977d6",
       "name": "Writer Branch Hub"
     },
@@ -243,10 +225,7 @@
       },
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
-      "position": [
-        -224,
-        656
-      ],
+      "position": [-224, 656],
       "id": "f3569cb2-fb8e-4b2b-922b-b9313b57af11",
       "name": "Writer Comedy Gate"
     },
@@ -277,10 +256,7 @@
       },
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
-      "position": [
-        -224,
-        1232
-      ],
+      "position": [-224, 1232],
       "id": "9501be0d-22e8-4878-84a4-c431ce117469",
       "name": "Writer Historic Gate"
     },
@@ -311,10 +287,7 @@
       },
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
-      "position": [
-        -224,
-        368
-      ],
+      "position": [-224, 368],
       "id": "07845f43-92cf-4b64-96a1-9a68b596de07",
       "name": "Writer Biographer Gate"
     },
@@ -345,10 +318,7 @@
       },
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
-      "position": [
-        -224,
-        1632
-      ],
+      "position": [-224, 1632],
       "id": "805735c6-c266-4eff-8416-85a9410f9852",
       "name": "Writer SciFi Gate"
     },
@@ -379,10 +349,7 @@
       },
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
-      "position": [
-        -224,
-        944
-      ],
+      "position": [-224, 944],
       "id": "2d21fa81-9fbb-4492-9f9d-abe9d4b162a7",
       "name": "Writer Documentary Gate"
     },
@@ -413,10 +380,7 @@
       },
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
-      "position": [
-        -224,
-        80
-      ],
+      "position": [-224, 80],
       "id": "7fb574fe-1fae-48a3-9a8b-b4802c824083",
       "name": "Writer Action Gate"
     },
@@ -454,10 +418,7 @@
       },
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 2,
-      "position": [
-        0,
-        576
-      ],
+      "position": [0, 576],
       "id": "4208cddc-f58e-4826-809c-0b9fe1e57ca2",
       "name": "Writer Comedy Brainstorm (OpenAI)"
     },
@@ -490,10 +451,7 @@
       },
       "type": "@n8n/n8n-nodes-langchain.googleGemini",
       "typeVersion": 1,
-      "position": [
-        0,
-        864
-      ],
+      "position": [0, 864],
       "id": "58e57a45-0817-4c31-9e60-33c17572d025",
       "name": "Writer Documentary Brainstorm (Gemini)"
     },
@@ -526,10 +484,7 @@
       },
       "type": "@n8n/n8n-nodes-langchain.googleGemini",
       "typeVersion": 1,
-      "position": [
-        0,
-        1152
-      ],
+      "position": [0, 1152],
       "id": "7403934b-d416-495e-88d0-673c69262ca2",
       "name": "Writer Historic Brainstorm (Gemini)"
     },
@@ -560,10 +515,7 @@
       },
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
-      "position": [
-        -224,
-        1904
-      ],
+      "position": [-224, 1904],
       "id": "661208ec-4a3e-4262-9a5a-96fab450f56d",
       "name": "Writer Researcher Gate"
     },
@@ -573,10 +525,7 @@
       },
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
-      "position": [
-        576,
-        720
-      ],
+      "position": [576, 720],
       "id": "57e044ce-39ca-4ee2-aefd-2942df263b24",
       "name": "Merge Writer Notes"
     },
@@ -586,10 +535,7 @@
       },
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
-      "position": [
-        1024,
-        1408
-      ],
+      "position": [1024, 1408],
       "id": "c1cc8500-952d-4742-97d2-ad9b494ac88d",
       "name": "Attach Research To Notes"
     },
@@ -616,10 +562,7 @@
       },
       "type": "n8n-nodes-base.perplexity",
       "typeVersion": 1,
-      "position": [
-        64,
-        1968
-      ],
+      "position": [64, 1968],
       "id": "6d742577-3f0c-46bc-8377-c2b199c24026",
       "name": "Writer Researcher (Perplexity)"
     },
@@ -649,10 +592,7 @@
       },
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
-      "position": [
-        3520,
-        1040
-      ],
+      "position": [3520, 1040],
       "id": "ea422721-f355-463a-8938-85dba86687e8",
       "name": "If Blog Post"
     },
@@ -682,10 +622,7 @@
       },
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
-      "position": [
-        3808,
-        1520
-      ],
+      "position": [3808, 1520],
       "id": "adefa997-46ed-4e9f-a9b9-0608aa63a9b7",
       "name": "If Visual Prompts"
     },
@@ -715,10 +652,7 @@
       },
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
-      "position": [
-        3520,
-        656
-      ],
+      "position": [3520, 656],
       "id": "730de635-27e8-4386-874b-6c78b8ffc3e4",
       "name": "If Story Arc"
     },
@@ -753,10 +687,7 @@
       },
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 2,
-      "position": [
-        3744,
-        464
-      ],
+      "position": [3744, 464],
       "id": "79c70a89-050d-4044-83d5-5d04810f4746",
       "name": "Future Story Arc Generator"
     },
@@ -766,10 +697,7 @@
       },
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
-      "position": [
-        4896,
-        1264
-      ],
+      "position": [4896, 1264],
       "id": "c47c228f-b405-47ba-b1de-023a3c03385c",
       "name": "Merge Formatted Outputs"
     },
@@ -779,10 +707,7 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        5120,
-        1296
-      ],
+      "position": [5120, 1296],
       "id": "0cd27b95-5f40-4a71-b89b-10022445a47d",
       "name": "Cache Final Draft"
     },
@@ -1038,10 +963,7 @@
       },
       "type": "n8n-nodes-base.formTrigger",
       "typeVersion": 2.3,
-      "position": [
-        -2592,
-        1264
-      ],
+      "position": [-2592, 1264],
       "id": "c14e6f64-0e19-42f6-aa9f-5f5c5b0f62dc",
       "name": "Spark Form (Submit Trigger)",
       "webhookId": "b8a67dce-aca2-478c-b443-33a43e0163f3"
@@ -1054,10 +976,7 @@
       },
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
-      "position": [
-        -672,
-        1360
-      ],
+      "position": [-672, 1360],
       "id": "48b2813f-33f8-4377-b577-99c296929f4a",
       "name": "Merge Router Context"
     },
@@ -1083,10 +1002,7 @@
       },
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
-      "position": [
-        -896,
-        1296
-      ],
+      "position": [-896, 1296],
       "id": "f62cebae-3734-4cec-9e3a-3658b4dc6d67",
       "name": "Parse Writers"
     },
@@ -1119,10 +1035,7 @@
       },
       "type": "@n8n/n8n-nodes-langchain.googleGemini",
       "typeVersion": 1,
-      "position": [
-        0,
-        288
-      ],
+      "position": [0, 288],
       "id": "4eb966fe-bab9-42b2-b337-41159b509a61",
       "name": "Writer Biographer Brainstorm (Gemini)"
     },
@@ -1160,10 +1073,7 @@
       },
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 2,
-      "position": [
-        0,
-        0
-      ],
+      "position": [0, 0],
       "id": "254c1da6-7f40-44fc-bc9d-c4f96659790c",
       "name": "Writer Action Brainstorm (OpenAI)"
     },
@@ -1173,10 +1083,7 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        352,
-        944
-      ],
+      "position": [352, 944],
       "id": "ae068c61-66c9-4a6b-9153-2d723c50c952",
       "name": "Normalize Documentary Notes"
     },
@@ -1186,10 +1093,7 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        352,
-        80
-      ],
+      "position": [352, 80],
       "id": "ba3dc1df-b57d-4bf3-8f65-4c65cc994bda",
       "name": "Normalize Action Notes"
     },
@@ -1199,10 +1103,7 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        800,
-        784
-      ],
+      "position": [800, 784],
       "id": "66798584-e8cb-4a58-bf92-10e4fe28a1a4",
       "name": "Build Writer Panel"
     },
@@ -1212,10 +1113,7 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        352,
-        1856
-      ],
+      "position": [352, 1856],
       "id": "210558e9-67a7-40fd-b794-5f9a295c97e6",
       "name": "Normalize Research"
     },
@@ -1225,10 +1123,7 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        1248,
-        1424
-      ],
+      "position": [1248, 1424],
       "id": "c0e25887-c218-423f-a43f-5d3f210fae92",
       "name": "Normalize Draft Context"
     },
@@ -1241,10 +1136,7 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [
-        -1856,
-        656
-      ],
+      "position": [-1856, 656],
       "id": "4e9685c4-56ba-4470-8578-b4987ea52434",
       "name": "Sticky Note"
     },
@@ -1257,10 +1149,7 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [
-        -2176,
-        704
-      ],
+      "position": [-2176, 704],
       "id": "4fcba7d2-1bb2-4c00-8474-37075261675e",
       "name": "Sticky Note1"
     },
@@ -1270,10 +1159,7 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        1472,
-        1424
-      ],
+      "position": [1472, 1424],
       "id": "4fffa601-6687-4f33-b6fd-4a61a51c925f",
       "name": "Switch Target Brand"
     },
@@ -1283,10 +1169,7 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        1696,
-        1424
-      ],
+      "position": [1696, 1424],
       "id": "442969da-31d7-4eb6-9618-dadbafd3ddca",
       "name": "Apply Project Mode Profile"
     },
@@ -1296,10 +1179,7 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        2272,
-        1248
-      ],
+      "position": [2272, 1248],
       "id": "3ad8f5de-4d77-4b88-b00b-20afb348ec85",
       "name": "Normalize Head Writer"
     },
@@ -1309,10 +1189,7 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        -2368,
-        1264
-      ],
+      "position": [-2368, 1264],
       "id": "6e88a273-a748-4a8b-8344-03f8e64e37a1",
       "name": "Mode and Brand Overrides"
     },
@@ -1323,10 +1200,7 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [
-        -1536,
-        688
-      ],
+      "position": [-1536, 688],
       "id": "8e11aafd-0e53-47b4-a5e5-15a8f5d5c75a",
       "name": "Sticky Note2"
     },
@@ -1336,10 +1210,7 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        352,
-        368
-      ],
+      "position": [352, 368],
       "id": "41f4e9ba-0700-4bca-a428-d30555f05ed5",
       "name": "Normalize Biographer Notes"
     },
@@ -1349,10 +1220,7 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        352,
-        656
-      ],
+      "position": [352, 656],
       "id": "2a98262e-64c5-47e8-a519-6c34e950ed9d",
       "name": "Normalize Comedy Notes"
     },
@@ -1362,10 +1230,7 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        352,
-        1232
-      ],
+      "position": [352, 1232],
       "id": "f54c2ca9-ac0e-43b2-91e6-7b98f3a5ffe4",
       "name": "Normalize Historic Notes"
     },
@@ -1375,10 +1240,7 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        352,
-        1632
-      ],
+      "position": [352, 1632],
       "id": "a7333598-2ea9-4489-b93c-a37032cbace6",
       "name": "Normalize SciFi Notes"
     },
@@ -1389,10 +1251,7 @@
       },
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
-      "position": [
-        -1472,
-        1360
-      ],
+      "position": [-1472, 1360],
       "id": "3b71b234-6601-4d6e-bd74-5d776b1815fb",
       "name": "Cache Spark"
     },
@@ -1430,10 +1289,7 @@
       },
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 2,
-      "position": [
-        0,
-        1568
-      ],
+      "position": [0, 1568],
       "id": "7b8e8faa-6290-4168-959a-fbbd46151dc2",
       "name": "Writer SciFi Brainstorm (OpenAI)"
     },
@@ -1445,10 +1301,7 @@
       },
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
-      "position": [
-        352,
-        2096
-      ],
+      "position": [352, 2096],
       "id": "b673896f-5c1d-4d54-90cb-e349d90733f3",
       "name": "Merge Citations"
     },
@@ -1472,10 +1325,7 @@
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
-      "position": [
-        2000,
-        1472
-      ],
+      "position": [2000, 1472],
       "id": "ee849fe9-aeef-4a53-bb45-57f9a2d6ec01",
       "name": "OpenAI Chat Model"
     },
@@ -1490,10 +1340,7 @@
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3,
-      "position": [
-        1920,
-        1248
-      ],
+      "position": [1920, 1248],
       "id": "31623ed1-57e7-4180-8be7-99b549569c5a",
       "name": "Head Writer Agent (OpenAI)"
     },
@@ -1503,10 +1350,7 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        2848,
-        1248
-      ],
+      "position": [2848, 1248],
       "id": "39dbe83d-0998-4afd-9740-99bb53d18c2e",
       "name": "Normalize Final Editor"
     },
@@ -1525,10 +1369,7 @@
       },
       "type": "n8n-nodes-base.googleDocs",
       "typeVersion": 2,
-      "position": [
-        4672,
-        1808
-      ],
+      "position": [4672, 1808],
       "id": "ddaab1c5-9c8b-427c-ab8b-de00f9e017b8",
       "name": "Update Final gDoc"
     },
@@ -1547,10 +1388,7 @@
       },
       "type": "n8n-nodes-base.googleDocs",
       "typeVersion": 2,
-      "position": [
-        1472,
-        2096
-      ],
+      "position": [1472, 2096],
       "id": "ff351608-c6d0-4bd5-b07d-e6fd582fa9f3",
       "name": "Update Notes gDoc"
     },
@@ -1561,10 +1399,7 @@
       },
       "type": "n8n-nodes-base.googleDocs",
       "typeVersion": 2,
-      "position": [
-        1024,
-        2016
-      ],
+      "position": [1024, 2016],
       "id": "64dcdae0-2cc1-40a2-900f-44fd7832361e",
       "name": "Create Notes gDoc"
     },
@@ -1575,10 +1410,7 @@
       },
       "type": "n8n-nodes-base.googleDocs",
       "typeVersion": 2,
-      "position": [
-        4160,
-        1664
-      ],
+      "position": [4160, 1664],
       "id": "87466816-f543-4658-b1a4-1bbc8b36d729",
       "name": "Create Final gDoc"
     },
@@ -1590,10 +1422,7 @@
       },
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
-      "position": [
-        4448,
-        1808
-      ],
+      "position": [4448, 1808],
       "id": "9e4d2ad2-3cc7-4249-b213-1385eddfe801",
       "name": "Merge Final for gDoc"
     },
@@ -1605,10 +1434,7 @@
       },
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
-      "position": [
-        1248,
-        2096
-      ],
+      "position": [1248, 2096],
       "id": "f4f91ebb-8229-4ea2-a528-620a5553cdfc",
       "name": "Merge Notes for gDoc"
     },
@@ -1619,10 +1445,7 @@
       },
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
-      "position": [
-        3808,
-        1808
-      ],
+      "position": [3808, 1808],
       "id": "52715da6-46e1-4de4-bca9-7663f534beca",
       "name": "Prep Final gDoc"
     },
@@ -1660,10 +1483,7 @@
       },
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
-      "position": [
-        800,
-        2096
-      ],
+      "position": [800, 2096],
       "id": "73f352cd-9b7d-4ad3-ba4a-8ff5249b59c4",
       "name": "Prep Notes gDoc"
     },
@@ -1694,10 +1514,7 @@
       },
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
-      "position": [
-        576,
-        2096
-      ],
+      "position": [576, 2096],
       "id": "a4ef6994-ff68-4c78-a839-14b3995de558",
       "name": "If Notes gDoc"
     },
@@ -1728,10 +1545,7 @@
       },
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
-      "position": [
-        3520,
-        1808
-      ],
+      "position": [3520, 1808],
       "id": "a832c4fd-9744-4188-bbaf-d2d5f6fcd895",
       "name": "If Final gDoc"
     },
@@ -1743,10 +1557,7 @@
       },
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
-      "position": [
-        3072,
-        1424
-      ],
+      "position": [3072, 1424],
       "id": "bb0f3054-89f5-4498-b74e-b5600a1e05b6",
       "name": "Merge Final Spark"
     },
@@ -1784,10 +1595,7 @@
       },
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 2,
-      "position": [
-        2496,
-        1248
-      ],
+      "position": [2496, 1248],
       "id": "ee2faac5-e760-4ac3-83a1-4740b1fb1f46",
       "name": "Final Editor (OpenAI)"
     },
@@ -1823,10 +1631,7 @@
       },
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 2,
-      "position": [
-        4096,
-        1328
-      ],
+      "position": [4096, 1328],
       "id": "7b25a18f-3ab3-45e5-80a9-ebba8d59564e",
       "name": "Art Director (OpenAI)"
     },
@@ -1836,10 +1641,7 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        4448,
-        1328
-      ],
+      "position": [4448, 1328],
       "id": "afcb8d20-e69f-43ea-a5b6-a9044aa2a65b",
       "name": "Normalize Art Director"
     },
@@ -1860,10 +1662,7 @@
       },
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
-      "position": [
-        4448,
-        1520
-      ],
+      "position": [4448, 1520],
       "id": "1d26ea99-356d-430d-a3fd-5c33e8f23e0b",
       "name": "Set Default Visual Prompts"
     },
@@ -1873,10 +1672,7 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        4160,
-        848
-      ],
+      "position": [4160, 848],
       "id": "add47e8c-f07a-4c85-91b7-ff97f4ea7cd6",
       "name": "Normalize Blog Post Generator"
     },
@@ -1886,10 +1682,7 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        4160,
-        464
-      ],
+      "position": [4160, 464],
       "id": "a42694b4-7214-41e2-9199-0603ea2ace1a",
       "name": "Normalize Future Story Arc Generator"
     },
@@ -1933,10 +1726,7 @@
       },
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
-      "position": [
-        4448,
-        1040
-      ],
+      "position": [4448, 1040],
       "id": "58a33bcc-422f-447a-8090-2ef81dac91d3",
       "name": "Set Default Blog Post Generator"
     },
@@ -1956,10 +1746,7 @@
       },
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
-      "position": [
-        4448,
-        656
-      ],
+      "position": [4448, 656],
       "id": "dc375479-ba75-4c73-9924-bd1e39792718",
       "name": "Set Default Future Story Arc Generator"
     },
@@ -1970,10 +1757,7 @@
       },
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
-      "position": [
-        3296,
-        1424
-      ],
+      "position": [3296, 1424],
       "id": "81e3249a-9159-483f-a0f6-fdffd40aa2bd",
       "name": "Cache Final Spark"
     },
@@ -2009,10 +1793,7 @@
       },
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 2,
-      "position": [
-        3744,
-        848
-      ],
+      "position": [3744, 848],
       "id": "3619fc5c-5088-4bee-a897-5ebf782b20b1",
       "name": "Social Media Director (OpenAI)"
     },
@@ -2038,10 +1819,7 @@
       },
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
-      "position": [
-        4448,
-        848
-      ],
+      "position": [4448, 848],
       "id": "af434cc5-b24a-44ab-9e66-29d414f08eb0",
       "name": "Prune Summaries"
     },
@@ -2052,10 +1830,7 @@
       },
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
-      "position": [
-        4448,
-        464
-      ],
+      "position": [4448, 464],
       "id": "0a8f6e26-eb29-4cfe-aff1-77da68fa96a7",
       "name": "Prune Future Arcs"
     },
@@ -2066,10 +1841,7 @@
       },
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
-      "position": [
-        5344,
-        1152
-      ],
+      "position": [5344, 1152],
       "id": "21082c75-b2af-4bee-8567-e9e7a3bfb3e0",
       "name": "Prep Outputs gDoc"
     },
@@ -2080,10 +1852,7 @@
       },
       "type": "n8n-nodes-base.googleDocs",
       "typeVersion": 2,
-      "position": [
-        5568,
-        1008
-      ],
+      "position": [5568, 1008],
       "id": "fd262aa7-580f-485f-8d95-463eb0a94a5e",
       "name": "Create Outputs gDoc"
     },
@@ -2095,10 +1864,7 @@
       },
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
-      "position": [
-        5792,
-        1152
-      ],
+      "position": [5792, 1152],
       "id": "b7e063e8-cd18-475c-a10a-b3b7246b0b95",
       "name": "Merge Outputs for gDoc1"
     },
@@ -2117,10 +1883,7 @@
       },
       "type": "n8n-nodes-base.googleDocs",
       "typeVersion": 2,
-      "position": [
-        6016,
-        1152
-      ],
+      "position": [6016, 1152],
       "id": "ca030dc8-f37b-4470-a1c1-857ecf29d286",
       "name": "Update Outputs gDoc"
     },
@@ -2140,10 +1903,7 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [
-        5344,
-        1344
-      ],
+      "position": [5344, 1344],
       "id": "528aeff0-c5bf-4d7d-a5b9-e6d61fe88aa8",
       "name": "HTTP Request",
       "alwaysOutputData": true,
@@ -2158,10 +1918,7 @@
         "color": 3
       },
       "type": "n8n-nodes-base.stickyNote",
-      "position": [
-        -1248,
-        704
-      ],
+      "position": [-1248, 704],
       "typeVersion": 1,
       "id": "0ed640db-e0a1-43b9-aa3b-c4d6488da5d2",
       "name": "Sticky Note3"
@@ -2172,10 +1929,7 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        4672,
-        656
-      ],
+      "position": [4672, 656],
       "id": "06fadef3-3027-4fe9-b4d9-fea81cdfac41",
       "name": "Join Future Story Arc Output"
     },
@@ -2185,10 +1939,7 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        4672,
-        1040
-      ],
+      "position": [4672, 1040],
       "id": "f3dea567-58d9-46b2-9fbc-5a87182eeae5",
       "name": "Join Visual Blog Post Output"
     },
@@ -2198,10 +1949,7 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        4672,
-        1520
-      ],
+      "position": [4672, 1520],
       "id": "e0ed188e-7e90-4d95-a07f-5ed8c6df8236",
       "name": "Join Visual Prompts Output"
     },
@@ -2210,10 +1958,7 @@
         "content": "\n[\n  \n{\n  \n\"notifier_email\": \"stephen@tonkaintl.com\",  \n\"story_seed\": \n\"Write a Tonka Blog article for cautious used Class 8 truck buyers that uses the mousetrap and 'free cheese' only as a light metaphor for risky, rushed deals. Focus mainly on practical inspection steps, research-based checklists, and how patience and a proper inspection process prevent expensive mistakes.\",\n  \n  \n\"project_mode\": \n\"blog_post\",\n  \n  \n\"target_brand\": \n\"tonka_blog\",\n  \n  \n\"target_audience\": \n\"truck buyers who are cautious about getting burned on a used semi truck\",\n  \n  \n\"fact_to_fiction\": \n15,\n  \n  \n\"creativity_to_reporter\": \n90,\n  \n  \n\"tone_strictness\": \n30,\n  \n  \n\"draft_length\": \n\"short\",\n  \n  \n\"enable_research\": \ntrue,\n  \n  \n\"gdocs_folder_id\": \n\"1EFwmu8YdaRT-yGGGm1kFv_8DIcVZ07re\",\n  \n  \n\"output_blog_post\": \ntrue,\n  \n  \n\"output_future_story_arc\": \ntrue,\n  \n  \n\"output_visual_prompts\": \ntrue,\n  \n  \n\"facts\": \n\"Most buyers do not take time to fully inspect their purchase\"\n  \n}\n]"
       },
       "type": "n8n-nodes-base.stickyNote",
-      "position": [
-        -2656,
-        976
-      ],
+      "position": [-2656, 976],
       "typeVersion": 1,
       "id": "ea2148d3-e7aa-4e98-9e7c-a477ff5e32b7",
       "name": "Sticky Note4"
@@ -2224,10 +1969,7 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        -2368,
-        1456
-      ],
+      "position": [-2368, 1456],
       "id": "7070fbc0-e190-43ce-bae9-e75bb3759bbe",
       "name": "Code in JavaScript"
     }

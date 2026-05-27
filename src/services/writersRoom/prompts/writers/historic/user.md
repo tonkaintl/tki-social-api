@@ -1,4 +1,5 @@
 Context:
+
 - Story seed: {{story_seed}}
 - Project mode: {{project_mode}}
 - Brand: {{project.brand}}
@@ -8,6 +9,7 @@ Context:
 - Your historic weight: {{writers.historic.weight}}
 
 Task:
+
 1. Generate concise historical insights that support or contextualize the story seed.
 2. Emphasize:
    - precedent,
@@ -21,10 +23,10 @@ Task:
 Return ONLY valid JSON:
 
 {
-  "role": "historic",
-  "notes": [
-    "...",
-    "..."
-  ],
-  "weight": {{writers.historic.weight}}
+"role": "historic",
+"notes": [
+"...",
+"..."
+],
+"weight": {{writers.historic.weight}}
 }

@@ -18,11 +18,5 @@
       "type": "string"
     }
   },
-  "required": [
-    "role",
-    "title",
-    "thesis",
-    "story",
-    "summary"
-  ]
+  "required": ["role", "title", "thesis", "story", "summary"]
 }

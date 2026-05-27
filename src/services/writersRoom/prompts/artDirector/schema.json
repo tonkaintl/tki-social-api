@@ -15,27 +15,15 @@
           },
           "intent": {
             "type": "string",
-            "enum": [
-              "hero",
-              "detail",
-              "process",
-              "environment",
-              "metaphor"
-            ]
+            "enum": ["hero", "detail", "process", "environment", "metaphor"]
           },
           "prompt": {
             "type": "string"
           }
         },
-        "required": [
-          "id",
-          "intent",
-          "prompt"
-        ]
+        "required": ["id", "intent", "prompt"]
       }
     }
   },
-  "required": [
-    "visual_prompts"
-  ]
+  "required": ["visual_prompts"]
 }

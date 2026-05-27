@@ -34,15 +34,15 @@ Get a paginated, filterable list of Writer's Room generated content.
 
 **Query Parameters:**
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `page` | integer | `1` | Page number (min: 1) |
-| `limit` | integer | `50` | Items per page (max: 100) |
-| `status` | string | - | Filter by status: `pending`, `sent`, `failed`, `archived` |
-| `brand` | string | - | Filter by brand (see Brand List below) |
-| `mode` | string | - | Filter by content mode (see Platform Modes below) |
-| `sortBy` | string | `created_at` | Sort field: `created_at`, `updated_at`, `status` |
-| `sortOrder` | string | `desc` | Sort direction: `asc` or `desc` |
+| Parameter   | Type    | Default      | Description                                               |
+| ----------- | ------- | ------------ | --------------------------------------------------------- |
+| `page`      | integer | `1`          | Page number (min: 1)                                      |
+| `limit`     | integer | `50`         | Items per page (max: 100)                                 |
+| `status`    | string  | -            | Filter by status: `pending`, `sent`, `failed`, `archived` |
+| `brand`     | string  | -            | Filter by brand (see Brand List below)                    |
+| `mode`      | string  | -            | Filter by content mode (see Platform Modes below)         |
+| `sortBy`    | string  | `created_at` | Sort field: `created_at`, `updated_at`, `status`          |
+| `sortOrder` | string  | `desc`       | Sort direction: `asc` or `desc`                           |
 
 **Example Request:**
 
@@ -160,6 +160,7 @@ Receives content from n8n Writer's Room workflow. **Internal use only** (n8n aut
 **Endpoint:** `POST /api/webhooks/writers-room/content`
 
 **Headers:**
+
 ```
 Content-Type: application/json
 x-internal-secret: {n8n_secret}
@@ -189,7 +190,7 @@ interface WritersRoomContent {
   _id: string;
   content_id: string; // Unique identifier (auto-generated if not provided)
   status: 'pending' | 'sent' | 'failed' | 'archived';
-  
+
   // Content metadata
   project_mode: PlatformMode; // See Platform Modes
   project: {
@@ -208,7 +209,7 @@ interface WritersRoomContent {
       };
     };
   };
-  
+
   // Generated content
   final_draft: {
     title: string;
@@ -217,7 +218,7 @@ interface WritersRoomContent {
     draft_markdown: string; // Full article in Markdown
     role: string; // Usually "Head Writer"
   };
-  
+
   // Creative parameters
   creative: {
     creativity_to_reporter: number; // 0-100
@@ -225,13 +226,13 @@ interface WritersRoomContent {
     length: 'short' | 'medium' | 'long';
     tone_strictness: number; // 0-100
   };
-  
+
   // Writer collaboration
   writer_panel: Array<{
     role: WritingGenre;
     weight: number; // 0-1
   }>;
-  
+
   writers: {
     action?: { enabled: boolean; weight: number };
     biographer?: { enabled: boolean; weight: number };
@@ -240,14 +241,14 @@ interface WritersRoomContent {
     historic?: { enabled: boolean; weight: number };
     scifi?: { enabled: boolean; weight: number };
   };
-  
+
   writer_notes?: {
     action?: { role: string; weight: number; notes: string[] };
     comedy?: { role: string; weight: number; notes: string[] };
     documentary?: { role: string; weight: number; notes: string[] };
     // ... other genres
   };
-  
+
   // Research data
   research?: {
     enable_research: boolean;
@@ -258,14 +259,14 @@ interface WritersRoomContent {
     role: string;
     weight: number;
   };
-  
+
   // Visual content
   visual_prompts: Array<{
     id: string; // e.g., "vp-01"
     intent: string; // e.g., "hero", "detail", "environment"
     prompt: string; // Detailed image generation prompt
   }>;
-  
+
   // Platform-specific summaries
   platform_summaries?: {
     youtube?: string;
@@ -274,10 +275,10 @@ interface WritersRoomContent {
     meta?: string;
     tonkaintl?: string;
   };
-  
+
   // Alternative titles
   title_variations: string[]; // Up to 5 alternative titles
-  
+
   // Future content suggestions
   future_story_arc_generator?: {
     arcs: Array<{
@@ -287,7 +288,7 @@ interface WritersRoomContent {
       suggested_story_seed: string;
     }>;
   };
-  
+
   // Output configuration
   outputs: {
     blog_post?: boolean;
@@ -300,7 +301,7 @@ interface WritersRoomContent {
     mongo_log?: boolean;
     gdocs_folder_id?: string; // Google Drive folder ID
   };
-  
+
   // System fields
   story_seed?: string;
   target_audience?: string;
@@ -314,12 +315,12 @@ interface WritersRoomContent {
   tokens?: {
     writer_token_count: number;
   };
-  
+
   // Email notification
   notifier_email: string; // Required
   send_email?: boolean; // Default: true
   email_sent_at?: Date;
-  
+
   // Timestamps
   created_at: Date;
   updated_at: Date;
@@ -388,17 +389,17 @@ type ContentStatus = 'pending' | 'sent' | 'failed' | 'archived';
 ```javascript
 const response = await fetch(
   'https://api.tonkaintl.com/api/writers-room-content?' +
-  'brand=tonka_blog&' +
-  'mode=blog_post&' +
-  'status=sent&' +
-  'page=1&' +
-  'limit=10&' +
-  'sortBy=created_at&' +
-  'sortOrder=desc',
+    'brand=tonka_blog&' +
+    'mode=blog_post&' +
+    'status=sent&' +
+    'page=1&' +
+    'limit=10&' +
+    'sortBy=created_at&' +
+    'sortOrder=desc',
   {
     headers: {
-      'Authorization': `Bearer ${token}`
-    }
+      Authorization: `Bearer ${token}`,
+    },
   }
 );
 
@@ -424,10 +425,10 @@ data.content.forEach(item => {
 // Get all Comedy-heavy content across all brands
 const comedyContent = await fetch(
   'https://api.tonkaintl.com/api/writers-room-content?limit=100',
-  { headers: { 'Authorization': `Bearer ${token}` } }
+  { headers: { Authorization: `Bearer ${token}` } }
 );
 
-const filtered = comedyContent.content.filter(item => 
+const filtered = comedyContent.content.filter(item =>
   item.writer_panel.some(w => w.role === 'comedy' && w.weight > 0.5)
 );
 ```
@@ -460,6 +461,7 @@ All endpoints return standard error responses:
 1. **Large Payloads:** The `draft_markdown` field can be very large (multiple KB). Consider pagination and lazy loading.
 
 2. **Google Drive Links:** If `outputs.gdocs_folder_id` is present, you can construct Drive URLs:
+
    ```
    https://drive.google.com/drive/folders/{gdocs_folder_id}
    ```
@@ -483,6 +485,7 @@ All endpoints return standard error responses:
 **MongoDB Collection:** `writers_room_contents`
 
 **Indexes:**
+
 - `content_id` (unique)
 - `created_at` (descending)
 - `status`

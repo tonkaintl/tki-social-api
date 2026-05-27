@@ -128,8 +128,13 @@ Lets you iterate on a single prompt without re-running everything upstream. The 
   "node": "genreToneRouter",
   "context": {
     "story_seed": "How to Avoid Overvaluing Your Equipment",
-    "project":  { "brand": "tonka_blog", "mode": "blog_post", "audience": "" },
-    "creative": { "fact_to_fiction": 30, "creativity_to_reporter": 60, "tone_strictness": 70, "length": "medium" },
+    "project": { "brand": "tonka_blog", "mode": "blog_post", "audience": "" },
+    "creative": {
+      "fact_to_fiction": 30,
+      "creativity_to_reporter": 60,
+      "tone_strictness": 70,
+      "length": "medium"
+    },
     "research": { "enable_research": false, "facts": null }
   }
 }
@@ -164,16 +169,16 @@ List every run with filters. Heavy fields (`final_payload`, large snapshot blobs
 
 Query params (all optional):
 
-| param | values | notes |
-| --- | --- | --- |
-| `status` | `running` \| `succeeded` \| `partial` \| `failed` | Most useful for finding gems: `?status=failed` |
-| `brand` | e.g. `tonka_blog` | exact match on `target_brand` |
-| `mode` | e.g. `blog_post` | exact match on `project_mode` |
-| `triggered_by` | `api` \| `cron` \| `test-node` | who started it |
-| `story_seed` | substring | case-insensitive regex match |
-| `since` / `until` | ISO date | bounded date range |
-| `page` | integer ≥ 1 | default 1 |
-| `limit` | integer 1–100 | default 25 |
+| param             | values                                            | notes                                          |
+| ----------------- | ------------------------------------------------- | ---------------------------------------------- |
+| `status`          | `running` \| `succeeded` \| `partial` \| `failed` | Most useful for finding gems: `?status=failed` |
+| `brand`           | e.g. `tonka_blog`                                 | exact match on `target_brand`                  |
+| `mode`            | e.g. `blog_post`                                  | exact match on `project_mode`                  |
+| `triggered_by`    | `api` \| `cron` \| `test-node`                    | who started it                                 |
+| `story_seed`      | substring                                         | case-insensitive regex match                   |
+| `since` / `until` | ISO date                                          | bounded date range                             |
+| `page`            | integer ≥ 1                                       | default 1                                      |
+| `limit`           | integer 1–100                                     | default 25                                     |
 
 Response:
 
@@ -277,44 +282,44 @@ You can edit `SEASON-01-IDEAS.md` between runs — the file is read fresh every 
 
 The pipeline accepts anything matching the shape below. Anything missing falls back to the default in `PIPELINE_INPUT_DEFAULTS`.
 
-| Field | Type | Default | Notes |
-| --- | --- | --- | --- |
-| `story_seed` | string | — | The idea for the piece. Required unless `useRotation: true`. |
-| `project_mode` | enum | `blog_post` | One of `blog_post`, `future_story_arc`, `mixed_allegory`, `novella_chapter`, `reference_doc`, `screenplay`, `social_post`, `story_prompts`, `straight_ad`, `visual_prompts`, `dispatch_essay`, `default_mode`. Controls structure + headWriter instructions. See [`profiles/projectModes.js`](./profiles/projectModes.js). |
-| `target_brand` | enum | `tonka_blog` | One of `tonka_blog`, `tonka_newsletter`, `diesel_kings`, `echoloop`, `generic_brand`, `ketosis_lifestyle_project`, `purple_star`, `theater_404`. Controls voice + brand guidelines. See [`profiles/brands.js`](./profiles/brands.js). |
-| `target_audience` | string | `""` | Free-form. Shows up in the Head Writer's system prompt. |
-| `fact_to_fiction` | number 0–100 | `50` | 0 = pure fantasy, 100 = pure factual. |
-| `creativity_to_reporter` | number 0–100 | `50` | 0 = wild creative, 100 = dry reporter. |
-| `tone_strictness` | number 0–100 | `50` | 0 = loose, 100 = strict to brand rules. |
-| `draft_length` | enum | `short` | `short` (~500–700 words), `medium` (~900–1,200), `long` (~1,500–2,000+). |
-| `enable_research` | boolean | `false` | When true, the Perplexity researcher runs in parallel with the writer brainstorms and grounds the Head Writer's draft in fresh, cited findings. Requires `PERPLEXITY_API_KEY`. Also boosts the `documentary` writer in the router. |
-| `facts` | string \| null | `null` | Pre-supplied facts/findings. Forwarded to the researcher as context to extend (not contradict), to writers, and to the Head Writer. |
-| `output_blog_post` | boolean | `true` | If true, runs Social Media Director after the final edit. |
-| `output_visual_prompts` | boolean | `false` | If true, runs Art Director. |
-| `output_future_story_arc` | boolean | `false` | If true, runs the Future Story Arc generator. |
-| `output_reference_doc` | boolean | `false` | Reserved; not wired in v1. |
-| `notifier_email` | string | `""` | Reserved; not wired in v1. |
-| `useRotation` | boolean | `false` | If true (or if `story_seed` is empty), pulls the next idea from SEASON-01-IDEAS.md and advances the cursor. |
-| `peek` | boolean | `false` | When `useRotation: true`, peek the next idea without advancing. Useful for testing. |
-| `forwardToSparkPost` | boolean | `true` | When false, the pipeline still runs end-to-end and persists to `writers_room_runs`, but skips the production-sink save to `tonka_spark_posts` and the notification email. Use for dry runs / previews. |
+| Field                     | Type           | Default      | Notes                                                                                                                                                                                                                                                                                                                      |
+| ------------------------- | -------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `story_seed`              | string         | —            | The idea for the piece. Required unless `useRotation: true`.                                                                                                                                                                                                                                                               |
+| `project_mode`            | enum           | `blog_post`  | One of `blog_post`, `future_story_arc`, `mixed_allegory`, `novella_chapter`, `reference_doc`, `screenplay`, `social_post`, `story_prompts`, `straight_ad`, `visual_prompts`, `dispatch_essay`, `default_mode`. Controls structure + headWriter instructions. See [`profiles/projectModes.js`](./profiles/projectModes.js). |
+| `target_brand`            | enum           | `tonka_blog` | One of `tonka_blog`, `tonka_newsletter`, `diesel_kings`, `echoloop`, `generic_brand`, `ketosis_lifestyle_project`, `purple_star`, `theater_404`. Controls voice + brand guidelines. See [`profiles/brands.js`](./profiles/brands.js).                                                                                      |
+| `target_audience`         | string         | `""`         | Free-form. Shows up in the Head Writer's system prompt.                                                                                                                                                                                                                                                                    |
+| `fact_to_fiction`         | number 0–100   | `50`         | 0 = pure fantasy, 100 = pure factual.                                                                                                                                                                                                                                                                                      |
+| `creativity_to_reporter`  | number 0–100   | `50`         | 0 = wild creative, 100 = dry reporter.                                                                                                                                                                                                                                                                                     |
+| `tone_strictness`         | number 0–100   | `50`         | 0 = loose, 100 = strict to brand rules.                                                                                                                                                                                                                                                                                    |
+| `draft_length`            | enum           | `short`      | `short` (~500–700 words), `medium` (~900–1,200), `long` (~1,500–2,000+).                                                                                                                                                                                                                                                   |
+| `enable_research`         | boolean        | `false`      | When true, the Perplexity researcher runs in parallel with the writer brainstorms and grounds the Head Writer's draft in fresh, cited findings. Requires `PERPLEXITY_API_KEY`. Also boosts the `documentary` writer in the router.                                                                                         |
+| `facts`                   | string \| null | `null`       | Pre-supplied facts/findings. Forwarded to the researcher as context to extend (not contradict), to writers, and to the Head Writer.                                                                                                                                                                                        |
+| `output_blog_post`        | boolean        | `true`       | If true, runs Social Media Director after the final edit.                                                                                                                                                                                                                                                                  |
+| `output_visual_prompts`   | boolean        | `false`      | If true, runs Art Director.                                                                                                                                                                                                                                                                                                |
+| `output_future_story_arc` | boolean        | `false`      | If true, runs the Future Story Arc generator.                                                                                                                                                                                                                                                                              |
+| `output_reference_doc`    | boolean        | `false`      | Reserved; not wired in v1.                                                                                                                                                                                                                                                                                                 |
+| `notifier_email`          | string         | `""`         | Reserved; not wired in v1.                                                                                                                                                                                                                                                                                                 |
+| `useRotation`             | boolean        | `false`      | If true (or if `story_seed` is empty), pulls the next idea from SEASON-01-IDEAS.md and advances the cursor.                                                                                                                                                                                                                |
+| `peek`                    | boolean        | `false`      | When `useRotation: true`, peek the next idea without advancing. Useful for testing.                                                                                                                                                                                                                                        |
+| `forwardToSparkPost`      | boolean        | `true`       | When false, the pipeline still runs end-to-end and persists to `writers_room_runs`, but skips the production-sink save to `tonka_spark_posts` and the notification email. Use for dry runs / previews.                                                                                                                     |
 
 ## Frontend form (suggested mapping)
 
 The original n8n flow exposed a form trigger. If you rebuild that as a frontend form, the simplest mapping is to send the JSON above directly to `POST /api/writers-room/run`. A minimal form needs:
 
-| UI element | Field | Required | Suggested control |
-| --- | --- | --- | --- |
-| Textarea | `story_seed` | yes | placeholder "The gist of the story" |
-| Dropdown | `project_mode` | yes | options listed above; default `blog_post` |
-| Dropdown | `target_brand` | yes | options listed above; default `tonka_blog` |
-| Text | `target_audience` | no | placeholder "voice and framing" |
-| Slider | `fact_to_fiction` | no | 0–100, default 50, label "0 = pure fantasy → 100 = pure factual" |
-| Slider | `creativity_to_reporter` | no | 0–100, default 50, label "0 = wild creative → 100 = dry reporter" |
-| Slider | `tone_strictness` | no | 0–100, default 50, label "0 = loose → 100 = strict to brand rules" |
-| Dropdown | `draft_length` | no | `short` \| `medium` \| `long`, default `short` |
-| Toggle | `enable_research` | no | default off |
-| Textarea | `facts` | no | only shown when `enable_research` is on |
-| Toggle group | `output_blog_post`, `output_visual_prompts`, `output_future_story_arc` | no | one toggle per output node, default on for blog post |
+| UI element   | Field                                                                  | Required | Suggested control                                                  |
+| ------------ | ---------------------------------------------------------------------- | -------- | ------------------------------------------------------------------ |
+| Textarea     | `story_seed`                                                           | yes      | placeholder "The gist of the story"                                |
+| Dropdown     | `project_mode`                                                         | yes      | options listed above; default `blog_post`                          |
+| Dropdown     | `target_brand`                                                         | yes      | options listed above; default `tonka_blog`                         |
+| Text         | `target_audience`                                                      | no       | placeholder "voice and framing"                                    |
+| Slider       | `fact_to_fiction`                                                      | no       | 0–100, default 50, label "0 = pure fantasy → 100 = pure factual"   |
+| Slider       | `creativity_to_reporter`                                               | no       | 0–100, default 50, label "0 = wild creative → 100 = dry reporter"  |
+| Slider       | `tone_strictness`                                                      | no       | 0–100, default 50, label "0 = loose → 100 = strict to brand rules" |
+| Dropdown     | `draft_length`                                                         | no       | `short` \| `medium` \| `long`, default `short`                     |
+| Toggle       | `enable_research`                                                      | no       | default off                                                        |
+| Textarea     | `facts`                                                                | no       | only shown when `enable_research` is on                            |
+| Toggle group | `output_blog_post`, `output_visual_prompts`, `output_future_story_arc` | no       | one toggle per output node, default on for blog post               |
 
 The original n8n form also had `max_revisions`, `output_screenplay`, `output_story_prompts`, `output_socials`, `output_gdocs`, `output_mongo_log` fields. They aren't in v1 — they were either unused in the n8n flow or are out-of-scope side effects (gDocs). Skip them in the new form.
 
@@ -322,12 +327,12 @@ The original n8n form also had `max_revisions`, `output_screenplay`, `output_sto
 
 Each prompt's `meta.json` declares its provider and model. Four providers are used. The generic LLM router ([`llm/index.js`](./llm/index.js)) dispatches the chat-LLM providers (`gemini`, `openai`, `openai-agent`); the researcher node calls Perplexity directly via [`llm/perplexity.js`](./llm/perplexity.js) so it can capture the response's `citations` array alongside the JSON body.
 
-| Provider | SDK | Key env | Default-model env | Where used |
-| --- | --- | --- | --- | --- |
-| `gemini` | `@google/genai` | `GEMINI_API_KEY` | `GEMINI_MODEL` | Genre Tone Router, Documentary writer, Historic writer, Biographer writer |
-| `openai` | `openai` | `OPENAI_API_KEY` | `OPENAI_MODEL` | Comedy / SciFi / Action writers, Final Editor, Art Director, Social Media Director, Future Story Arc |
-| `openai-agent` | `openai` (chat completions w/ JSON schema) | `OPENAI_API_KEY` | `OPENAI_MODEL` | Head Writer |
-| `perplexity` | raw HTTP (axios) → `api.perplexity.ai/chat/completions` | `PERPLEXITY_API_KEY` | `PERPLEXITY_MODEL` | Researcher (live web research with citations) |
+| Provider       | SDK                                                     | Key env              | Default-model env  | Where used                                                                                           |
+| -------------- | ------------------------------------------------------- | -------------------- | ------------------ | ---------------------------------------------------------------------------------------------------- |
+| `gemini`       | `@google/genai`                                         | `GEMINI_API_KEY`     | `GEMINI_MODEL`     | Genre Tone Router, Documentary writer, Historic writer, Biographer writer                            |
+| `openai`       | `openai`                                                | `OPENAI_API_KEY`     | `OPENAI_MODEL`     | Comedy / SciFi / Action writers, Final Editor, Art Director, Social Media Director, Future Story Arc |
+| `openai-agent` | `openai` (chat completions w/ JSON schema)              | `OPENAI_API_KEY`     | `OPENAI_MODEL`     | Head Writer                                                                                          |
+| `perplexity`   | raw HTTP (axios) → `api.perplexity.ai/chat/completions` | `PERPLEXITY_API_KEY` | `PERPLEXITY_MODEL` | Researcher (live web research with citations)                                                        |
 
 The variety is intentional — different model families give the panel different voices. To change a model, edit `meta.json` for that prompt; the orchestrator picks it up on next restart (or call `clearPromptCache()` from [`llm/loadPrompt.js`](./llm/loadPrompt.js)).
 

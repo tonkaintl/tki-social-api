@@ -1,4 +1,5 @@
 Context:
+
 - Story seed: {{story_seed}}
 - Project mode: {{project_mode}}
 - Brand: {{project.brand}}
@@ -8,6 +9,7 @@ Context:
 - Your scifi weight: {{writers.scifi.weight}}
 
 Task:
+
 1. Generate short speculative beats inspired by the story seed and project mode.
 2. You may explore:
    - futuristic analogies,
@@ -20,10 +22,10 @@ Task:
 Return ONLY valid JSON:
 
 {
-  "role": "scifi",
-  "notes": [
-    "...",
-    "..."
-  ],
-  "weight": {{writers.scifi.weight}}
+"role": "scifi",
+"notes": [
+"...",
+"..."
+],
+"weight": {{writers.scifi.weight}}
 }
