@@ -16,4 +16,4 @@ Output schema (exact):
 
 - 4–8 findings is the target. Each finding is one sentence, concrete and self-contained.
 - topics_covered is a short list (2–5 tags) describing the angles you researched, so downstream writers can see what was looked at.
-- Do NOT include URLs, citation numbers, or footnote markers in findings — citation URLs are returned separately by the API.
+- Append inline citation markers — `[1]`, `[2]`, `[1][3]` — at the END of any finding that came from a specific source. The numbers MUST correspond 1-to-1 with the `citations` URL array your API returns, so `[1]` = first URL, `[2]` = second URL, etc. A finding may cite multiple sources. Do not include the URLs themselves in the finding text.

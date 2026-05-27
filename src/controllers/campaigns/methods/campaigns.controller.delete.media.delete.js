@@ -11,6 +11,10 @@ import {
   ERROR_MESSAGES,
 } from '../../../constants/errors.js';
 import SocialCampaigns from '../../../models/socialCampaigns.model.js';
+import {
+  deleteObject,
+  keyFromPublicUrl,
+} from '../../../services/r2.service.js';
 import { logger } from '../../../utils/logger.js';
 
 // ----------------------------------------------------------------------------
@@ -94,6 +98,39 @@ export const removeCampaignMedia = async (req, res) => {
     }
 
     const removedMediaUrl = campaign.media_urls[mediaIndex];
+
+    // Delete the R2 object first — if it fails, leave the Mongo entry in
+    // place so we don't end up with a phantom URL. We attempt the legacy
+    // url-parse fallback for records written before the r2_key field existed.
+    const r2Key =
+      removedMediaUrl.r2_key || keyFromPublicUrl(removedMediaUrl.url);
+    if (r2Key) {
+      try {
+        await deleteObject(r2Key);
+      } catch (r2Error) {
+        logger.error('Failed to delete R2 object for campaign media', {
+          error: r2Error.message,
+          mediaId: id,
+          r2Key,
+          requestId: req.requestId,
+          stockNumber,
+        });
+        const apiError = new ApiError(
+          ERROR_CODES.EXTERNAL_SERVICE_ERROR,
+          'Failed to delete underlying R2 object',
+          502
+        );
+        return res.status(apiError.statusCode).json({
+          code: apiError.code,
+          error: apiError.message,
+        });
+      }
+    } else {
+      logger.warn(
+        'Skipping R2 delete — no r2_key and URL is not under R2_PUBLIC_BASE_URL (legacy Azure asset?)',
+        { mediaId: id, mediaUrl: removedMediaUrl.url, stockNumber }
+      );
+    }
 
     // Remove the media URL with the specified ID
     const updatedMediaUrls = campaign.media_urls.filter(

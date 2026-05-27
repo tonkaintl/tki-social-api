@@ -130,6 +130,11 @@ const envSchema = z.object({
     .default(8080),
   PORTAL_API_URL: z.string().url().default('http://localhost:4200'),
   PORTAL_INTERNAL_SECRET: z.string().min(1).default('test_portal_secret'),
+  R2_ACCESS_KEY_ID: z.string().optional(),
+  R2_ACCOUNT_ID: z.string().optional(),
+  R2_BUCKET: z.string().optional(),
+  R2_PUBLIC_BASE_URL: z.string().url().optional(),
+  R2_SECRET_ACCESS_KEY: z.string().optional(),
   THREADS_ACCESS_TOKEN: z.string().optional(),
   THREADS_CLIENT_ID: z.string().optional(),
   THREADS_CLIENT_SECRET: z.string().optional(),
@@ -153,6 +158,15 @@ const envSchema = z.object({
     .transform(val => val === 'true')
     .pipe(z.boolean())
     .default('false'),
+  // AI-tells severity threshold. When a final draft's accumulated tell
+  // severity score reaches this number, the run is downgraded from
+  // `succeeded` to `partial` and skips the spark-post forward + email.
+  // Use higher numbers (15+) to be lenient; lower (5) to be strict.
+  WRITERS_ROOM_TELLS_THRESHOLD: z
+    .string()
+    .transform(Number)
+    .pipe(z.number().min(0).max(100))
+    .default('10'),
   YOUTUBE_ACCESS_TOKEN: z.string().optional(),
   YOUTUBE_CLIENT_ID: z.string().optional(),
   YOUTUBE_CLIENT_SECRET: z.string().optional(),

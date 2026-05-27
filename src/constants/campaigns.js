@@ -27,6 +27,7 @@ export const METRICOOL_OPERATIONS = {
 // Media storage constants
 export const MEDIA_STORAGE = {
   AZURE: 'azure',
+  R2: 'r2',
 };
 
 export const MEDIA_STORAGE_VALUES = Object.values(MEDIA_STORAGE);

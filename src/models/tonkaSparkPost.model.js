@@ -132,6 +132,7 @@ var VisualPromptImageSchema = new Schema(
     created_at: { default: Date.now, type: Date },
     description: { type: String },
     filename: { type: String },
+    r2_key: { type: String },
     size: { type: Number },
     url: { type: String },
   },

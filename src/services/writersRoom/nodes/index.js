@@ -5,6 +5,7 @@
 
 import { PIPELINE_NODE } from '../../../constants/writersroom.js';
 
+import { aiTellsCheck } from './aiTellsCheck.js';
 import { artDirector } from './artDirector.js';
 import { buildWriterPanel } from './buildWriterPanel.js';
 import { draftContext } from './draftContext.js';
@@ -25,6 +26,7 @@ import { writerHistoric } from './writers/historic.js';
 import { writerSciFi } from './writers/scifi.js';
 
 export const NODE_REGISTRY = {
+  [PIPELINE_NODE.AI_TELLS_CHECK]: aiTellsCheck,
   [PIPELINE_NODE.ART_DIRECTOR]: artDirector,
   [PIPELINE_NODE.BUILD_WRITER_PANEL]: buildWriterPanel,
   [PIPELINE_NODE.DRAFT_CONTEXT]: draftContext,

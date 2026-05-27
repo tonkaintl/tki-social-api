@@ -11,6 +11,10 @@ import {
   ERROR_MESSAGES,
 } from '../../../constants/errors.js';
 import TonkaSparkPosts from '../../../models/tonkaSparkPost.model.js';
+import {
+  deleteObject,
+  keyFromPublicUrl,
+} from '../../../services/r2.service.js';
 import { logger } from '../../../utils/logger.js';
 
 // ----------------------------------------------------------------------------
@@ -49,6 +53,46 @@ export const deleteVisualPromptImage = async (req, res) => {
 
     // Determine query type (content_id vs _id)
     const query = id.includes('-') ? { content_id: id } : { _id: id };
+
+    // Look up the stored r2_key (preferred) before mutating Mongo — falls back
+    // to parsing the key out of the URL for legacy records without r2_key.
+    const existing = await TonkaSparkPosts.findOne(
+      { ...query, 'visual_prompts.id': promptId },
+      { 'visual_prompts.$': 1 }
+    );
+    const existingImage = existing?.visual_prompts?.[0]?.images?.find(
+      img => img.url === decodedImageUrl
+    );
+    const r2Key =
+      existingImage?.r2_key || keyFromPublicUrl(decodedImageUrl) || null;
+
+    if (r2Key) {
+      try {
+        await deleteObject(r2Key);
+      } catch (r2Error) {
+        logger.error('Failed to delete R2 object for visual prompt image', {
+          entryId: id,
+          error: r2Error.message,
+          promptId,
+          r2Key,
+          requestId: req.id,
+        });
+        const apiError = new ApiError(
+          ERROR_CODES.EXTERNAL_SERVICE_ERROR,
+          'Failed to delete underlying R2 object',
+          502
+        );
+        return res.status(apiError.statusCode).json({
+          code: apiError.code,
+          error: apiError.message,
+        });
+      }
+    } else {
+      logger.warn(
+        'Skipping R2 delete — no r2_key and URL is not under R2_PUBLIC_BASE_URL (legacy Azure asset?)',
+        { entryId: id, imageUrl: decodedImageUrl, promptId }
+      );
+    }
 
     // Remove the image from the prompt's images array
     const updatedEntry = await TonkaSparkPosts.findOneAndUpdate(
