@@ -37,12 +37,7 @@ import { logger } from '../../../utils/logger.js';
  */
 export async function runWritersRoom(req, res) {
   try {
-    const {
-      forwardToSparkPost,
-      peek = false,
-      useRotation = false,
-      ...rest
-    } = req.body || {};
+    const { peek = false, useRotation = false, ...rest } = req.body || {};
 
     let input = { ...rest };
     let rotationInfo = null;
@@ -79,9 +74,6 @@ export async function runWritersRoom(req, res) {
     });
 
     const result = await runPipeline(input, {
-      // Default true — the n8n flow's final step was the spark-post POST,
-      // so this preserves that behavior. Callers can pass false for dry runs.
-      forwardToSparkPost: forwardToSparkPost !== false,
       ideaRotation: rotationInfo
         ? {
             cursor: rotationInfo.cursor,

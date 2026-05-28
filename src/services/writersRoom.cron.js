@@ -92,10 +92,6 @@ async function executeCronRun(claimedIdea, triggerLabel) {
 
   try {
     const result = await runPipeline(pipelineInput, {
-      // Always publish + email — see file-header note on why this isn't
-      // env-gated. The orchestrator default is also true, but pinning it
-      // here makes intent local to the cron path.
-      forwardToSparkPost: true,
       triggeredBy: RUN_TRIGGER.CRON,
     });
 

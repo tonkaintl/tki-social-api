@@ -117,7 +117,6 @@ async function step(trace, runId, name, fn) {
 
 export async function runPipeline(input = {}, options = {}) {
   const {
-    forwardToSparkPost = true,
     ideaRotation = null,
     requestId = null,
     triggeredBy = RUN_TRIGGER.API,
@@ -254,11 +253,11 @@ export async function runPipeline(input = {}, options = {}) {
     );
 
     // 11. Forward to tonka_spark_posts (saves doc + sends notification
-    //     email). Skipped if:
-    //       - the caller asked us not to (forwardToSparkPost: false), OR
-    //       - the AI-tells severity score is >= the configured threshold,
-    //         in which case we downgrade to PARTIAL and skip the email so
-    //         slop drafts don't get auto-published at 6am.
+    //     email). The ONLY reason to skip this is the AI-tells quality
+    //     gate: if the severity score is >= the configured threshold the
+    //     run is downgraded to PARTIAL and we don't auto-publish slop.
+    //     Otherwise we always forward — anything else silently throws
+    //     away an LLM run we already paid for.
     let sparkPostDocId = null;
     let finalStatus = RUN_STATUS.SUCCEEDED;
 
@@ -285,7 +284,7 @@ export async function runPipeline(input = {}, options = {}) {
       };
       trace.push(skipEntry);
       await appendTrace(runId, skipEntry);
-    } else if (forwardToSparkPost) {
+    } else {
       try {
         const sparkPostStart = Date.now();
         const doc = await saveTonkaSparkPost(payload, {
