@@ -15,6 +15,7 @@ import { futureStoryArc } from './futureStoryArc.js';
 import { genreToneRouter } from './genreToneRouter.js';
 import { headWriter } from './headWriter.js';
 import { inputNormalizer } from './inputNormalizer.js';
+import { pickTitle } from './pickTitle.js';
 import { projectMode } from './projectMode.js';
 import { researcher } from './researcher.js';
 import { socialMediaDirector } from './socialMediaDirector.js';
@@ -36,6 +37,7 @@ export const NODE_REGISTRY = {
   [PIPELINE_NODE.GENRE_TONE_ROUTER]: genreToneRouter,
   [PIPELINE_NODE.HEAD_WRITER]: headWriter,
   [PIPELINE_NODE.INPUT_NORMALIZER]: inputNormalizer,
+  [PIPELINE_NODE.PICK_TITLE]: pickTitle,
   [PIPELINE_NODE.PROJECT_MODE]: projectMode,
   [PIPELINE_NODE.RESEARCHER]: researcher,
   [PIPELINE_NODE.SOCIAL_MEDIA_DIRECTOR]: socialMediaDirector,

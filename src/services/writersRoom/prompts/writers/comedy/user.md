@@ -1,4 +1,5 @@
 Context:
+
 - Story seed: {{story_seed}}
 - Project mode: {{project_mode}}
 - Brand: {{project.brand}}
@@ -8,6 +9,7 @@ Context:
 - Your comedy weight: {{writers.comedy.weight}}
 
 Task:
+
 1. Generate short comedic beats tailored to the story seed, project mode, brand, and audience.
 2. Use irony, contrast, understatement, or light absurdity. No slapstick unless context strongly suggests it.
 3. If facts or real stakes exist, you may:
@@ -19,10 +21,10 @@ Task:
 Return ONLY valid JSON:
 
 {
-  "role": "comedy",
-  "notes": [
-    "...",
-    "..."
-  ],
-  "weight": {{writers.comedy.weight}}
+"role": "comedy",
+"notes": [
+"...",
+"..."
+],
+"weight": {{writers.comedy.weight}}
 }

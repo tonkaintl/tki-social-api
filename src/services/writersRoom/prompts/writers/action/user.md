@@ -1,4 +1,5 @@
 Context:
+
 - Story seed: {{story_seed}}
 - Project mode: {{project_mode}}
 - Brand: {{project.brand}}
@@ -8,6 +9,7 @@ Context:
 - Your action weight: {{writers.action.weight}}
 
 Task:
+
 1. Generate intense, action-oriented story beats tailored to the story seed, project mode, brand, and audience.
 2. Emphasize:
    - Risk, danger, or high stakes.
@@ -19,10 +21,10 @@ Task:
 Return ONLY valid JSON:
 
 {
-  "role": "action",
-  "notes": [
-    "...",
-    "..."
-  ],
-  "weight": {{writers.action.weight}}
+"role": "action",
+"notes": [
+"...",
+"..."
+],
+"weight": {{writers.action.weight}}
 }

@@ -41,6 +41,7 @@ tonka_dispatch_newsletters (curated newsletter)
 Create a newsletter containing ALL ranked articles from a specific batch.
 
 **API Call:**
+
 ```http
 POST /api/dispatch/newsletters
 Authorization: Bearer {token}
@@ -53,12 +54,14 @@ Content-Type: application/json
 ```
 
 **What Happens:**
+
 1. System finds all rankings with matching `batch_id`
 2. Creates newsletter with all articles in their original rank order
 3. Articles maintain reference to source rankings via `tonka_dispatch_rankings_id`
 4. Newsletter tracks original batch via `source_batch_id`
 
 **Best For:**
+
 - Weekly/daily digest newsletters
 - "Top 10 This Week" style newsletters
 - Automated newsletter generation from ranking pipeline
@@ -102,12 +105,14 @@ Content-Type: application/json
 ```
 
 **What Happens:**
+
 1. System loads each ranking by ID
 2. Creates newsletter with articles in the order provided in `ranking_ids` array
 3. Each article references its source ranking
 4. `source_batch_id` is NOT set (mixed rankings)
 
 **Best For:**
+
 - Feed-specific newsletters
 - Curated "best of" newsletters
 - Theme-based newsletters (e.g., "All articles about bankruptcies")
@@ -175,6 +180,7 @@ Content-Type: application/json
 ```
 
 **What Happens:**
+
 - Creates newsletter with NO articles
 - `source_batch_id` is `null`
 - Newsletter status defaults to `draft`
@@ -187,6 +193,7 @@ Content-Type: application/json
 Manual sections are custom content written by editors (not from rankings).
 
 **Add Editor's Note:**
+
 ```http
 POST /api/dispatch/newsletters/{newsletter_id}/articles
 Authorization: Bearer {token}
@@ -201,6 +208,7 @@ Content-Type: application/json
 ```
 
 **Add Custom Section:**
+
 ```http
 POST /api/dispatch/newsletters/{newsletter_id}/articles
 Authorization: Bearer {token}
@@ -217,6 +225,7 @@ Content-Type: application/json
 ```
 
 **Manual Section Characteristics:**
+
 - `is_manual_section: true`
 - `tonka_dispatch_rankings_id: null` (no ranking reference)
 - All content comes from `custom_*` fields
@@ -280,16 +289,16 @@ Content-Type: application/json
 
 ## Comparison Matrix
 
-| Feature | Feed-Based (Batch) | Feed-Based (Selected) | Manual |
-|---------|-------------------|----------------------|---------|
-| **Speed** | ⚡⚡⚡ Instant | ⚡⚡ Fast | ⚡ Slow |
-| **Control** | Low | Medium | High |
-| **Custom Content** | ❌ No | ❌ No | ✅ Yes |
-| **Ranking References** | ✅ All articles | ✅ Selected articles | ⚡ Optional |
-| **source_batch_id** | ✅ Set | ❌ Null | ❌ Null |
-| **Best For** | Automated digest | Curated from rankings | Editorial newsletters |
-| **Articles on Create** | All from batch | Selected rankings | Zero (build manually) |
-| **Editing After Create** | Can customize | Can customize | All fields custom |
+| Feature                  | Feed-Based (Batch) | Feed-Based (Selected) | Manual                |
+| ------------------------ | ------------------ | --------------------- | --------------------- |
+| **Speed**                | ⚡⚡⚡ Instant     | ⚡⚡ Fast             | ⚡ Slow               |
+| **Control**              | Low                | Medium                | High                  |
+| **Custom Content**       | ❌ No              | ❌ No                 | ✅ Yes                |
+| **Ranking References**   | ✅ All articles    | ✅ Selected articles  | ⚡ Optional           |
+| **source_batch_id**      | ✅ Set             | ❌ Null               | ❌ Null               |
+| **Best For**             | Automated digest   | Curated from rankings | Editorial newsletters |
+| **Articles on Create**   | All from batch     | Selected rankings     | Zero (build manually) |
+| **Editing After Create** | Can customize      | Can customize         | All fields custom     |
 
 ---
 
@@ -300,6 +309,7 @@ The most powerful newsletters combine both methods:
 ### Workflow Example
 
 **1. Create from Batch** (get ranked content automatically)
+
 ```json
 POST /api/dispatch/newsletters
 {
@@ -309,6 +319,7 @@ POST /api/dispatch/newsletters
 ```
 
 **2. Add Editor's Note at Top** (manual section)
+
 ```json
 POST /api/dispatch/newsletters/{id}/articles
 {
@@ -320,6 +331,7 @@ POST /api/dispatch/newsletters/{id}/articles
 ```
 
 **3. Customize Specific Articles** (override ranked content)
+
 ```json
 PATCH /api/dispatch/newsletters/{id}/articles/{article_id}
 {
@@ -329,11 +341,13 @@ PATCH /api/dispatch/newsletters/{id}/articles/{article_id}
 ```
 
 **4. Remove Low-Quality Articles** (curate the batch)
+
 ```json
 DELETE /api/dispatch/newsletters/{id}/articles/{article_id}
 ```
 
 **5. Add Manual Conclusion** (manual section)
+
 ```json
 POST /api/dispatch/newsletters/{id}/articles
 {
@@ -370,17 +384,20 @@ POST /api/dispatch/newsletters/{id}/articles
 ```
 
 **If "Latest Rankings Batch" selected:**
+
 - Fetch latest batch_id from `/api/dispatch/rankings?sort=-created_at&limit=1`
 - Create newsletter with that batch_id
 - Redirect to editor showing all articles
 
 **If "Select from Feed" selected:**
+
 - Show dropdown of feeds from `/api/dispatch/feeds`
 - Fetch rankings for that feed: `/api/dispatch/rankings?tonka_dispatch_rss_links_id={feed_id}`
 - Show checkbox list of rankings
 - Create newsletter with selected `ranking_ids`
 
 **If "Start Blank" selected:**
+
 - Create empty newsletter
 - Redirect to editor with "Add Content" prompts
 
@@ -438,6 +455,7 @@ POST /api/dispatch/newsletters/{id}/articles
 ### Database Schema Differences
 
 **Feed-Based Newsletter (from batch):**
+
 ```javascript
 {
   _id: ObjectId("..."),
@@ -455,6 +473,7 @@ POST /api/dispatch/newsletters/{id}/articles
 ```
 
 **Manual Newsletter:**
+
 ```javascript
 {
   _id: ObjectId("..."),
@@ -487,19 +506,19 @@ function getArticleContent(article) {
       link: article.custom_link || null,
       imageUrl: article.custom_image_url || null,
       category: article.custom_category || null,
-      sourceName: article.custom_source_name || null
+      sourceName: article.custom_source_name || null,
     };
   } else {
     // From ranking - use custom overrides or fall back to ranking
     const ranking = article.tonka_dispatch_rankings_id; // populated
-    
+
     return {
       title: article.custom_title || ranking.title,
       snippet: article.custom_snippet || ranking.snippet,
       link: article.custom_link || ranking.link,
       imageUrl: article.custom_image_url || null,
       category: article.custom_category || ranking.category,
-      sourceName: article.custom_source_name || ranking.source_name
+      sourceName: article.custom_source_name || ranking.source_name,
     };
   }
 }
@@ -510,18 +529,21 @@ function getArticleContent(article) {
 ## Summary
 
 ### Feed-Based Creation
+
 ✅ **Fast** - Automatic population from ranking system  
 ✅ **Scalable** - Perfect for regular newsletters  
 ✅ **Data-Driven** - Leverages automated content discovery  
 ⚠️ **Requires Setup** - Need ranking pipeline running  
-⚠️ **Less Customization** - Initially uses ranking data  
+⚠️ **Less Customization** - Initially uses ranking data
 
 ### Manual Creation
+
 ✅ **Flexible** - Total editorial control  
 ✅ **Custom Content** - Write original commentary  
 ✅ **No Dependencies** - Works without ranking system  
 ⚠️ **Time-Intensive** - Requires manual content entry  
-⚠️ **No Automation** - Every article added manually  
+⚠️ **No Automation** - Every article added manually
 
 ### Best Practice: Use Both
+
 Start with feed-based creation for speed, then add manual sections for editorial voice and context. This gives you the best of both worlds: automated content discovery + human curation.

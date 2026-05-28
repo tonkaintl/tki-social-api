@@ -46,7 +46,7 @@ const SEED_TELLS = [
   {
     category: 'ai_tell',
     notes: 'em-dash + inspirational pivot',
-    pattern: '— and that\'s how',
+    pattern: "— and that's how",
     severity: 'high',
   },
   { category: 'ai_tell', pattern: 'in conclusion', severity: 'high' },
@@ -144,7 +144,7 @@ const SEED_TELLS = [
   },
   {
     category: 'weasel_words',
-    pattern: 'in today\'s fast-paced',
+    pattern: "in today's fast-paced",
     severity: 'high',
   },
   {

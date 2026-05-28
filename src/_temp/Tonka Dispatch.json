@@ -13,10 +13,7 @@
       },
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
-      "position": [
-        -1280,
-        96
-      ],
+      "position": [-1280, 96],
       "id": "9bd4ed33-48f6-402a-aa24-a82a6561ec3d",
       "name": "Schedule Trigger"
     },
@@ -57,10 +54,7 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [
-        -1056,
-        112
-      ],
+      "position": [-1056, 112],
       "id": "68fc5297-892b-46a5-81b6-f86cccfe416a",
       "name": "HTTP Request",
       "alwaysOutputData": true,
@@ -89,10 +83,7 @@
       },
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
-      "position": [
-        -832,
-        96
-      ],
+      "position": [-832, 96],
       "id": "d1f6684a-e6c7-41b5-a66f-2545aed597f6",
       "name": "Cache RSS"
     },
@@ -103,10 +94,7 @@
       },
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
-      "position": [
-        -608,
-        96
-      ],
+      "position": [-608, 96],
       "id": "f07a72c1-ba60-4a52-a980-49933f9493fb",
       "name": "Split Out RSS Array"
     },
@@ -117,10 +105,7 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        -160,
-        96
-      ],
+      "position": [-160, 96],
       "id": "2c059d34-5476-4fd0-af24-8f5e9ab35bdc",
       "name": "Code Merge RSS and Feed"
     },
@@ -200,10 +185,7 @@
       },
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
-      "position": [
-        -384,
-        96
-      ],
+      "position": [-384, 96],
       "id": "b630c047-d99f-4362-b7fb-50df0f5f2b67",
       "name": "Cache RSS Feed Links"
     },
@@ -215,10 +197,7 @@
         "color": 6
       },
       "type": "n8n-nodes-base.stickyNote",
-      "position": [
-        0,
-        0
-      ],
+      "position": [0, 0],
       "typeVersion": 1,
       "id": "23d562ca-3c75-400b-b3dd-f0f367576b54",
       "name": "Sticky Note"
@@ -230,10 +209,7 @@
       },
       "type": "n8n-nodes-base.aggregate",
       "typeVersion": 1,
-      "position": [
-        960,
-        96
-      ],
+      "position": [960, 96],
       "id": "5110566d-0b21-4304-b259-bfec8224b010",
       "name": "Aggregate"
     },
@@ -268,10 +244,7 @@
       },
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 2,
-      "position": [
-        1200,
-        -352
-      ],
+      "position": [1200, -352],
       "id": "a21f25a9-d351-4f60-9e82-d20adb09561f",
       "name": "Rank via LLM"
     },
@@ -281,10 +254,7 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        1536,
-        96
-      ],
+      "position": [1536, 96],
       "id": "20276d1e-11d3-445f-b80c-ef56a360a163",
       "name": "Normalize Rankings"
     },
@@ -304,10 +274,7 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [
-        1760,
-        192
-      ],
+      "position": [1760, 192],
       "id": "b022f8d6-04d0-44cc-ad69-42fccf8fc6d0",
       "name": "HTTP Request1",
       "alwaysOutputData": true,
@@ -326,10 +293,7 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        64,
-        96
-      ],
+      "position": [64, 96],
       "id": "72eed6c8-8bb3-4f1a-be2c-2572ee46fcec",
       "name": "Pare 01 - Drop Low-Value Patterns"
     },
@@ -339,10 +303,7 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        288,
-        96
-      ],
+      "position": [288, 96],
       "id": "22b9346f-7f4f-476d-8d90-aa827ec24c95",
       "name": "Pare 02 - Cap Per Feed"
     },
@@ -352,10 +313,7 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        512,
-        96
-      ],
+      "position": [512, 96],
       "id": "5d193fab-8542-4647-9ed2-85866af32d33",
       "name": "Pare 03 - Cap Per Category"
     },
@@ -365,10 +323,7 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        736,
-        96
-      ],
+      "position": [736, 96],
       "id": "de86587c-d559-4b38-bb9e-8fcf62047608",
       "name": "Pare 04 - Global Cap"
     },
@@ -383,10 +338,7 @@
       },
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.2,
-      "position": [
-        1760,
-        16
-      ],
+      "position": [1760, 16],
       "id": "98fdd9e5-7782-44de-bac5-4c7cdc2c60aa",
       "name": "Send a message",
       "webhookId": "aa711434-f7a7-4487-b960-2b8e88e0ee6e",
@@ -420,10 +372,7 @@
       },
       "type": "@n8n/n8n-nodes-langchain.anthropic",
       "typeVersion": 1,
-      "position": [
-        1184,
-        96
-      ],
+      "position": [1184, 96],
       "id": "685f02e4-3f90-4cb3-9ee0-b60987e37908",
       "name": "Message a model",
       "credentials": {

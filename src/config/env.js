@@ -151,13 +151,64 @@ const envSchema = z.object({
     .transform(val => val === 'true')
     .pipe(z.boolean())
     .default(true),
-  // Writers Room pipeline (n8n replacement) — feature flag for the cron job.
-  // Set false in non-prod env to keep the cron from triggering pipeline runs.
+  // ── Writers Room pipeline (n8n replacement) ──────────────────────────────
+  // Kept alphabetical (sort/sort-keys rule). Semantic grouping in comments only.
+  //
+  // creativity_to_reporter random window. LOWER = wild-creative, HIGHER =
+  // dry-reporter. 0–20 keeps the cron output on the creative end.
+  WRITERS_ROOM_CREATIVITY_MAX: z
+    .string()
+    .transform(Number)
+    .pipe(z.number().min(0).max(100))
+    .default('20'),
+  WRITERS_ROOM_CREATIVITY_MIN: z
+    .string()
+    .transform(Number)
+    .pipe(z.number().min(0).max(100))
+    .default('0'),
+  // Cron feature flag. False in non-prod so we don't burn LLM tokens at boot.
   WRITERS_ROOM_CRON_ENABLED: z
     .string()
     .transform(val => val === 'true')
     .pipe(z.boolean())
     .default('false'),
+  // Cron schedule + timezone pulled from env so we can change cadence
+  // without a deploy. Default = 07:00 America/Chicago, Monday through Friday.
+  WRITERS_ROOM_CRON_SCHEDULE: nonEmptyStringWithDefault('0 7 * * 1-5'),
+  WRITERS_ROOM_CRON_TIMEZONE: nonEmptyStringWithDefault('America/Chicago'),
+  WRITERS_ROOM_DRAFT_LENGTH: z
+    .enum(['short', 'medium', 'long'])
+    .default('short'),
+  WRITERS_ROOM_ENABLE_RESEARCH: z
+    .string()
+    .transform(val => val === 'true')
+    .pipe(z.boolean())
+    .default('true'),
+  // fact_to_fiction: HIGHER = more facts (the researcher prompt is the only
+  // place the direction is annotated for the LLM: "higher = lean harder on
+  // real data"). 100 = pure facts.
+  WRITERS_ROOM_FACT_TO_FICTION: z
+    .string()
+    .transform(Number)
+    .pipe(z.number().min(0).max(100))
+    .default('100'),
+  WRITERS_ROOM_OUTPUT_BLOG_POST: z
+    .string()
+    .transform(val => val === 'true')
+    .pipe(z.boolean())
+    .default('true'),
+  WRITERS_ROOM_OUTPUT_FUTURE_STORY_ARC: z
+    .string()
+    .transform(val => val === 'true')
+    .pipe(z.boolean())
+    .default('true'),
+  WRITERS_ROOM_OUTPUT_VISUAL_PROMPTS: z
+    .string()
+    .transform(val => val === 'true')
+    .pipe(z.boolean())
+    .default('true'),
+  WRITERS_ROOM_PROJECT_MODE: nonEmptyStringWithDefault('blog_post'),
+  WRITERS_ROOM_TARGET_BRAND: nonEmptyStringWithDefault('tonka_blog'),
   // AI-tells severity threshold. When a final draft's accumulated tell
   // severity score reaches this number, the run is downgraded from
   // `succeeded` to `partial` and skips the spark-post forward + email.
@@ -167,6 +218,18 @@ const envSchema = z.object({
     .transform(Number)
     .pipe(z.number().min(0).max(100))
     .default('10'),
+  // tone_strictness random window — fully open by default (0–100) so the
+  // panel surprises us on every fire.
+  WRITERS_ROOM_TONE_MAX: z
+    .string()
+    .transform(Number)
+    .pipe(z.number().min(0).max(100))
+    .default('100'),
+  WRITERS_ROOM_TONE_MIN: z
+    .string()
+    .transform(Number)
+    .pipe(z.number().min(0).max(100))
+    .default('0'),
   YOUTUBE_ACCESS_TOKEN: z.string().optional(),
   YOUTUBE_CLIENT_ID: z.string().optional(),
   YOUTUBE_CLIENT_SECRET: z.string().optional(),

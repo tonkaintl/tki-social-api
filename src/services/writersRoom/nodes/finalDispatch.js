@@ -59,6 +59,9 @@ export function finalDispatch(ctx) {
     story_seed: ctx.story_seed || '',
     target_audience: ctx.project?.audience || ctx.target_audience || '',
     target_brand: ctx.target_brand || null,
+    // pickTitle output — { chosen, candidates, original, reason }. Lets
+    // consumers see WHY final_draft.title looks the way it does.
+    title_pick: ctx.title_pick || null,
     title_variations: blogPackage.title_variations || [],
     visual_prompts: ctx.visual_prompts || [],
     writer_notes: ctx.writer_notes || null,
