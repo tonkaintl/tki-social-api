@@ -94,6 +94,10 @@ export const PIPELINE_NODE = {
   GENRE_TONE_ROUTER: 'genreToneRouter',
   HEAD_WRITER: 'headWriter',
   INPUT_NORMALIZER: 'inputNormalizer',
+  // After socialMediaDirector produces title_variations, randomly promote
+  // one into final_draft.title so the spark-post downstream consumer sees
+  // a fresh variation per run instead of always the editor's first pick.
+  PICK_TITLE: 'pickTitle',
   PROJECT_MODE: 'projectMode',
   RESEARCHER: 'researcher',
   SOCIAL_MEDIA_DIRECTOR: 'socialMediaDirector',
@@ -171,8 +175,14 @@ export const IDEA_ROTATION = {
 
 // Pipeline error codes.
 export const PIPELINE_ERROR_CODE = {
+  IDEA_NOT_FOUND: 'IDEA_NOT_FOUND',
   IDEA_ROTATION_EMPTY: 'IDEA_ROTATION_EMPTY',
   IDEA_ROTATION_READ_FAILED: 'IDEA_ROTATION_READ_FAILED',
+  IDEAS_CRUD_FAILED: 'IDEAS_CRUD_FAILED',
+  IDEAS_DUPLICATE: 'IDEAS_DUPLICATE',
+  IDEAS_LIST_FAILED: 'IDEAS_LIST_FAILED',
+  IDEAS_SEASON_EXHAUSTED: 'IDEAS_SEASON_EXHAUSTED',
+  INVALID_IDEA_ID: 'INVALID_IDEA_ID',
   INVALID_NODE_NAME: 'INVALID_NODE_NAME',
   INVALID_RUN_ID: 'INVALID_RUN_ID',
   LLM_CALL_FAILED: 'LLM_CALL_FAILED',
@@ -184,6 +194,52 @@ export const PIPELINE_ERROR_CODE = {
   RESEARCH_FAILED: 'RESEARCH_FAILED',
   RUN_LIST_FAILED: 'RUN_LIST_FAILED',
   RUN_NOT_FOUND: 'RUN_NOT_FOUND',
+};
+
+// ----------------------------------------------------------------------------
+// Writers Room idea bank — replaces SEASON-01-IDEAS.md as the rotation source.
+// Frontend manages this collection via /api/writers-room/ideas CRUD; the cron
+// picks the next unused idea by (season, position) each fire.
+// ----------------------------------------------------------------------------
+
+// Mirrors the frontend CATEGORIES list. Stored on each idea, surfaced to the
+// LLM only when the project_mode profile needs it (otherwise editorial-only).
+export const IDEA_CATEGORY = {
+  BUYER: 'buyer',
+  COMMENTARY: 'commentary',
+  CULTURE: 'culture',
+  OTHER: 'other',
+  VENDOR: 'vendor',
+};
+
+export const IDEA_CATEGORY_VALUES = Object.values(IDEA_CATEGORY);
+
+export const IDEA_STATUS = {
+  // Picked by the cron, pipeline currently running. Still selectable by the
+  // selector if the run document is stale (use the cron concurrency guard).
+  IN_PROGRESS: 'in_progress',
+  // Removed from rotation but kept for history. Soft-delete target.
+  RETIRED: 'retired',
+  // Hasn't run yet (or has been manually reset). Free for the next cron
+  // fire to pick. Named "unused" instead of "pending" because "pending"
+  // implies queued/scheduled — these ideas aren't queued, they're just
+  // sitting in the bank waiting for their turn.
+  UNUSED: 'unused',
+  // Pipeline completed (regardless of failed/partial/succeeded run status).
+  // The cron skips USED ideas until the season is fully exhausted.
+  USED: 'used',
+};
+
+export const IDEA_STATUS_VALUES = Object.values(IDEA_STATUS);
+
+// Default season label new ideas get when one isn't supplied. The frontend
+// can override per-create, and the seed script stamps "season_01".
+export const IDEA_DEFAULT_SEASON = 'season_01';
+
+export const IDEAS_PAGINATION = {
+  DEFAULT_LIMIT: 100,
+  DEFAULT_PAGE: 1,
+  MAX_LIMIT: 500,
 };
 
 // ----------------------------------------------------------------------------

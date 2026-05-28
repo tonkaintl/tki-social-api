@@ -1,24 +1,34 @@
 import { PIPELINE_ERROR_CODE } from '../../../constants/writersroom.js';
-import { peekNextIdea } from '../../../services/writersRoom/ideaRotation.js';
+import { peekNextIdeaFromDb } from '../../../services/writersRoom/ideas.service.js';
 import { logger } from '../../../utils/logger.js';
 
 /**
- * Peek at the next idea in the SEASON-01-IDEAS.md rotation WITHOUT
- * advancing the cursor. Useful for confirming the rotation is configured
+ * GET /api/writers-room/next-idea
+ *
+ * Peek at the next idea the cron would consume WITHOUT flipping its status.
+ * Reads the writers_room_ideas collection (which the frontend manages via
+ * /api/writers-room/ideas). Useful for confirming the rotation is configured
  * before kicking off a cron-driven run.
  *
- * Response: { ok, cursor, idea, totalIdeas, lastUsedAt, requestId }
+ * Query params:
+ *   season — defaults to "season_01"
+ *
+ * Response:
+ *   { ok, season, idea, total_ideas, used, remaining, requestId }
+ *   idea is null when the season is exhausted.
  */
 export async function getNextWritersRoomIdea(req, res) {
   try {
-    const info = await peekNextIdea();
+    const season = req.query.season || undefined;
+    const info = await peekNextIdeaFromDb(season);
     return res.status(200).json({
-      cursor: info.cursor,
       idea: info.idea,
-      lastUsedAt: info.last_used_at,
       ok: true,
+      remaining: info.remaining,
       requestId: req.id,
-      totalIdeas: info.total_ideas,
+      season: info.season,
+      total_ideas: info.total_ideas,
+      used: info.used,
     });
   } catch (err) {
     logger.error('[WritersRoom] Idea peek failed', {

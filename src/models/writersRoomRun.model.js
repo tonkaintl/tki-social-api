@@ -47,6 +47,8 @@ const snapshotsSchema = new Schema(
     head_draft: { type: Schema.Types.Mixed },
     head_writer_system_message: { type: String },
     research: { type: Schema.Types.Mixed },
+    // { chosen, candidates, original, reason } — pickTitle node output.
+    title_pick: { type: Schema.Types.Mixed },
     visual_prompts: { type: Schema.Types.Mixed },
     writer_notes: { type: Schema.Types.Mixed },
     writer_panel: { type: Schema.Types.Mixed },

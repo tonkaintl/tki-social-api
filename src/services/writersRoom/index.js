@@ -58,6 +58,7 @@ import {
 import { genreToneRouter } from './nodes/genreToneRouter.js';
 import { headWriter } from './nodes/headWriter.js';
 import { inputNormalizer } from './nodes/inputNormalizer.js';
+import { pickTitle } from './nodes/pickTitle.js';
 import { projectMode } from './nodes/projectMode.js';
 import { researcher } from './nodes/researcher.js';
 import {
@@ -237,6 +238,15 @@ export async function runPipeline(input = {}, options = {}) {
       ctx = defaultFutureStoryArc(ctx);
     }
     await recordSnapshot(runId, { future_arcs: ctx.future_arcs });
+
+    // 9.5. Randomly promote one of the Social Media Director's title
+    //      variations into final_draft.title so the spark-post downstream
+    //      consumer rotates titles per run. Pass-through when no
+    //      variations exist (blog output skipped, or LLM returned none).
+    ctx = await step(trace, runId, 'pickTitle', () =>
+      Promise.resolve(pickTitle(ctx))
+    );
+    await recordSnapshot(runId, { title_pick: ctx.title_pick });
 
     // 10. Build the final outbound payload.
     const payload = await step(trace, runId, 'finalDispatch', () =>
