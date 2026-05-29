@@ -238,15 +238,8 @@ export const WRITERS_ROOM_EMAIL_TEMPLATES = {
       `;
     },
 
-    SUBJECT: ({ brand, title }) => {
-      if (title && brand) {
-        return `Writer's Room: ${title} [${brand}]`;
-      }
-      if (title) {
-        return `Writer's Room: ${title}`;
-      }
-      return "Writer's Room Content Ready";
-    },
+    SUBJECT: ({ title }) =>
+      title ? `[TKIWR] '${title}'` : '[TKIWR] Content Ready',
   },
 
   ERROR_NOTIFICATION: {
