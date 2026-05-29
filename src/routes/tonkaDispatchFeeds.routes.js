@@ -2,6 +2,7 @@ import express from 'express';
 
 import {
   listFeeds,
+  removeFeed,
   updateFeed,
   upsertFeed,
 } from '../controllers/tonkaDispatchFeeds/methods.js';
@@ -26,6 +27,11 @@ router.get('/', verifyEitherAuth, listFeeds);
 // PATCH Routes
 // ----------------------------------------------------------------------------
 router.patch('/:id', verifyToken, updateFeed);
+
+// ----------------------------------------------------------------------------
+// DELETE Routes
+// ----------------------------------------------------------------------------
+router.delete('/:id', verifyToken, removeFeed);
 
 // ----------------------------------------------------------------------------
 export default router;
