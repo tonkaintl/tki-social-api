@@ -90,19 +90,21 @@ export const WRITERS_ROOM_EMAIL_TEMPLATES = {
 
   CONTENT_NOTIFICATION: {
     BODY: ({
-      content_id,
       doc_link,
       final_draft,
       future_story_arc_generator,
       outputs,
       platform_summaries,
-      project,
       research,
+      spark_post_id,
       timestamp,
       title_variations,
       visual_prompts,
       writer_notes,
     }) => {
+      const editLink = spark_post_id
+        ? `<p style="margin-top: 12px;"><a href="https://social.tonkaintl.com/tonka-spark-posts/${spark_post_id}" target="_blank" style="color: #b70000; font-weight: bold; text-decoration: none;">→ Edit Post</a></p>`
+        : '';
       const formatList = (items, prefix = '- ') =>
         items && items.length > 0
           ? items.map(item => `${prefix}${item}`).join('\n')
@@ -134,38 +136,10 @@ export const WRITERS_ROOM_EMAIL_TEMPLATES = {
           <h2 style="color: #b70000; border-bottom: 3px solid #b70000; padding-bottom: 10px;">✍️ Writer's Room Final Draft</h2>
           
           ${doc_link ? `<p style="background: #d4edda; padding: 15px; border-radius: 5px; margin: 20px 0;"><strong>📄 <a href="${doc_link}" target="_blank" style="color: #155724;">View Full Document in Google Drive</a></strong></p>` : ''}
-          
-          <div style="background: #f0f0f0; padding: 15px; border-radius: 5px; margin: 20px 0;">
-            <h3 style="margin-top: 0;">FINAL DRAFT LOG</h3>
-            <table style="width: 100%; border-collapse: collapse;">
-              <tr>
-                <td style="padding: 5px; font-weight: bold; width: 30%;">Run Timestamp:</td>
-                <td style="padding: 5px;">${timestamp ? new Date(timestamp).toLocaleString() : new Date().toLocaleString()}</td>
-              </tr>
-              <tr>
-                <td style="padding: 5px; font-weight: bold;">Content ID:</td>
-                <td style="padding: 5px;">${content_id || 'n/a'}</td>
-              </tr>
-              <tr>
-                <td style="padding: 5px; font-weight: bold;">Project Mode:</td>
-                <td style="padding: 5px;">${project?.mode || 'n/a'}</td>
-              </tr>
-              <tr>
-                <td style="padding: 5px; font-weight: bold;">Brand:</td>
-                <td style="padding: 5px;">${project?.brand_meta?.name || 'n/a'}</td>
-              </tr>
-              <tr>
-                <td style="padding: 5px; font-weight: bold;">Target Audience:</td>
-                <td style="padding: 5px;">${project?.audience || 'n/a'}</td>
-              </tr>
-            </table>
-          </div>
-          
-          <hr style="border: 0; border-top: 2px solid #ccc; margin: 30px 0;" />
-          
-          ${final_draft?.title ? `<h3 style="color: #b70000; font-size: 24px;">TITLE</h3><p style="font-size: 20px; font-weight: bold;">${final_draft.title}</p>` : ''}
-          
-          ${final_draft?.thesis ? `<h3 style="color: #b70000; margin-top: 25px;">THESIS</h3><p style="font-style: italic; background: #fffbea; padding: 15px; border-left: 4px solid #f59e0b; border-radius: 4px;">${final_draft.thesis}</p>` : ''}
+
+          ${final_draft?.thesis ? `<h3 style="color: #b70000; margin-top: 25px;">THESIS</h3><div style="font-style: italic; background: #fffbea; padding: 15px; border-left: 4px solid #f59e0b; border-radius: 4px;"><p style="margin: 0;">${final_draft.thesis}</p>${editLink}</div>` : ''}
+
+          ${final_draft?.title ? `<p style="font-size: 24px; font-weight: bold; margin-top: 25px;">${final_draft.title}</p>` : ''}
           
           ${final_draft?.draft_markdown ? `<h3 style="color: #b70000; margin-top: 25px;">ARTICLE BODY (FINAL DRAFT)</h3><div style="background: #ffffff; padding: 20px; border: 1px solid #ddd; border-radius: 5px; line-height: 1.8;"><pre style="white-space: pre-wrap; font-family: Georgia, serif; font-size: 15px;">${final_draft.draft_markdown}</pre></div>` : ''}
           
