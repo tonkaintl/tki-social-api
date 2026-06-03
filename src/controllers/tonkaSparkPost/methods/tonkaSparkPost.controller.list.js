@@ -14,6 +14,7 @@ export async function getTonkaSparkPostList(req, res) {
   try {
     const {
       brand,
+      is_used,
       limit = 50,
       mode,
       page = 1,
@@ -25,6 +26,7 @@ export async function getTonkaSparkPostList(req, res) {
 
     logger.info('Get Tonka Spark Post list request', {
       brand,
+      is_used,
       limit: Number(limit),
       mode,
       page: Number(page),
@@ -48,6 +50,10 @@ export async function getTonkaSparkPostList(req, res) {
 
     if (mode && PLATFORM_MODES_VALUES.includes(mode)) {
       filter.project_mode = mode;
+    }
+
+    if (is_used !== undefined) {
+      filter.is_used = is_used === 'true';
     }
 
     if (search) {
@@ -106,6 +112,7 @@ export async function getTonkaSparkPostList(req, res) {
       count: content.length,
       filters: {
         brand: brand || null,
+        is_used: is_used !== undefined ? is_used === 'true' : null,
         mode: mode || null,
         search: search || null,
         status: status || null,

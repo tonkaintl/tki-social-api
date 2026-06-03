@@ -279,6 +279,7 @@ export const NEWSLETTER_FIELDS = {
   HERO_IMAGE_URL: 'hero_image_url',
   HTML_CONTENT: 'html_content',
   ID: '_id',
+  IS_USED: 'is_used',
   SCHEDULED_DATE: 'scheduled_date',
   SENT_DATE: 'sent_date',
   SOURCE_BATCH_ID: 'source_batch_id',

@@ -46,6 +46,11 @@ var tonkaDispatchNewsletterSchema = new Schema({
     default: '',
     type: String,
   },
+  // User-controlled "used" toggle (independent of status).
+  is_used: {
+    default: false,
+    type: Boolean,
+  },
   scheduled_date: Date,
   sent_date: Date,
   source_batch_id: String,

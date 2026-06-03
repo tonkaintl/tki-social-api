@@ -9,6 +9,7 @@ import {
   listNewsletters,
   removeArticle,
   reorderArticles,
+  toggleNewsletterUsed,
   updateArticle,
   updateNewsletter,
 } from '../controllers/tonkaDispatchNewsletters/methods.js';
@@ -37,6 +38,7 @@ router.get('/:id', verifyEitherAuth, getNewsletter);
 // PATCH Routes
 // ----------------------------------------------------------------------------
 router.patch('/:id', verifyToken, updateNewsletter);
+router.patch('/:id/used', verifyToken, toggleNewsletterUsed);
 router.patch('/:id/articles/:article_id', verifyToken, updateArticle);
 
 // ----------------------------------------------------------------------------
