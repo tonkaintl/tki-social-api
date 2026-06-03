@@ -14,10 +14,15 @@ import { logger } from '../../../utils/logger.js';
  */
 export async function listNewsletters(req, res) {
   try {
-    const { limit, page, search, sort, source_batch_id, status } = req.query;
+    const { is_used, limit, page, search, sort, source_batch_id, status } =
+      req.query;
 
     // Build filter object
     const filter = {};
+
+    if (is_used !== undefined) {
+      filter[NEWSLETTER_FIELDS.IS_USED] = is_used === 'true';
+    }
 
     if (status) {
       if (!NEWSLETTER_STATUS_VALUES.includes(status)) {
@@ -124,6 +129,7 @@ export async function listNewsletters(req, res) {
         ...(status && { status }),
         ...(source_batch_id && { source_batch_id }),
         ...(search && { search }),
+        ...(is_used !== undefined && { is_used: is_used === 'true' }),
       },
       newsletters,
       page: pageNum,

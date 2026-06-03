@@ -68,6 +68,7 @@ export async function saveTonkaSparkPost(content, options = {}) {
         }
       : null,
     head_writer_system_message: content.head_writer_system_message || null,
+    is_used: false,
     notifier_email: content.notifier_email || config.TONKA_SPARK_RECIPIENTS,
     outputs: content.outputs || null,
     platform_summaries: content.platform_summaries || null,

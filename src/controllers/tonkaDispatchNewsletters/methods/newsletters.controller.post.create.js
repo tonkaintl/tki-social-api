@@ -48,6 +48,7 @@ export async function createNewsletter(req, res) {
     const newsletterData = {
       _id: newsletterId,
       hero_image_url: hero_image_url || null,
+      is_used: false,
       source_batch_id: source_batch_id || null,
       status: status || NEWSLETTER_STATUS.DRAFT,
       testing_emails: testing_emails || [],

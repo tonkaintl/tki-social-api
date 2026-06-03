@@ -228,6 +228,8 @@ var tonkaSparkPostSchema = new Schema({
   final_draft: FinalDraftSchema,
   future_story_arc_generator: FutureStoryArcGeneratorSchema,
   head_writer_system_message: { type: String },
+  // User-controlled "used" toggle.
+  is_used: { default: false, type: Boolean },
   notifier_email: { type: String },
   outputs: OutputsSchema,
   platform_summaries: PlatformSummariesSchema,

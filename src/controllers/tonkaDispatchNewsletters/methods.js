@@ -3,6 +3,7 @@ import { removeArticle } from './methods/newsletters.controller.delete.remove-ar
 import { listNewsletters } from './methods/newsletters.controller.get.list.js';
 import { getNewsletter } from './methods/newsletters.controller.get.single.js';
 import { updateArticle } from './methods/newsletters.controller.patch.article-update.js';
+import { toggleNewsletterUsed } from './methods/newsletters.controller.patch.toggle-used.js';
 import { updateNewsletter } from './methods/newsletters.controller.patch.update.js';
 import { addArticle } from './methods/newsletters.controller.post.add-article.js';
 import { createNewsletter } from './methods/newsletters.controller.post.create.js';
@@ -18,6 +19,7 @@ export {
   listNewsletters,
   removeArticle,
   reorderArticles,
+  toggleNewsletterUsed,
   updateArticle,
   updateNewsletter,
 };

@@ -5,6 +5,7 @@ import {
   deleteVisualPromptImage,
   getTonkaSparkPostById,
   getTonkaSparkPostList,
+  toggleTonkaSparkPostUsed,
   updateFinalDraft,
   uploadVisualPromptImage,
 } from '../controllers/tonkaSparkPost/methods.js';
@@ -28,6 +29,7 @@ router.get('/:id', getTonkaSparkPostById);
 // Final Draft Routes
 // ----------------------------------------------------------------------------
 router.patch('/:id/final-draft', updateFinalDraft);
+router.patch('/:id/used', toggleTonkaSparkPostUsed);
 
 // ----------------------------------------------------------------------------
 // Visual Prompts Routes
