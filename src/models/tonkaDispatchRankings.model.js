@@ -47,6 +47,15 @@ var tonkaDispatchRankingSchema = new Schema({
   source_name: String,
   title: String,
   tonka_dispatch_rss_links_id: String,
+  // Single-use claim: set to the newsletter that uses this ranking.
+  // null = available for use. An article (ranking) may only be used in
+  // one newsletter at a time, regardless of newsletter status.
+  used_in_newsletter_id: {
+    default: null,
+    index: true,
+    ref: 'tonka_dispatch_newsletters',
+    type: mongoose.Schema.Types.ObjectId,
+  },
 });
 
 // ----------------------------------------------------------

@@ -197,6 +197,7 @@ export const RANKING_FIELDS = {
   SOURCE_NAME: 'source_name',
   TITLE: 'title',
   TONKA_DISPATCH_RSS_LINKS_ID: 'tonka_dispatch_rss_links_id',
+  USED_IN_NEWSLETTER_ID: 'used_in_newsletter_id',
 };
 
 // Valid sort fields for rankings listing
@@ -254,6 +255,7 @@ export const NEWSLETTER_STATUS_VALUES = Object.values(NEWSLETTER_STATUS);
 
 // Newsletter error codes
 export const NEWSLETTER_ERROR_CODE = {
+  ARTICLE_IN_USE: 'ARTICLE_IN_USE',
   ARTICLE_NOT_FOUND: 'ARTICLE_NOT_FOUND',
   DUPLICATE_ARTICLE: 'DUPLICATE_ARTICLE',
   GENERATE_FAILED: 'GENERATE_FAILED',

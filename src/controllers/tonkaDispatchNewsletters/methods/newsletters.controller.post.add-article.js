@@ -117,23 +117,28 @@ export async function addArticle(req, res) {
         });
       }
 
-      // Check for duplicate
-      const isDuplicate = newsletter.articles.some(
-        article =>
-          article.tonka_dispatch_rankings_id &&
-          article.tonka_dispatch_rankings_id.toString() ===
-            tonka_dispatch_rankings_id
+      // Atomically claim the ranking for this newsletter. Only succeeds if it
+      // is not already used in any newsletter (single-use across all statuses).
+      // This compare-and-set also closes the read-then-write race.
+      const claimed = await TonkaDispatchRanking.findOneAndUpdate(
+        {
+          _id: tonka_dispatch_rankings_id,
+          used_in_newsletter_id: null,
+        },
+        { $set: { used_in_newsletter_id: newsletter._id } },
+        { new: true }
       );
 
-      if (isDuplicate) {
-        logger.warn('Article already in newsletter', {
+      if (!claimed) {
+        logger.warn('Ranking already used in a newsletter', {
           requestId: req.id,
           tonka_dispatch_rankings_id,
+          used_in_newsletter_id: ranking.used_in_newsletter_id,
         });
 
-        return res.status(400).json({
-          code: NEWSLETTER_ERROR_CODE.DUPLICATE_ARTICLE,
-          message: 'This article is already in the newsletter',
+        return res.status(409).json({
+          code: NEWSLETTER_ERROR_CODE.ARTICLE_IN_USE,
+          message: 'This article is already used in a newsletter',
           requestId: req.id,
         });
       }
@@ -172,7 +177,22 @@ export async function addArticle(req, res) {
     };
 
     newsletter.articles.push(article);
-    await newsletter.save();
+
+    try {
+      await newsletter.save();
+    } catch (saveError) {
+      // Release the claim so the ranking is not orphaned as "used".
+      if (!is_manual_section && tonka_dispatch_rankings_id) {
+        await TonkaDispatchRanking.updateOne(
+          {
+            _id: tonka_dispatch_rankings_id,
+            used_in_newsletter_id: newsletter._id,
+          },
+          { $set: { used_in_newsletter_id: null } }
+        );
+      }
+      throw saveError;
+    }
 
     const addedArticle = newsletter.articles[newsletter.articles.length - 1];
 

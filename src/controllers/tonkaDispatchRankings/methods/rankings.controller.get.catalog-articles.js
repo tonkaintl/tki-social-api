@@ -12,7 +12,7 @@ import { logger } from '../../../utils/logger.js';
  */
 export async function listCatalogArticles(req, res) {
   try {
-    const { category, limit, page } = req.query;
+    const { category, exclude_used, limit, page } = req.query;
 
     if (!category || category.trim() === '') {
       logger.warn('Missing category for ranking catalog articles', {
@@ -48,12 +48,22 @@ export async function listCatalogArticles(req, res) {
     const skip = (pageNum - 1) * limitNum;
     const normalizedCategory = category.trim();
 
+    // Articles are single-use across newsletters. By default we return all of
+    // them with their claim state so the UI can show used ones as disabled;
+    // exclude_used=true hides them entirely instead.
+    const excludeUsed = exclude_used === 'true';
+
     const filter = {
       [RANKING_FIELDS.CATEGORY]: normalizedCategory,
     };
 
+    if (excludeUsed) {
+      filter[RANKING_FIELDS.USED_IN_NEWSLETTER_ID] = null;
+    }
+
     logger.info('Listing ranking catalog articles', {
       category: normalizedCategory,
+      exclude_used: excludeUsed,
       limit: limitNum,
       page: pageNum,
       requestId: req.id,
@@ -72,6 +82,7 @@ export async function listCatalogArticles(req, res) {
         [RANKING_FIELDS.SNIPPET]: 1,
         [RANKING_FIELDS.SOURCE_NAME]: 1,
         [RANKING_FIELDS.TITLE]: 1,
+        [RANKING_FIELDS.USED_IN_NEWSLETTER_ID]: 1,
       })
       .sort({
         _id: 1,
