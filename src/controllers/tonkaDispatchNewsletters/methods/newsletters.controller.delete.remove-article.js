@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 
 import { NEWSLETTER_ERROR_CODE } from '../../../constants/tonkaDispatch.js';
 import TonkaDispatchNewsletter from '../../../models/tonkaDispatchNewsletters.model.js';
+import TonkaDispatchRanking from '../../../models/tonkaDispatchRankings.model.js';
 import { logger } from '../../../utils/logger.js';
 
 /**
@@ -76,6 +77,7 @@ export async function removeArticle(req, res) {
     }
 
     const removedOrder = article.custom_order;
+    const releasedRankingId = article.tonka_dispatch_rankings_id;
 
     // Remove the article
     newsletter.articles.pull(article_id);
@@ -88,6 +90,17 @@ export async function removeArticle(req, res) {
       });
 
     await newsletter.save();
+
+    // Release the ranking claim so the article can be used again.
+    if (releasedRankingId) {
+      await TonkaDispatchRanking.updateOne(
+        {
+          _id: releasedRankingId,
+          used_in_newsletter_id: newsletter._id,
+        },
+        { $set: { used_in_newsletter_id: null } }
+      );
+    }
 
     logger.info('Article removed successfully', {
       article_id,

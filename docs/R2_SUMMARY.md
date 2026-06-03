@@ -8,16 +8,16 @@ Replaces direct-to-Azure frontend uploads with server-side R2 uploads through th
 
 ### New
 
-| Method | Path | Purpose |
-| --- | --- | --- |
-| `POST` | `/api/campaigns/:stockNumber/media/upload` | Upload campaign media (image/video/pdf, ≤100MB) |
-| `POST` | `/api/tonka-spark-posts/:id/visual-prompts/:promptId/images/upload` | Upload visual prompt image (image only, ≤5MB) |
+| Method | Path                                                                | Purpose                                         |
+| ------ | ------------------------------------------------------------------- | ----------------------------------------------- |
+| `POST` | `/api/campaigns/:stockNumber/media/upload`                          | Upload campaign media (image/video/pdf, ≤100MB) |
+| `POST` | `/api/tonka-spark-posts/:id/visual-prompts/:promptId/images/upload` | Upload visual prompt image (image only, ≤5MB)   |
 
 ### Changed (existing routes — same path, new behavior)
 
-| Method | Path | Change |
-| --- | --- | --- |
-| `DELETE` | `/api/campaigns/:stockNumber/media/:id` | Now also deletes the underlying R2 object |
+| Method   | Path                                                                   | Change                                    |
+| -------- | ---------------------------------------------------------------------- | ----------------------------------------- |
+| `DELETE` | `/api/campaigns/:stockNumber/media/:id`                                | Now also deletes the underlying R2 object |
 | `DELETE` | `/api/tonka-spark-posts/:id/visual-prompts/:promptId/images/:imageUrl` | Now also deletes the underlying R2 object |
 
 All routes require the existing Clerk Bearer-token auth.
@@ -30,12 +30,12 @@ All routes require the existing Clerk Bearer-token auth.
 
 **Request** — `multipart/form-data`:
 
-| Field | Required | Type | Notes |
-| --- | --- | --- | --- |
-| `file` | yes | binary | image/_, video/_, or application/pdf |
-| `description` | no | string | |
-| `alt` | no | string | |
-| `tags` | no | string | Comma-separated, e.g. `"front,interior"` |
+| Field         | Required | Type   | Notes                                    |
+| ------------- | -------- | ------ | ---------------------------------------- |
+| `file`        | yes      | binary | image/_, video/_, or application/pdf     |
+| `description` | no       | string |                                          |
+| `alt`         | no       | string |                                          |
+| `tags`        | no       | string | Comma-separated, e.g. `"front,interior"` |
 
 **Response** — `201`:
 
@@ -63,11 +63,11 @@ All routes require the existing Clerk Bearer-token auth.
 
 **Request** — `multipart/form-data`:
 
-| Field | Required | Type | Notes |
-| --- | --- | --- | --- |
-| `file` | yes | binary | image/\* only, ≤5MB |
-| `alt` | no | string | |
-| `description` | no | string | |
+| Field         | Required | Type   | Notes               |
+| ------------- | -------- | ------ | ------------------- |
+| `file`        | yes      | binary | image/\* only, ≤5MB |
+| `alt`         | no       | string |                     |
+| `description` | no       | string |                     |
 
 `:id` accepts either `content_id` (UUID) or `_id` (ObjectId).
 
@@ -81,7 +81,15 @@ All routes require the existing Clerk Bearer-token auth.
   "size": 123456,
   "visual_prompt": {
     "id": "vp-01",
-    "images": [{ "url": "...", "r2_key": "...", "filename": "...", "size": 123456, "created_at": "..." }]
+    "images": [
+      {
+        "url": "...",
+        "r2_key": "...",
+        "filename": "...",
+        "size": 123456,
+        "created_at": "..."
+      }
+    ]
   }
 }
 ```
@@ -104,15 +112,15 @@ Legacy records written before this migration have no `r2_key`. The controller fa
 
 ## Error responses
 
-| Status | `code` | When |
-| --- | --- | --- |
-| `400` | `VALIDATION_ERROR` | Missing `file`, bad params, bad body |
-| `400` | `LIMIT_FILE_SIZE` | File exceeds the size cap (5MB or 100MB) |
-| `400` | `LIMIT_UNEXPECTED_FILE` | Field name isn't `file` |
-| `400` | `UNSUPPORTED_FILE_TYPE` | MIME type rejected by fileFilter |
-| `404` | `NOT_FOUND` / `RESOURCE_NOT_FOUND` | Campaign / post / prompt / media not found |
-| `502` | `EXTERNAL_SERVICE_ERROR` | R2 delete failed during DELETE route |
-| `500` | `INTERNAL_SERVER_ERROR` | Anything else |
+| Status | `code`                             | When                                       |
+| ------ | ---------------------------------- | ------------------------------------------ |
+| `400`  | `VALIDATION_ERROR`                 | Missing `file`, bad params, bad body       |
+| `400`  | `LIMIT_FILE_SIZE`                  | File exceeds the size cap (5MB or 100MB)   |
+| `400`  | `LIMIT_UNEXPECTED_FILE`            | Field name isn't `file`                    |
+| `400`  | `UNSUPPORTED_FILE_TYPE`            | MIME type rejected by fileFilter           |
+| `404`  | `NOT_FOUND` / `RESOURCE_NOT_FOUND` | Campaign / post / prompt / media not found |
+| `502`  | `EXTERNAL_SERVICE_ERROR`           | R2 delete failed during DELETE route       |
+| `500`  | `INTERNAL_SERVER_ERROR`            | Anything else                              |
 
 All error responses include `requestId` for log correlation.
 

@@ -443,6 +443,7 @@ async function saveRankings(finalRankings, articleMap, batchId) {
         source_name: feed.name || null,
         title: article.title || null,
         tonka_dispatch_rss_links_id: feed._id?.toString() || null,
+        used_in_newsletter_id: null,
       });
       saved.push(doc);
     } catch (err) {

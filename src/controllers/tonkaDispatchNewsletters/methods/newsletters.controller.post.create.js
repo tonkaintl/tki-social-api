@@ -1,3 +1,5 @@
+import mongoose from 'mongoose';
+
 import {
   NEWSLETTER_ERROR_CODE,
   NEWSLETTER_STATUS,
@@ -37,8 +39,14 @@ export async function createNewsletter(req, res) {
       title,
     });
 
+    // Pre-generate the newsletter id so we can atomically claim rankings to it
+    // before the document exists. Rankings are single-use across all
+    // newsletters, so already-used rankings are skipped (not duplicated).
+    const newsletterId = new mongoose.Types.ObjectId();
+
     // Build newsletter object
     const newsletterData = {
+      _id: newsletterId,
       hero_image_url: hero_image_url || null,
       source_batch_id: source_batch_id || null,
       status: status || NEWSLETTER_STATUS.DRAFT,
@@ -75,20 +83,54 @@ export async function createNewsletter(req, res) {
         });
       }
 
-      // Convert rankings to article objects
-      rankings.forEach((ranking, index) => {
+      // Claim each ranking atomically; only include the ones we successfully
+      // claim. Rankings already used elsewhere are skipped.
+      const skipped = [];
+
+      for (const ranking of rankings) {
+        const claimed = await TonkaDispatchRanking.findOneAndUpdate(
+          {
+            _id: ranking._id,
+            used_in_newsletter_id: null,
+          },
+          { $set: { used_in_newsletter_id: newsletterId } },
+          { new: true }
+        );
+
+        if (!claimed) {
+          skipped.push(ranking._id);
+          continue;
+        }
+
         articles.push({
-          custom_order: index,
+          custom_order: articles.length,
           is_manual_section: false,
           tonka_dispatch_rankings_id: ranking._id,
         });
-      });
+      }
+
+      if (skipped.length > 0) {
+        logger.warn('Skipped rankings already used in another newsletter', {
+          requestId: req.id,
+          skipped_count: skipped.length,
+        });
+      }
     }
 
     newsletterData.articles = articles;
 
-    // Create newsletter
-    const newsletter = await TonkaDispatchNewsletter.create(newsletterData);
+    // Create newsletter. If this fails, release any rankings we claimed so
+    // they are not orphaned as "used".
+    let newsletter;
+    try {
+      newsletter = await TonkaDispatchNewsletter.create(newsletterData);
+    } catch (createError) {
+      await TonkaDispatchRanking.updateMany(
+        { used_in_newsletter_id: newsletterId },
+        { $set: { used_in_newsletter_id: null } }
+      );
+      throw createError;
+    }
 
     logger.info('Newsletter created successfully', {
       articles_count: newsletter.articles.length,

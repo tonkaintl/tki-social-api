@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 
 import { NEWSLETTER_ERROR_CODE } from '../../../constants/tonkaDispatch.js';
 import TonkaDispatchNewsletter from '../../../models/tonkaDispatchNewsletters.model.js';
+import TonkaDispatchRanking from '../../../models/tonkaDispatchRankings.model.js';
 import { logger } from '../../../utils/logger.js';
 
 /**
@@ -45,8 +46,16 @@ export async function deleteNewsletter(req, res) {
       });
     }
 
+    // Release all ranking claims held by this newsletter so the articles
+    // become available for use again.
+    const released = await TonkaDispatchRanking.updateMany(
+      { used_in_newsletter_id: newsletter._id },
+      { $set: { used_in_newsletter_id: null } }
+    );
+
     logger.info('Newsletter deleted successfully', {
       id,
+      released_rankings: released.modifiedCount,
       requestId: req.id,
     });
 
