@@ -14,6 +14,10 @@
 //     the head writer + final editor prompts)
 // ----------------------------------------------------------------------------
 
+import {
+  formatTellsForPrompt,
+  loadPreventableTells,
+} from '../aiTells.service.js';
 import { getBrandConfig } from '../profiles/brands.js';
 import {
   buildHeadWriterSystemMessage,
@@ -25,7 +29,7 @@ function asList(items) {
   return items.map(d => `- ${d}`).join('\n');
 }
 
-export function draftContext(ctx) {
+export async function draftContext(ctx) {
   const brandKey =
     typeof ctx.target_brand === 'string'
       ? ctx.target_brand
@@ -35,8 +39,14 @@ export function draftContext(ctx) {
   const modeKey = ctx.project_mode || 'default_mode';
   const modeProfile = getProjectModeProfile(modeKey);
 
+  // Pull the banned-phrase block from the same active tells dictionary the
+  // post-draft scan uses, so admin edits drive prevention + detection from
+  // one source. Cached load — no extra Mongo query per run.
+  const bannedPhrases = formatTellsForPrompt(await loadPreventableTells());
+
   const headWriterSystemMessage = buildHeadWriterSystemMessage({
     audience: ctx.project?.audience || ctx.target_audience || '',
+    bannedPhrases,
     brandMeta: brandConfig.project,
     modeKey,
     modeProfile,

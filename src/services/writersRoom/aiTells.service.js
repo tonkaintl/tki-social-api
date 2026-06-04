@@ -13,8 +13,10 @@
 import mongoose from 'mongoose';
 
 import {
+  TELL_CATEGORY,
   TELL_PAGINATION,
   TELL_PATTERN_TYPE,
+  TELL_SEVERITY,
   TELL_SEVERITY_SCORE,
 } from '../../constants/writersroom.js';
 import WritersRoomTell from '../../models/writersRoomTell.model.js';
@@ -128,20 +130,106 @@ export async function scanDraft(text) {
 }
 
 // ----------------------------------------------------------------------------
+// First-person guard — absolute, non-negotiable, and intentionally NOT part
+// of the admin tells dictionary (it can't be deactivated). The Tonka blog
+// voice never claims personal experience, so any first-person SINGULAR
+// pronoun ("I / me / my / myself") is a fabrication. "We/us/our" is allowed
+// as the brand's collective voice (see the head-writer prompt), so it's
+// excluded here on purpose. Caller treats count > 0 as a hard publish block.
+//
+// Aggressive by design: bare "I" also matches stray standalone tokens like
+// "Type I" or "World War I". A false positive only downgrades a run to
+// `partial` (re-runnable) — it never publishes first person — so we accept
+// the trade.
+// ----------------------------------------------------------------------------
+export function detectFirstPerson(text) {
+  if (typeof text !== 'string' || text.length === 0) {
+    return { count: 0, found: [] };
+  }
+  const re = /\b(I|me|my|myself)\b/gi;
+  const found = [];
+  let m;
+  while ((m = re.exec(text)) !== null) {
+    found.push({ index: m.index, snippet: m[0] });
+  }
+  return { count: found.length, found };
+}
+
+// ----------------------------------------------------------------------------
+// Prompt-side prevention — the head writer prompt is fed a banned-phrases
+// block built from the SAME dictionary the post-draft scan uses, so admin
+// edits drive both prevention and detection from one source. We only inject
+// the categories/patterns that translate to a useful "avoid this phrase"
+// instruction:
+//   - substring patterns only (the model doesn't reason in regex)
+//   - ai_tell / brand_forbidden / weasel_words (preamble strings would just
+//     prime the model to emit them)
+//   - high/medium severity (keeps the list short and high-signal)
+// ----------------------------------------------------------------------------
+const PROMPT_TELL_CATEGORIES = new Set([
+  TELL_CATEGORY.AI_TELL,
+  TELL_CATEGORY.BRAND_FORBIDDEN,
+  TELL_CATEGORY.WEASEL_WORDS,
+]);
+const PROMPT_TELL_SEVERITIES = new Set([
+  TELL_SEVERITY.HIGH,
+  TELL_SEVERITY.MEDIUM,
+]);
+
+// Active substring tells worth injecting into the head-writer prompt as
+// banned phrases. Shares scanDraft's cache — no extra Mongo query per run.
+export async function loadPreventableTells() {
+  const tells = await loadActiveTells();
+  return tells.filter(
+    t =>
+      t.pattern_type === TELL_PATTERN_TYPE.SUBSTRING &&
+      PROMPT_TELL_CATEGORIES.has(t.category) &&
+      PROMPT_TELL_SEVERITIES.has(t.severity)
+  );
+}
+
+// Render banned-phrase tells as a prompt block for the head writer. Returns
+// '' when there's nothing to inject so the prompt assembler can skip it.
+export function formatTellsForPrompt(tells) {
+  if (!Array.isArray(tells) || tells.length === 0) return '';
+  const lines = tells.map(t => `- "${t.pattern}"`);
+  return [
+    'Banned phrases (HARD RULE — every draft is auto-scanned for these after ' +
+      'writing; any match gets the entire draft rejected and unpublished, so ' +
+      'do not use them or close variants):',
+    ...lines,
+  ].join('\n');
+}
+
+// ----------------------------------------------------------------------------
 // CRUD — used by controllers. All write paths invalidate the cache.
 // ----------------------------------------------------------------------------
+
+// Escape user input before dropping it into a Mongo $regex so search terms
+// with regex metacharacters (".", "(", etc.) match literally and can't throw.
+function escapeRegExp(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
 
 export async function listTells({
   active = null,
   category = null,
   limit = TELL_PAGINATION.DEFAULT_LIMIT,
   page = TELL_PAGINATION.DEFAULT_PAGE,
+  search = null,
   severity = null,
 } = {}) {
   const filter = {};
   if (active !== null) filter.active = active;
   if (category) filter.category = category;
   if (severity) filter.severity = severity;
+  if (search) {
+    const safe = escapeRegExp(search);
+    filter.$or = [
+      { pattern: { $options: 'i', $regex: safe } },
+      { notes: { $options: 'i', $regex: safe } },
+    ];
+  }
 
   const skip = (page - 1) * limit;
   const [items, totalCount] = await Promise.all([

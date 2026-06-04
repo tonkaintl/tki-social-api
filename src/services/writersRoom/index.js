@@ -190,9 +190,7 @@ export async function runPipeline(input = {}, options = {}) {
     });
 
     // 6. Attach brand + mode profiles, build the Head Writer system message.
-    ctx = await step(trace, runId, 'draftContext', () =>
-      Promise.resolve(draftContext(ctx))
-    );
+    ctx = await step(trace, runId, 'draftContext', () => draftContext(ctx));
     await recordSnapshot(runId, {
       head_writer_system_message: ctx.head_writer_system_message,
     });
@@ -253,11 +251,14 @@ export async function runPipeline(input = {}, options = {}) {
     );
 
     // 11. Forward to tonka_spark_posts (saves doc + sends notification
-    //     email). The ONLY reason to skip this is the AI-tells quality
-    //     gate: if the severity score is >= the configured threshold the
-    //     run is downgraded to PARTIAL and we don't auto-publish slop.
-    //     Otherwise we always forward — anything else silently throws
-    //     away an LLM run we already paid for.
+    //     email). Two quality gates can skip this and downgrade the run to
+    //     PARTIAL so we don't auto-publish:
+    //       a. AI-tells threshold — severity score >= configured threshold.
+    //       b. First-person guard — ANY "I/me/my/myself" in the draft. This
+    //          is absolute (not score-based): first person implies fabricated
+    //          personal experience, which is a lie we never publish.
+    //     Otherwise we always forward — anything else silently throws away an
+    //     LLM run we already paid for.
     let sparkPostDocId = null;
     let finalStatus = RUN_STATUS.SUCCEEDED;
 
@@ -265,10 +266,28 @@ export async function runPipeline(input = {}, options = {}) {
     const tellsThreshold = config.WRITERS_ROOM_TELLS_THRESHOLD;
     const tellsTrippedThreshold = tellsScore >= tellsThreshold;
 
-    if (tellsTrippedThreshold) {
+    const firstPersonCount = ctx.ai_tells?.first_person?.count || 0;
+    const firstPersonTripped = firstPersonCount > 0;
+
+    const gateTripped = tellsTrippedThreshold || firstPersonTripped;
+
+    if (gateTripped) {
+      const reasons = [];
+      if (firstPersonTripped) {
+        reasons.push(
+          `first_person (${firstPersonCount} match${firstPersonCount === 1 ? '' : 'es'})`
+        );
+      }
+      if (tellsTrippedThreshold) {
+        reasons.push(
+          `ai_tells_threshold (score ${tellsScore} >= ${tellsThreshold})`
+        );
+      }
+
       logger.warn(
-        '[WritersRoom] AI-tells threshold tripped — downgrading run to partial',
+        '[WritersRoom] Quality gate tripped — downgrading run to partial',
         {
+          first_person_count: firstPersonCount,
           runId: runId?.toString(),
           tells_count: ctx.ai_tells?.tells_count,
           tells_score: tellsScore,
@@ -280,7 +299,7 @@ export async function runPipeline(input = {}, options = {}) {
         ms: 0,
         name: 'forwardToSparkPost',
         ok: false,
-        skipReason: `ai_tells_threshold (score ${tellsScore} >= ${tellsThreshold})`,
+        skipReason: reasons.join('; '),
       };
       trace.push(skipEntry);
       await appendTrace(runId, skipEntry);

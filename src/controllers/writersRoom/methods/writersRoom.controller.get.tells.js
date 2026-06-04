@@ -14,14 +14,17 @@ import { logger } from '../../../utils/logger.js';
  * what to flag.
  *
  * Query params (all optional):
- *   category — ai_tell | brand_forbidden | weasel_words | preamble
+ *   category — ai_tell | brand_forbidden | first_person | weasel_words | preamble
  *   severity — low | medium | high
  *   active   — "true" | "false"
+ *   search   — case-insensitive text match against pattern + notes
+ *              (also accepted as `q`)
  *   page, limit
  */
 export async function listWritersRoomTells(req, res) {
   try {
     const { active, category, limit, page, severity } = req.query;
+    const search = req.query.search || req.query.q || null;
 
     if (category && !TELL_CATEGORY_VALUES.includes(category)) {
       return res.status(400).json({
@@ -53,6 +56,7 @@ export async function listWritersRoomTells(req, res) {
       category: category || null,
       limit: limitNum,
       page: pageNum,
+      search,
       severity: severity || null,
     });
 
@@ -61,6 +65,7 @@ export async function listWritersRoomTells(req, res) {
       filters: {
         ...(category && { category }),
         ...(severity && { severity }),
+        ...(search && { search }),
         ...(activeFilter !== null && { active: activeFilter }),
       },
       ok: true,

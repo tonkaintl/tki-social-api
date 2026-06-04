@@ -154,6 +154,33 @@ const SEED_TELLS = [
     severity: 'low',
   },
 
+  // ── First-person plural — soft threshold, NOT a hard block ───────────────
+  // "we/us/our" is legal as brand collective voice (taglines like "We sell
+  // steel, not stories."), so these are LOW severity: one or two won't trip
+  // the threshold, but a draft saturated with first-person plural will. Must
+  // be regex with word boundaries — substring "us"/"our"/"we" would match
+  // "trust", "your", "power". (First-person SINGULAR "I/me/my" is a separate
+  // hard guard in aiTells.service.js, not a dictionary tell.)
+  {
+    category: 'first_person',
+    notes: 'First-person plural — fine in moderation, flagged when saturated',
+    pattern: '\\bwe\\b',
+    pattern_type: 'regex',
+    severity: 'low',
+  },
+  {
+    category: 'first_person',
+    pattern: '\\bus\\b',
+    pattern_type: 'regex',
+    severity: 'low',
+  },
+  {
+    category: 'first_person',
+    pattern: '\\bour\\b',
+    pattern_type: 'regex',
+    severity: 'low',
+  },
+
   // ── Brand-forbidden — words people don't actually use ────────────────────
   {
     category: 'brand_forbidden',

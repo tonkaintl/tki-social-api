@@ -300,6 +300,12 @@ export const TELL_CATEGORY = {
   AI_TELL: 'ai_tell',
   // Words a real broker / Tonka buyer never says
   BRAND_FORBIDDEN: 'brand_forbidden',
+  // First-person PLURAL pronouns ("we", "us", "our"). Soft/threshold-only:
+  // brand collective voice ("We sell steel, not stories.") is legal in
+  // moderation, so these are low-severity and tunable — saturation trips the
+  // score. First-person SINGULAR ("I/me/my") is a hard, non-dictionary block
+  // (see detectFirstPerson in aiTells.service.js), NOT this category.
+  FIRST_PERSON: 'first_person',
   // Response preamble bleed-through ("Here is the JSON", "Certainly!")
   PREAMBLE: 'preamble',
   // Writer-talking-about-writing meta language ("fluff", "long-form content")

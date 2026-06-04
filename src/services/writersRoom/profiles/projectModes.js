@@ -245,6 +245,7 @@ export function getProjectModeProfile(modeKey) {
 
 export function buildHeadWriterSystemMessage({
   audience,
+  bannedPhrases = '',
   brandMeta,
   modeKey,
   modeProfile,
@@ -311,6 +312,11 @@ export function buildHeadWriterSystemMessage({
 
   const taskBlock = ['Task:', ...taskLines.map(line => `- ${line}`)];
 
+  // Banned-phrase block built from the active tells dictionary (see
+  // aiTells.service formatTellsForPrompt). Empty string when there's nothing
+  // to inject, so we skip it rather than leaving a dangling header.
+  const bannedBlock = bannedPhrases ? [bannedPhrases, ''] : [];
+
   return [
     'You are the HEAD WRITER in a multi-writer room.',
     '',
@@ -321,6 +327,7 @@ export function buildHeadWriterSystemMessage({
     ...sliderBlock,
     ...writerPanelSummary,
     ...modeBlock,
+    ...bannedBlock,
     ...taskBlock,
   ].join('\n');
 }
