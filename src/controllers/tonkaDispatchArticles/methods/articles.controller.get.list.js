@@ -1,14 +1,35 @@
 import {
+  ARTICLE_STATE,
+  ARTICLE_STATE_VALUES,
   ARTICLES_ERROR_CODE,
   ARTICLES_FIELDS,
   ARTICLES_PAGINATION,
   ARTICLES_SORT_FIELD_VALUES,
 } from '../../../constants/tonkaDispatch.js';
 import DispatchArticle from '../../../models/dispatchArticle.model.js';
-import TonkaDispatchRanking from '../../../models/tonkaDispatchRankings.model.js';
+import TonkaDispatchRssLinks from '../../../models/tonkaDispatchRssLinks.model.js';
+import { logger } from '../../../utils/logger.js';
+import {
+  articleStateStages,
+  buildArticleBaseMatch,
+} from '../util/articleStateAggregation.js';
+
+const RSS_LINKS_COLLECTION = TonkaDispatchRssLinks.collection.collectionName;
+
+// Content fields can be large (full article body); trim for list payloads.
+const MAX_CONTENT_LENGTH = 2000;
+const MAX_SNIPPET_LENGTH = 500;
 
 /**
- * List dispatch articles with optional filtering, searching, sorting, and pagination
+ * List dispatch articles with their derived ranked/used/unranked state.
+ *
+ * dispatch_articles is the source of truth; each row is joined to its ranking
+ * (if any) to expose `state`, `ranking_id`, `ai_enrichment_status`,
+ * `ai_summary`, and `used_in_newsletter_id`. Supports filtering by state,
+ * category, publish-date range, relevance-score range, search, plus sorting
+ * and pagination.
+ *
+ * GET /api/dispatch/articles
  */
 export async function listArticles(req, res) {
   try {
@@ -23,121 +44,94 @@ export async function listArticles(req, res) {
       score_min,
       search,
       sort,
+      state,
     } = req.query;
 
-    // Build filter object
-    const filter = {};
+    // ── Validate state ──────────────────────────────────────────────────────
+    // Back-compat: the old `exclude_used=true` meant "only articles not in any
+    // ranking", which is exactly the new `state=unranked`. Honor it when no
+    // explicit state is supplied.
+    let stateFilter = state;
+    if (!stateFilter && exclude_used === 'true') {
+      stateFilter = ARTICLE_STATE.UNRANKED;
+    }
 
-    // Exclude articles already used in rankings
-    if (exclude_used === 'true') {
-      const usedArticleIds = await TonkaDispatchRanking.distinct(
-        'dispatch_article_id'
-      );
-      // Filter out null values and ensure we have valid ObjectIds
-      const validIds = usedArticleIds.filter(id => id !== null);
+    if (stateFilter && !ARTICLE_STATE_VALUES.includes(stateFilter)) {
+      logger.warn('Invalid article state filter', {
+        requestId: req.id,
+        state: stateFilter,
+      });
 
-      console.log('[ARTICLES] ========================================');
-      console.log('[ARTICLES] EXCLUDE_USED=TRUE - IDs TO EXCLUDE:');
-      console.log(
-        '[ARTICLES] Total distinct IDs from rankings:',
-        usedArticleIds.length
-      );
-      console.log('[ARTICLES] Valid (non-null) IDs:', validIds.length);
-      console.log(
-        '[ARTICLES] Null IDs:',
-        usedArticleIds.length - validIds.length
-      );
-      console.log('[ARTICLES] ========================================');
+      return res.status(400).json({
+        code: ARTICLES_ERROR_CODE.INVALID_STATE,
+        message: `state must be one of: ${ARTICLE_STATE_VALUES.join(', ')}`,
+        requestId: req.id,
+      });
+    }
 
-      if (validIds.length > 0) {
-        filter[ARTICLES_FIELDS.ID] = { $nin: validIds };
+    // ── Validate publish-date range ─────────────────────────────────────────
+    let publishStartMs;
+    let publishEndMs;
+
+    if (publish_start !== undefined) {
+      publishStartMs = parseInt(publish_start, 10);
+      if (isNaN(publishStartMs)) {
+        return res.status(400).json({
+          code: ARTICLES_ERROR_CODE.INVALID_DATE_RANGE,
+          message: 'publish_start must be a valid timestamp in milliseconds',
+          requestId: req.id,
+        });
       }
     }
 
-    if (category) {
-      filter[ARTICLES_FIELDS.CATEGORY] = category;
-    }
-
-    // Publish date range filter (using published_at_ms)
-    if (publish_start || publish_end) {
-      filter[ARTICLES_FIELDS.PUBLISHED_AT_MS] = {};
-
-      if (publish_start) {
-        const startMs = parseInt(publish_start, 10);
-        if (isNaN(startMs)) {
-          console.log('[ARTICLES] Invalid publish_start:', publish_start);
-
-          return res.status(400).json({
-            code: ARTICLES_ERROR_CODE.INVALID_DATE_RANGE,
-            message: 'publish_start must be a valid timestamp in milliseconds',
-            requestId: req.id,
-          });
-        }
-        filter[ARTICLES_FIELDS.PUBLISHED_AT_MS].$gte = startMs;
-      }
-
-      if (publish_end) {
-        const endMs = parseInt(publish_end, 10);
-        if (isNaN(endMs)) {
-          console.log('[ARTICLES] Invalid publish_end:', publish_end);
-
-          return res.status(400).json({
-            code: ARTICLES_ERROR_CODE.INVALID_DATE_RANGE,
-            message: 'publish_end must be a valid timestamp in milliseconds',
-            requestId: req.id,
-          });
-        }
-        filter[ARTICLES_FIELDS.PUBLISHED_AT_MS].$lte = endMs;
+    if (publish_end !== undefined) {
+      publishEndMs = parseInt(publish_end, 10);
+      if (isNaN(publishEndMs)) {
+        return res.status(400).json({
+          code: ARTICLES_ERROR_CODE.INVALID_DATE_RANGE,
+          message: 'publish_end must be a valid timestamp in milliseconds',
+          requestId: req.id,
+        });
       }
     }
 
-    // Score range filter (using relevance.score)
-    if (score_min !== undefined || score_max !== undefined) {
-      filter[ARTICLES_FIELDS.RELEVANCE_SCORE] = {};
+    // ── Validate relevance-score range ──────────────────────────────────────
+    let scoreMin;
+    let scoreMax;
 
-      if (score_min !== undefined) {
-        const minScore = parseFloat(score_min);
-        if (isNaN(minScore) || minScore < -1 || minScore > 100) {
-          console.log('[ARTICLES] Invalid score_min:', score_min);
-
-          return res.status(400).json({
-            code: ARTICLES_ERROR_CODE.INVALID_SCORE_RANGE,
-            message: 'score_min must be a number between -1 and 100',
-            requestId: req.id,
-          });
-        }
-        filter[ARTICLES_FIELDS.RELEVANCE_SCORE].$gte = minScore;
-      }
-
-      if (score_max !== undefined) {
-        const maxScore = parseFloat(score_max);
-        if (isNaN(maxScore) || maxScore < -1 || maxScore > 100) {
-          console.log('[ARTICLES] Invalid score_max:', score_max);
-
-          return res.status(400).json({
-            code: ARTICLES_ERROR_CODE.INVALID_SCORE_RANGE,
-            message: 'score_max must be a number between -1 and 100',
-            requestId: req.id,
-          });
-        }
-        filter[ARTICLES_FIELDS.RELEVANCE_SCORE].$lte = maxScore;
+    if (score_min !== undefined) {
+      scoreMin = parseFloat(score_min);
+      if (isNaN(scoreMin) || scoreMin < -1 || scoreMin > 100) {
+        return res.status(400).json({
+          code: ARTICLES_ERROR_CODE.INVALID_SCORE_RANGE,
+          message: 'score_min must be a number between -1 and 100',
+          requestId: req.id,
+        });
       }
     }
 
-    // Add search filter (case-insensitive, searches across multiple fields)
-    if (search && search.trim() !== '') {
-      const searchRegex = new RegExp(search.trim(), 'i');
-      filter.$or = [
-        { [ARTICLES_FIELDS.TITLE]: searchRegex },
-        { [ARTICLES_FIELDS.AUTHOR]: searchRegex },
-        { [ARTICLES_FIELDS.CATEGORY]: searchRegex },
-        { [ARTICLES_FIELDS.CONTENT_SNIPPET]: searchRegex },
-      ];
+    if (score_max !== undefined) {
+      scoreMax = parseFloat(score_max);
+      if (isNaN(scoreMax) || scoreMax < -1 || scoreMax > 100) {
+        return res.status(400).json({
+          code: ARTICLES_ERROR_CODE.INVALID_SCORE_RANGE,
+          message: 'score_max must be a number between -1 and 100',
+          requestId: req.id,
+        });
+      }
     }
 
-    // Parse pagination parameters
+    // ── Pagination (limit=0 means "return all") ─────────────────────────────
     const pageNum = parseInt(page, 10) || ARTICLES_PAGINATION.DEFAULT_PAGE;
-    // limit=0 means no limit (return all results)
+
+    if (pageNum < 1) {
+      return res.status(400).json({
+        code: ARTICLES_ERROR_CODE.INVALID_PAGE,
+        message: 'Page number must be at least 1',
+        requestId: req.id,
+      });
+    }
+
     let limitNum;
     if (limit === '0' || limit === 0) {
       limitNum = 0;
@@ -149,114 +143,129 @@ export async function listArticles(req, res) {
     }
     const skip = limitNum === 0 ? 0 : (pageNum - 1) * limitNum;
 
-    if (pageNum < 1) {
-      console.log('[ARTICLES] Invalid page number:', pageNum);
-
-      return res.status(400).json({
-        code: ARTICLES_ERROR_CODE.INVALID_PAGE,
-        message: 'Page number must be at least 1',
-        requestId: req.id,
-      });
-    }
-
-    // Parse sort parameter
-    let sortObj = { [ARTICLES_FIELDS.PUBLISHED_AT_MS]: -1 }; // Default: newest first
+    // ── Sort ────────────────────────────────────────────────────────────────
+    let sortObj = { [ARTICLES_FIELDS.PUBLISHED_AT_MS]: -1 }; // Default: newest
 
     if (sort) {
       if (!ARTICLES_SORT_FIELD_VALUES.includes(sort)) {
-        console.log('[ARTICLES] Invalid sort field:', sort);
-
         return res.status(400).json({
           code: ARTICLES_ERROR_CODE.INVALID_SORT_FIELD,
           message: `Sort must be one of: ${ARTICLES_SORT_FIELD_VALUES.join(', ')}`,
           requestId: req.id,
         });
       }
-
-      // Convert sort string to Mongoose format
-      if (sort.startsWith('-')) {
-        sortObj = { [sort.substring(1)]: -1 };
-      } else {
-        sortObj = { [sort]: 1 };
-      }
+      sortObj = sort.startsWith('-')
+        ? { [sort.substring(1)]: -1 }
+        : { [sort]: 1 };
     }
 
-    console.log('[ARTICLES] Listing articles:', {
-      filter,
+    // ── Build aggregation ───────────────────────────────────────────────────
+    const baseMatch = buildArticleBaseMatch({
+      category,
+      publishEndMs,
+      publishStartMs,
+      scoreMax,
+      scoreMin,
+      search,
+    });
+
+    // Page sub-pipeline: sort → page → populate rss feed (only for the page).
+    const dataStages = [{ $sort: sortObj }];
+    if (limitNum !== 0) {
+      dataStages.push({ $skip: skip }, { $limit: limitNum });
+    }
+    dataStages.push(
+      {
+        $lookup: {
+          as: 'rss_link_id',
+          foreignField: '_id',
+          from: RSS_LINKS_COLLECTION,
+          localField: ARTICLES_FIELDS.RSS_LINK_ID,
+        },
+      },
+      { $addFields: { rss_link_id: { $first: '$rss_link_id' } } }
+    );
+
+    const pipeline = [
+      { $match: baseMatch },
+      ...articleStateStages(),
+      ...(stateFilter ? [{ $match: { state: stateFilter } }] : []),
+      {
+        $facet: {
+          categoryDistribution: [
+            {
+              $group: {
+                _id: {
+                  $ifNull: [`$${ARTICLES_FIELDS.CATEGORY}`, 'uncategorized'],
+                },
+                count: { $sum: 1 },
+              },
+            },
+          ],
+          data: dataStages,
+          totalCount: [{ $count: 'count' }],
+        },
+      },
+    ];
+
+    logger.info('Listing dispatch articles', {
       limit: limitNum,
       page: pageNum,
+      requestId: req.id,
       sort: sortObj,
+      state: stateFilter,
     });
 
-    // Get total count for pagination
-    const totalCount = await DispatchArticle.countDocuments(filter);
-
-    // Query database with pagination and populate RSS feed reference
-    const query = DispatchArticle.find(filter)
-      .sort(sortObj)
-      .skip(skip)
-      .populate('rss_link_id');
-
-    // Apply limit only if not 0 (0 means return all)
-    const articles = limitNum === 0 ? await query : await query.limit(limitNum);
-
+    const [result] = await DispatchArticle.aggregate(pipeline);
+    const totalCount = result?.totalCount?.[0]?.count ?? 0;
+    const articles = result?.data ?? [];
     const totalPages = limitNum === 0 ? 1 : Math.ceil(totalCount / limitNum);
 
-    // Truncate content fields for performance (articles consumed by AI)
-    const MAX_CONTENT_LENGTH = 2000;
-    const MAX_SNIPPET_LENGTH = 500;
+    // Truncate heavy content fields for the list payload.
     const truncatedArticles = articles.map(article => {
-      const articleObj = article.toObject();
-
-      if (
-        articleObj.content &&
-        articleObj.content.length > MAX_CONTENT_LENGTH
-      ) {
-        articleObj.content =
-          articleObj.content.substring(0, MAX_CONTENT_LENGTH) +
+      if (article.content && article.content.length > MAX_CONTENT_LENGTH) {
+        article.content =
+          article.content.substring(0, MAX_CONTENT_LENGTH) +
           '... [content truncated]';
       }
-
       if (
-        articleObj.content_snippet &&
-        articleObj.content_snippet.length > MAX_SNIPPET_LENGTH
+        article.content_snippet &&
+        article.content_snippet.length > MAX_SNIPPET_LENGTH
       ) {
-        articleObj.content_snippet =
-          articleObj.content_snippet.substring(0, MAX_SNIPPET_LENGTH) +
+        article.content_snippet =
+          article.content_snippet.substring(0, MAX_SNIPPET_LENGTH) +
           '... [truncated]';
       }
-
-      return articleObj;
+      return article;
     });
 
-    // Calculate category distribution summary
-    const categoryDistribution = {};
-    truncatedArticles.forEach(article => {
-      const cat = article.category || 'uncategorized';
-      categoryDistribution[cat] = (categoryDistribution[cat] || 0) + 1;
-    });
-
-    console.log('[ARTICLES] ========================================');
-    console.log('[ARTICLES] RESULTS - ARTICLES BEING RETURNED:');
-    console.log('[ARTICLES] Count:', truncatedArticles.length);
-    console.log('[ARTICLES] Total available:', totalCount);
-    console.log('[ARTICLES] Category distribution:', categoryDistribution);
-    console.log(
-      '[ARTICLES] Article IDs being returned:',
-      truncatedArticles.map(a => a._id.toString())
+    const categoryDistribution = (result?.categoryDistribution ?? []).reduce(
+      (acc, item) => {
+        acc[item._id] = item.count;
+        return acc;
+      },
+      {}
     );
-    console.log('[ARTICLES] ========================================');
+
+    logger.info('Dispatch articles retrieved successfully', {
+      count: truncatedArticles.length,
+      page: pageNum,
+      requestId: req.id,
+      state: stateFilter,
+      totalCount,
+    });
 
     return res.status(200).json({
       articles: truncatedArticles,
+      categoryDistribution,
       count: truncatedArticles.length,
       filters: {
         ...(category && { category }),
-        ...(exclude_used && { exclude_used: exclude_used === 'true' }),
-        ...(publish_start && { publish_start: parseInt(publish_start, 10) }),
-        ...(publish_end && { publish_end: parseInt(publish_end, 10) }),
-        ...(score_min !== undefined && { score_min: parseFloat(score_min) }),
-        ...(score_max !== undefined && { score_max: parseFloat(score_max) }),
+        ...(stateFilter && { state: stateFilter }),
+        ...(publish_start && { publish_start: publishStartMs }),
+        ...(publish_end && { publish_end: publishEndMs }),
+        ...(scoreMin !== undefined && { score_min: scoreMin }),
+        ...(scoreMax !== undefined && { score_max: scoreMax }),
         ...(search && { search }),
       },
       page: pageNum,
@@ -265,8 +274,11 @@ export async function listArticles(req, res) {
       totalPages,
     });
   } catch (error) {
-    console.log('[ARTICLES] ERROR:', error.message);
-    console.log('[ARTICLES] Stack:', error.stack);
+    logger.error('Failed to list dispatch articles', {
+      error: error.message,
+      requestId: req.id,
+      stack: error.stack,
+    });
 
     return res.status(500).json({
       code: ARTICLES_ERROR_CODE.ARTICLES_LIST_FAILED,
