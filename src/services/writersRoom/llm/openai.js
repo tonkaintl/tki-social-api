@@ -13,6 +13,17 @@ import { logger } from '../../../utils/logger.js';
 
 let client = null;
 
+// gpt-5 (non-chat) and o-series reasoning models reject custom sampling
+// params — sending a non-default `temperature` or `top_p` returns a 400
+// ("Only the default (1) value is supported"). The gpt-5-chat* variants DO
+// accept them, hence the chat exclusion. For restricted models we omit both
+// so the prompt's meta.json temperature is simply ignored (model uses its
+// default) instead of crashing the run.
+function restrictsSampling(model) {
+  if (typeof model !== 'string' || model.includes('chat')) return false;
+  return /^gpt-5/.test(model) || /^o\d/.test(model);
+}
+
 function getClient() {
   if (client) return client;
   if (!config.OPENAI_API_KEY) {
@@ -41,10 +52,13 @@ export async function callOpenAi({
   if (user) messages.push({ content: user, role: 'user' });
 
   const params = { messages, model };
-  if (temperature !== null && temperature !== undefined) {
+  const allowSampling = !restrictsSampling(model);
+  if (allowSampling && temperature !== null && temperature !== undefined) {
     params.temperature = temperature;
   }
-  if (topP !== null && topP !== undefined) params.top_p = topP;
+  if (allowSampling && topP !== null && topP !== undefined) {
+    params.top_p = topP;
+  }
   if (maxOutputTokens) params.max_completion_tokens = maxOutputTokens;
 
   if (schema) {

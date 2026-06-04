@@ -95,19 +95,38 @@ async function executeCronRun(claimedIdea, triggerLabel) {
       triggeredBy: RUN_TRIGGER.CRON,
     });
 
-    // Flip the idea to USED regardless of pipeline status — a failed run
-    // still "consumed" the idea (cost the API call, surfaced the seed). The
-    // operator can manually flip it back to UNUSED from the admin UI if
-    // they want a re-run.
-    await markIdeaUsed(claimedIdea._id, result.runId);
+    // Only consume the idea (flip to USED) when the run actually produced a
+    // spark post. A partial run (quality gate tripped → no spark) or a failed
+    // run produced nothing publishable, so we RELEASE the idea back to UNUSED
+    // instead of burning it. Otherwise the topic is silently lost and needs a
+    // manual reset before it can be retried. The attempt is still archived in
+    // writers_room_runs (queryable by story_seed) regardless.
+    if (result.sparkPostDocumentId) {
+      await markIdeaUsed(claimedIdea._id, result.runId);
+    } else {
+      await releaseIdea(claimedIdea._id);
+    }
 
     if (!result.ok) {
-      logger.error('[WritersRoom] Pipeline run failed', {
-        error: result.error,
-        idea: claimedIdea.title,
-        runId: result.runId,
-        triggeredBy: triggerLabel,
-      });
+      logger.error(
+        '[WritersRoom] Pipeline run failed — idea released for retry',
+        {
+          error: result.error,
+          idea: claimedIdea.title,
+          runId: result.runId,
+          triggeredBy: triggerLabel,
+        }
+      );
+    } else if (!result.sparkPostDocumentId) {
+      logger.warn(
+        '[WritersRoom] Run finished without a spark — idea released for retry',
+        {
+          idea: claimedIdea.title,
+          runId: result.runId,
+          status: result.status,
+          triggeredBy: triggerLabel,
+        }
+      );
     } else {
       logger.info('[WritersRoom] Pipeline run complete', {
         durationMs: result.durationMs,

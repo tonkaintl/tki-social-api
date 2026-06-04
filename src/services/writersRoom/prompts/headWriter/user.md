@@ -42,10 +42,12 @@ Research findings:
 
 Research requirements (non-negotiable when enable_research is true):
 
-1. If there are 1–3 findings, you MUST use every finding at least once in the story and/or practical explanation.
-2. If there are more than 3 findings, you MUST use at least 3 distinct findings as concrete details. You may use more if it feels natural.
+The research findings are the most valuable part of the piece — they are the concrete, checkable specifics a reader can act on. Treat them as the spine of the article, not background flavor. Surface them as specifics (named sources, numbers, exact checks, real consequences); do NOT dissolve them into vague generalities like "do your research" or "be careful." The findings carry bracketed reference numbers like [1] or [4][10]; use the facts but STRIP those markers — never write citation brackets in the article body (sources are tracked separately).
+
+1. If there are 1–3 findings, you MUST use every finding at least once as a concrete detail in the story and/or practical explanation.
+2. If there are more than 3 findings, you MUST use at least 4 distinct findings as concrete details, and lead with the most surprising or actionable ones. Use more if it feels natural.
 3. When you describe inspections, condition, safety, maintenance, or value, you MUST base those details on the findings above. You may paraphrase or compress, but do not contradict them or invent incompatible technical details.
-4. You may express findings inside the allegorical story, in the real-world explanation, or both, but they cannot be ignored while enable_research is true.
+4. You may express findings inside the allegorical story, in the real-world explanation, or both, but they cannot be ignored or watered down while enable_research is true.
 
 Task:
 

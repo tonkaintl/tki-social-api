@@ -11,15 +11,15 @@ export const PROJECT_MODE_CONFIGS = {
     description:
       'Write a clear, engaging blog post that blends story, insight, and practical value for the reader.',
     headWriterInstructions: [
-      'Open with a strong hook that makes the reader feel seen.',
+      'Open with a hook — a concrete scenario or the real situation a truck buyer faces. Keep the register straight and professional, not folksy: no homespun idioms or cutesy relatable touches (e.g. "before any handshake").',
       'Blend real-world examples and clear explanations.',
       'Focus on one main idea or lesson, not everything at once.',
       'Use headings and short paragraphs so it is easy to skim.',
     ],
     label: 'Blog post',
     structureHints: [
-      'Hook / problem the reader recognizes.',
-      'Context or a short anecdote that illustrates the issue.',
+      'Open on a problem the reader immediately recognizes.',
+      'A concrete scenario or example showing how the problem actually shows up.',
       'Breakdown of what’s really going on.',
       'Concrete recommendations or steps.',
       'Short closing that reinforces the main takeaway.',
@@ -27,7 +27,7 @@ export const PROJECT_MODE_CONFIGS = {
     taskLines: [
       'Treat the story_seed and writer_notes as conceptual origin only, not as a literal fable you must retell.',
       'Write a professional Tonka Blog article for working truck buyers, not a children’s story.',
-      'Keep any allegory or metaphor to at most 1–2 short lines of framing, then focus on clear, practical guidance.',
+      'A scenario or real-world example to open is good. Avoid folksy or cutesy metaphors and homespun analogies; if a comparison genuinely clarifies, keep it plain and to one short line at most.',
       'Use the research findings to ground inspections, risk, and process details whenever you describe “what to do”.',
       'Use headings and short paragraphs; prioritize clarity and usefulness over cleverness.',
       'Avoid extended scenes about mice or characters; anchor the piece in inspections, deals, and shop-floor reality.',

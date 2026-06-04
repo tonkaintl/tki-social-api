@@ -288,6 +288,16 @@ export const RUN_PAGINATION = {
 };
 
 // ----------------------------------------------------------------------------
+// Final editor length backstop — the final editor is a line-edit pass, not a
+// summarizer, but small models intermittently collapse a full draft into a
+// teaser. If the edited story drops below this fraction of the head writer's
+// draft word count, we treat it as over-compression and keep the head
+// writer's draft instead. Deterministic guarantee that a "short" (~500-word)
+// piece never ships as 87 words. Tunable: lower = more tolerant of trimming.
+// ----------------------------------------------------------------------------
+export const FINAL_EDITOR_MIN_LENGTH_RATIO = 0.8;
+
+// ----------------------------------------------------------------------------
 // AI-tells admin — user-managed dictionary of patterns that flag AI slop
 // (em-dash inspirational closes, "long haul", semicolon-metaphors) or
 // brand-forbidden words ("yellow iron", "fluff"). Runs as a pipeline step

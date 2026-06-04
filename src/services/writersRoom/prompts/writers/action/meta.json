@@ -2,7 +2,7 @@
   "n8nNodeName": "Writer Action Brainstorm (OpenAI)",
   "n8nNodeType": "@n8n/n8n-nodes-langchain.openAi",
   "provider": "openai",
-  "model": "gpt-5-chat-latest",
+  "model": "gpt-5-mini",
   "temperature": 0.5,
   "maxOutputTokens": null,
   "topP": 1,

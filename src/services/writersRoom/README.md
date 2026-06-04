@@ -543,9 +543,10 @@ WRITERS_ROOM_CRON_ENABLED=false
 **Model resolution precedence** (highest wins):
 
 1. `overrides.model` passed to `callLlmFromPrompt()` — rare; mostly for tests
-2. `prompts/<slug>/meta.json` `model` field — per-prompt specialization
-3. Per-provider env var (`OPENAI_MODEL` / `GEMINI_MODEL` / `PERPLEXITY_MODEL` / `ANTHROPIC_MODEL`) — the floor; always set via the zod schema in [`config/env.js`](../../config/env.js) so this is never empty
+2. Per-node env var (`WRITERS_ROOM_MODEL_*`, mapped by slug in `SLUG_MODEL_CONFIG` in [`llm/index.js`](./llm/index.js)) — every node's model lives in env so all cost drivers are visible/tunable in one place. Each defaults (via the zod schema) to the value the node's `meta.json` historically pinned, so unset = old behavior.
+3. `prompts/<slug>/meta.json` `model` field — per-prompt specialization; now effectively a fallback shadowed by the per-node env var
+4. Per-provider env var (`OPENAI_MODEL` / `GEMINI_MODEL` / `PERPLEXITY_MODEL` / `ANTHROPIC_MODEL`) — last-resort floor for nodes not in `SLUG_MODEL_CONFIG`
 
-This means **most prompts pin their own model** in `meta.json` (e.g. `gpt-5-chat-latest` for writers vs `gpt-4.1-mini` for the editor — the n8n flow's deliberate per-role specialization). The env vars are only the fallback for new prompts that don't yet specify, or for swapping a whole provider's default at once without editing 12 meta.json files.
+This means **every node's model is set from `.env`** (e.g. `WRITERS_ROOM_MODEL_HEAD_WRITER`, `WRITERS_ROOM_MODEL_WRITERS`, `WRITERS_ROOM_MODEL_FINAL_EDITOR`). Change one line in `.env` to re-point a node — e.g. drop the brainstorm writers to a cheaper tier — without editing any `meta.json`. The researcher calls Perplexity directly and reads `WRITERS_ROOM_MODEL_RESEARCHER` itself.
 
 All API keys are optional at boot. A pipeline run only fails on a missing key when it tries to call that specific provider. So you can iterate on writer prompts with just `OPENAI_API_KEY` + `GEMINI_API_KEY` set, and turn research on later once `PERPLEXITY_API_KEY` is added.
