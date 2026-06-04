@@ -363,12 +363,38 @@ export const ARTICLE_UPDATE_FIELDS_VALUES = Object.values(
 
 // Articles error codes
 export const ARTICLES_ERROR_CODE = {
+  ALREADY_RANKED: 'ALREADY_RANKED',
+  ARTICLE_NOT_FOUND: 'ARTICLE_NOT_FOUND',
   ARTICLES_LIST_FAILED: 'ARTICLES_LIST_FAILED',
+  INVALID_ARTICLE_ID: 'INVALID_ARTICLE_ID',
   INVALID_DATE_RANGE: 'INVALID_DATE_RANGE',
   INVALID_PAGE: 'INVALID_PAGE',
   INVALID_SCORE_RANGE: 'INVALID_SCORE_RANGE',
   INVALID_SORT_FIELD: 'INVALID_SORT_FIELD',
+  INVALID_STATE: 'INVALID_STATE',
+  PROMOTE_FAILED: 'PROMOTE_FAILED',
 };
+
+// Provenance stamped on rankings created by a manual promote (vs. the daily
+// pipeline's 'embedded' provenance), so hand-added rankings are auditable.
+export const MANUAL_PROMOTE = {
+  BATCH_PREFIX: 'manual',
+  FEED_MATCH_REASON: 'manual_promote',
+  FEED_MATCH_STATUS: 'matched',
+  MATCH_METHOD: 'manual',
+};
+
+// Derived article state (relative to the rankings collection):
+//   unranked = no ranking points at this dispatch_article
+//   ranked   = a ranking exists and is not yet used in a newsletter
+//   used     = a ranking exists and is claimed by a newsletter
+export const ARTICLE_STATE = {
+  RANKED: 'ranked',
+  UNRANKED: 'unranked',
+  USED: 'used',
+};
+
+export const ARTICLE_STATE_VALUES = Object.values(ARTICLE_STATE);
 
 // Articles field names (schema fields from dispatch_articles)
 export const ARTICLES_FIELDS = {
