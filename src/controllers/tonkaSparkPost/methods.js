@@ -1,3 +1,4 @@
+export { deleteTonkaSparkPost } from './methods/tonkaSparkPost.controller.delete.js';
 export { getTonkaSparkPostById } from './methods/tonkaSparkPost.controller.getById.js';
 export { getTonkaSparkPostList } from './methods/tonkaSparkPost.controller.list.js';
 export { swapTonkaSparkPostTitle } from './methods/tonkaSparkPost.controller.swapTitle.js';
