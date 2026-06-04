@@ -195,15 +195,72 @@ function buildCardRow(item, isLast) {
 }
 
 // ----------------------------------------------------------------------------
+// Lead-in card: a denormalized Spark Post rendered above the article list.
+// Image first (the hero), then title, blurb teaser, and a "Read more" CTA
+// pointing at the manually-pasted public link.
+// ----------------------------------------------------------------------------
+
+function buildLeadCard(lead) {
+  const title = escapeHtml(lead.title);
+  const blurb = escapeHtml(lead.blurb);
+  const href = escapeHtml(lead.link || '#');
+
+  const imageRow = lead.image_url
+    ? `<tr><td style="padding:0">` +
+      `<img src="${escapeHtml(lead.image_url)}" alt="${title}" ` +
+      `style="${STYLE.heroImage}" />` +
+      `</td></tr>`
+    : '';
+
+  const titleRow = title
+    ? `<tr><td style="${STYLE.title}">` +
+      `<h2 style="${STYLE.titleText}">${title}</h2>` +
+      `</td></tr>`
+    : '';
+
+  const blurbRow = blurb
+    ? `<tr><td style="${STYLE.snippetText}">${blurb}</td></tr>`
+    : '';
+
+  const ctaRow =
+    `<tr><td style="padding:12px 16px 16px 16px;vertical-align:top">` +
+    `<a href="${href}" target="_blank" rel="noopener noreferrer" ` +
+    `style="${STYLE.ctaButton}">Read more</a>` +
+    `</td></tr>`;
+
+  return (
+    `<table role="presentation" cellpadding="0" cellspacing="0" border="0" ` +
+    `width="100%" style="${STYLE.card}">` +
+    imageRow +
+    titleRow +
+    blurbRow +
+    ctaRow +
+    buildDividerRow() +
+    `</table>`
+  );
+}
+
+function buildLeadRow(lead) {
+  return (
+    `<tr><td style="${STYLE.cardOuterCell}">` +
+    buildLeadCard(lead) +
+    `</td></tr>` +
+    `<tr><td style="${STYLE.spacerCell}">&nbsp;</td></tr>`
+  );
+}
+
+// ----------------------------------------------------------------------------
 // Top-level renderer
 // ----------------------------------------------------------------------------
 
-export function generateNewsletterBroadcastHtml({ items } = {}) {
+export function generateNewsletterBroadcastHtml({ items, lead } = {}) {
   if (!Array.isArray(items) || items.length === 0) {
     throw Object.assign(new Error('items must be a non-empty array'), {
       status: 400,
     });
   }
+
+  const leadRow = lead ? buildLeadRow(lead) : '';
 
   const rows = items
     .map((item, idx) => buildCardRow(item, idx === items.length - 1))
@@ -212,6 +269,7 @@ export function generateNewsletterBroadcastHtml({ items } = {}) {
   // Wrap in a single outer table for 'stacked tables' output
   return (
     `<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="width:100%;border-collapse:collapse">` +
+    leadRow +
     rows +
     `</table>`
   );

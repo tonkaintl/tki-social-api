@@ -264,6 +264,7 @@ export const NEWSLETTER_ERROR_CODE = {
   INVALID_SORT_FIELD: 'INVALID_SORT_FIELD',
   INVALID_STATUS: 'INVALID_STATUS',
   INVALID_STATUS_TRANSITION: 'INVALID_STATUS_TRANSITION',
+  LEAD_REQUIRED: 'LEAD_REQUIRED',
   NEWSLETTER_CREATE_FAILED: 'NEWSLETTER_CREATE_FAILED',
   NEWSLETTER_DELETE_FAILED: 'NEWSLETTER_DELETE_FAILED',
   NEWSLETTER_LIST_FAILED: 'NEWSLETTER_LIST_FAILED',
@@ -280,6 +281,7 @@ export const NEWSLETTER_FIELDS = {
   HTML_CONTENT: 'html_content',
   ID: '_id',
   IS_USED: 'is_used',
+  LEAD_SPARK: 'lead_spark',
   SCHEDULED_DATE: 'scheduled_date',
   SENT_DATE: 'sent_date',
   SOURCE_BATCH_ID: 'source_batch_id',
@@ -333,6 +335,7 @@ export const NEWSLETTER_PAGINATION = {
 // Allowed fields for newsletter PATCH updates
 export const NEWSLETTER_UPDATE_FIELDS = {
   HERO_IMAGE_URL: 'hero_image_url',
+  LEAD_SPARK: 'lead_spark',
   SCHEDULED_DATE: 'scheduled_date',
   STATUS: 'status',
   TESTING_EMAILS: 'testing_emails',

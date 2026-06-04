@@ -34,6 +34,20 @@ var articleSchema = new Schema({
   },
 });
 
+// Lead spark subdocument: a denormalized snapshot of a Tonka Spark Post that
+// runs as the newsletter's lead-in above the article list. Stored as-is from
+// the frontend (not a live join); null when the newsletter has no lead.
+var leadSparkSchema = new Schema(
+  {
+    blurb: String, // stripped + cropped teaser from the spark draft body
+    image_url: String, // first visual_prompts[].images[].url — becomes the hero
+    link: String, // manually pasted public URL
+    spark_post_id: String, // Spark content_id (UUID); may fall back to _id
+    title: String, // Spark final_draft.title
+  },
+  { _id: false }
+);
+
 // Newsletter schema
 var tonkaDispatchNewsletterSchema = new Schema({
   articles: [articleSchema],
@@ -50,6 +64,10 @@ var tonkaDispatchNewsletterSchema = new Schema({
   is_used: {
     default: false,
     type: Boolean,
+  },
+  lead_spark: {
+    default: null,
+    type: leadSparkSchema,
   },
   scheduled_date: Date,
   sent_date: Date,

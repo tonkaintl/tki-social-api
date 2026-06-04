@@ -85,12 +85,28 @@ export async function generateNewsletter(req, res) {
       });
     }
 
+    // Gate: a lead spark with a public link is required. The frontend disables
+    // the button, but enforce it server-side too.
+    const lead = newsletter.lead_spark;
+    if (!lead || !lead.link || String(lead.link).trim() === '') {
+      logger.warn('Generate blocked — missing lead spark link', {
+        id: newsletter._id,
+        requestId: req.id,
+      });
+
+      return res.status(400).json({
+        code: NEWSLETTER_ERROR_CODE.LEAD_REQUIRED,
+        message: 'A lead spark with a link is required to generate',
+        requestId: req.id,
+      });
+    }
+
     const orderedArticles = [...newsletter.articles].sort(
       (a, b) => (a.custom_order ?? 0) - (b.custom_order ?? 0)
     );
     const items = orderedArticles.map(articleToItem);
 
-    const html = generateNewsletterBroadcastHtml({ items });
+    const html = generateNewsletterBroadcastHtml({ items, lead });
 
     newsletter.html_content = html;
     newsletter.status = NEWSLETTER_STATUS.GENERATED;
