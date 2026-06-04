@@ -94,9 +94,10 @@ export async function takeNextIdeaFromDb(season = IDEA_DEFAULT_SEASON) {
   return idea;
 }
 
-// Called after the pipeline finishes (success OR failure — either way the
-// idea has been "consumed"). Flips IN_PROGRESS → USED and stamps the run id
-// + bumps run_count for archive linking.
+// Called after a run that ACTUALLY produced a spark post. Flips
+// IN_PROGRESS → USED, stamps the run id, bumps run_count for archive linking.
+// Runs that produce no spark (partial = quality gate, or failed) call
+// releaseIdea instead so the topic isn't burned — see executeCronRun.
 export async function markIdeaUsed(ideaId, runId) {
   if (!ideaId || !mongoose.Types.ObjectId.isValid(ideaId)) return null;
   const now = new Date();
@@ -115,9 +116,11 @@ export async function markIdeaUsed(ideaId, runId) {
   ).lean();
 }
 
-// Roll an in-flight idea back to UNUSED. Used when the pipeline fails so
-// hard it never reaches markIdeaUsed (e.g. story_seed validation error after
-// we already claimed it). Otherwise we'd permanently lose the idea.
+// Roll an in-flight idea back to UNUSED. Used whenever a run did NOT produce a
+// spark: a hard crash before markIdeaUsed (e.g. story_seed validation error
+// after we claimed it), a failed pipeline, or a partial run (quality gate
+// tripped). Keeps the topic available for retry instead of burning it on a run
+// that published nothing.
 export async function releaseIdea(ideaId) {
   if (!ideaId || !mongoose.Types.ObjectId.isValid(ideaId)) return null;
   return WritersRoomIdea.findByIdAndUpdate(

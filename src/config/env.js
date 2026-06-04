@@ -191,6 +191,26 @@ const envSchema = z.object({
     .transform(Number)
     .pipe(z.number().min(0).max(100))
     .default('100'),
+  // ── Per-node model overrides ─────────────────────────────────────────────
+  // Every Writers Room LLM node's model, surfaced here so all cost drivers
+  // are visible/tunable in one place. Each defaults to the model the node's
+  // prompts/<slug>/meta.json historically pinned, so leaving these unset
+  // changes nothing. Set one to re-point that node (e.g. drop the brainstorm
+  // writers to a cheaper tier). Precedence: these win over meta.json.
+  WRITERS_ROOM_MODEL_ART_DIRECTOR: nonEmptyStringWithDefault('gpt-5-mini'),
+  WRITERS_ROOM_MODEL_FINAL_EDITOR: nonEmptyStringWithDefault('gpt-4.1-mini'),
+  WRITERS_ROOM_MODEL_FUTURE_ARC: nonEmptyStringWithDefault('gpt-5-mini'),
+  WRITERS_ROOM_MODEL_HEAD_WRITER: nonEmptyStringWithDefault('gpt-5-mini'),
+  WRITERS_ROOM_MODEL_RESEARCHER: nonEmptyStringWithDefault('sonar-pro'),
+  WRITERS_ROOM_MODEL_ROUTER: nonEmptyStringWithDefault('gemini-2.5-flash'),
+  WRITERS_ROOM_MODEL_SOCIAL_DIRECTOR: nonEmptyStringWithDefault(
+    'gpt-4.1-mini-2025-04-14'
+  ),
+  // OpenAI brainstorm writers (action, comedy, scifi).
+  WRITERS_ROOM_MODEL_WRITERS: nonEmptyStringWithDefault('gpt-5-mini'),
+  // Gemini brainstorm writers (biographer, documentary, historic).
+  WRITERS_ROOM_MODEL_WRITERS_GEMINI:
+    nonEmptyStringWithDefault('gemini-2.5-flash'),
   WRITERS_ROOM_OUTPUT_BLOG_POST: z
     .string()
     .transform(val => val === 'true')

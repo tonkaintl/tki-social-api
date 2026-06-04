@@ -67,9 +67,13 @@ export async function researcher(ctx) {
     const result = await callPerplexity({
       jsonOutput: true,
       maxOutputTokens: meta.maxOutputTokens || null,
-      // Model precedence: prompts/researcher/meta.json → PERPLEXITY_MODEL env
-      // var → (unreachable; env has a default). Mirrors the LLM router.
-      model: meta.model || config.PERPLEXITY_MODEL,
+      // Model precedence: WRITERS_ROOM_MODEL_RESEARCHER (per-node env, the
+      // visible cost knob) → prompts/researcher/meta.json → PERPLEXITY_MODEL.
+      // Mirrors the LLM router's per-node resolution.
+      model:
+        config.WRITERS_ROOM_MODEL_RESEARCHER ||
+        meta.model ||
+        config.PERPLEXITY_MODEL,
       system: rendered.system,
       temperature: meta.temperature ?? 0.2,
       topP: meta.topP ?? null,
