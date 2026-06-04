@@ -2,6 +2,7 @@ import express from 'express';
 
 import {
   addVisualPromptImage,
+  deleteTonkaSparkPost,
   deleteVisualPromptImage,
   getTonkaSparkPostById,
   getTonkaSparkPostList,
@@ -48,6 +49,13 @@ router.delete(
   '/:id/visual-prompts/:promptId/images/:imageUrl',
   deleteVisualPromptImage
 );
+
+// ----------------------------------------------------------------------------
+// DELETE Routes
+// ----------------------------------------------------------------------------
+// Hard-delete an entire spark post (truly bad sparks). Accepts content_id or
+// _id. Declared after the visual-prompt delete so the more specific route wins.
+router.delete('/:id', deleteTonkaSparkPost);
 
 // ----------------------------------------------------------------------------
 export default router;
