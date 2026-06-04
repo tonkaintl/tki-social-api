@@ -5,8 +5,10 @@ import {
   deleteVisualPromptImage,
   getTonkaSparkPostById,
   getTonkaSparkPostList,
+  swapTonkaSparkPostTitle,
   toggleTonkaSparkPostUsed,
   updateFinalDraft,
+  updateTonkaSparkPostTitle,
   uploadVisualPromptImage,
 } from '../controllers/tonkaSparkPost/methods.js';
 import { verifyToken } from '../middleware/auth.bearer.js';
@@ -29,6 +31,8 @@ router.get('/:id', getTonkaSparkPostById);
 // Final Draft Routes
 // ----------------------------------------------------------------------------
 router.patch('/:id/final-draft', updateFinalDraft);
+router.patch('/:id/title', updateTonkaSparkPostTitle);
+router.patch('/:id/title/swap', swapTonkaSparkPostTitle);
 router.patch('/:id/used', toggleTonkaSparkPostUsed);
 
 // ----------------------------------------------------------------------------

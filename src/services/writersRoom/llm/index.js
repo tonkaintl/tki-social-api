@@ -17,10 +17,29 @@ import {
   LLM_PROVIDER,
   PIPELINE_ERROR_CODE,
 } from '../../../constants/writersroom.js';
+import { logger } from '../../../utils/logger.js';
+import {
+  deepHasControlChars,
+  deepSanitize,
+} from '../../../utils/sanitizeControlChars.js';
 
 import { callGemini } from './gemini.js';
 import { loadAndRender } from './loadPrompt.js';
 import { callOpenAi } from './openai.js';
+
+// LLMs sometimes emit malformed unicode escapes for smart quotes / em-dashes
+// (e.g. "" for U+2019), which JSON.parse decodes into raw C0 control
+// characters that then get persisted into draft_markdown. Scrub every LLM
+// result at this single chokepoint so no downstream node has to care.
+function cleanLlmOutput(result, { model, provider, slug }) {
+  if (!deepHasControlChars(result)) return result;
+  logger.warn('[WritersRoom] LLM output contained control chars — sanitized', {
+    model,
+    provider,
+    slug,
+  });
+  return deepSanitize(result);
+}
 
 // Map provider → the env var that holds its default model.
 function envDefaultModelFor(provider) {
@@ -64,21 +83,23 @@ export async function callLlmFromPrompt(slug, ctx, overrides = {}) {
   };
 
   if (provider === LLM_PROVIDER.GEMINI) {
-    return callGemini({
+    const result = await callGemini({
       ...common,
       jsonOutput: overrides.jsonOutput ?? meta.jsonOutput ?? false,
     });
+    return cleanLlmOutput(result, { model, provider, slug });
   }
 
   if (
     provider === LLM_PROVIDER.OPENAI ||
     provider === LLM_PROVIDER.OPENAI_AGENT
   ) {
-    return callOpenAi({
+    const result = await callOpenAi({
       ...common,
       schema: schema || null,
       structuredOutputName: meta.structuredOutputName || null,
     });
+    return cleanLlmOutput(result, { model, provider, slug });
   }
 
   const err = new Error(`Unsupported LLM provider for ${slug}: ${provider}`);

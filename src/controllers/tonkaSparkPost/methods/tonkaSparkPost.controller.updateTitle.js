@@ -1,6 +1,7 @@
 // ----------------------------------------------------------------------------
-// PATCH /api/tonka-spark-post/:id/final-draft
-// Update final_draft content (minor edits when reviewers spot incorrect info).
+// PATCH /api/tonka-spark-posts/:id/title
+// Edit the current title only (final_draft.title). A focused alternative to
+// the broader final-draft endpoint when a reviewer just wants to retitle.
 // ----------------------------------------------------------------------------
 
 import { z } from 'zod';
@@ -18,42 +19,34 @@ const paramsSchema = z.object({
   id: z.string().min(1, 'Post ID is required'),
 });
 
-const finalDraftBodySchema = z
-  .object({
-    draft_markdown: z.string().optional(),
-    role: z.string().optional(),
-    summary: z.string().optional(),
-    thesis: z.string().optional(),
-    title: z.string().optional(),
-  })
-  .refine(data => Object.keys(data).length > 0, {
-    message: 'At least one final_draft field must be provided',
-  });
+const titleBodySchema = z.object({
+  title: z
+    .string({
+      invalid_type_error: 'title must be a string',
+      required_error: 'title is required',
+    })
+    .trim()
+    .min(1, 'title cannot be empty'),
+});
 
-export const updateFinalDraft = async (req, res) => {
+export const updateTonkaSparkPostTitle = async (req, res) => {
   try {
     const { id } = paramsSchema.parse(req.params);
-    const updates = finalDraftBodySchema.parse(req.body);
+    const { title: rawTitle } = titleBodySchema.parse(req.body);
+    // Scrub mangled control chars (e.g. "" smart-quote garbage) so an edit
+    // can't persist the same corruption the LLM pipeline now strips.
+    const title = sanitizeText(rawTitle);
 
     const query = id.includes('-') ? { content_id: id } : { _id: id };
 
-    const setFields = { updated_at: new Date() };
-    for (const [key, value] of Object.entries(updates)) {
-      // Scrub mangled control chars (e.g. "" smart-quote garbage) so a
-      // manual edit can't persist the corruption the LLM pipeline now strips.
-      setFields[`final_draft.${key}`] =
-        typeof value === 'string' ? sanitizeText(value) : value;
-    }
-
-    logger.info('Updating tonka spark post final_draft', {
-      fields: Object.keys(updates),
+    logger.info('Updating tonka spark post title', {
       postId: id,
       requestId: req.id,
     });
 
     const updated = await TonkaSparkPosts.findOneAndUpdate(
       query,
-      { $set: setFields },
+      { $set: { 'final_draft.title': title, updated_at: new Date() } },
       {
         new: true,
         projection: { _id: 1, content_id: 1, final_draft: 1, updated_at: 1 },
@@ -73,7 +66,7 @@ export const updateFinalDraft = async (req, res) => {
       });
     }
 
-    logger.info('Tonka spark post final_draft updated', {
+    logger.info('Tonka spark post title updated', {
       contentId: updated.content_id,
       requestId: req.id,
     });
@@ -99,7 +92,7 @@ export const updateFinalDraft = async (req, res) => {
       });
     }
 
-    logger.error('Error updating tonka spark post final_draft', {
+    logger.error('Error updating tonka spark post title', {
       error: error.message,
       postId: req.params.id,
       requestId: req.id,
@@ -113,7 +106,7 @@ export const updateFinalDraft = async (req, res) => {
     return res.status(apiError.statusCode).json({
       code: apiError.code,
       error: apiError.message,
-      message: 'Failed to update final draft',
+      message: 'Failed to update title',
     });
   }
 };

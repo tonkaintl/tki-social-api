@@ -67,6 +67,72 @@ Get single post by `content_id` (UUID) or `_id` (MongoDB ObjectId).
 
 ---
 
+## Title Management
+
+The `:id` param accepts either the `content_id` (UUID, contains `-`) or the Mongo `_id`.
+
+### PATCH /api/tonka-spark-posts/:id/title
+
+Edit the current title only (`final_draft.title`). Use this when a reviewer
+just wants to retitle without touching the rest of the final draft.
+
+**Auth**: Bearer token required
+
+**Body**:
+
+```json
+{
+  "title": "New headline"
+}
+```
+
+**Response** `200`:
+
+```json
+{
+  "content_id": "…",
+  "final_draft": { "title": "New headline", "...": "…" },
+  "updated_at": "2026-06-04T…"
+}
+```
+
+### PATCH /api/tonka-spark-posts/:id/title/swap
+
+Promote a title to the current title and demote the old one into the
+alternatives list.
+
+**Auth**: Bearer token required
+
+**Body**:
+
+```json
+{
+  "old_title": "Current headline",
+  "new_title": "The title to promote"
+}
+```
+
+Behavior:
+
+- `final_draft.title` becomes `new_title`.
+- `new_title` is removed from `title_variations` (every exact match) so the
+  main title doesn't also appear as an alternative. It need not be present.
+- `old_title` is appended to `title_variations` if it isn't already there; if
+  it's already present, it's left as-is (no duplicate).
+
+**Response** `200`:
+
+```json
+{
+  "content_id": "…",
+  "final_draft": { "title": "An existing alternative", "...": "…" },
+  "title_variations": ["Current headline", "…"],
+  "updated_at": "2026-06-04T…"
+}
+```
+
+---
+
 ## Visual Prompt Image Management
 
 ### POST /api/tonka-spark-post/:id/visual-prompts/:promptId/images

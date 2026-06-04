@@ -20,6 +20,10 @@ import axios from 'axios';
 import { config } from '../../../config/env.js';
 import { PIPELINE_ERROR_CODE } from '../../../constants/writersroom.js';
 import { logger } from '../../../utils/logger.js';
+import {
+  deepSanitize,
+  sanitizeText,
+} from '../../../utils/sanitizeControlChars.js';
 
 import { extractJson } from './extractJson.js';
 
@@ -92,7 +96,11 @@ export async function callPerplexity({
       // Perplexity has no native JSON-object mode (unlike OpenAI), so the
       // model often wraps output in prose + ```json fences. extractJson
       // handles both clean JSON and wrapped-with-preamble cases.
-      return { citations, parsed: extractJson(text), raw: text };
+      return {
+        citations,
+        parsed: deepSanitize(extractJson(text)),
+        raw: sanitizeText(text),
+      };
     } catch (err) {
       logger.error('[WritersRoom] Perplexity returned invalid JSON', {
         error: err.message,
@@ -105,5 +113,5 @@ export async function callPerplexity({
     }
   }
 
-  return { citations, raw: text };
+  return { citations, raw: sanitizeText(text) };
 }
