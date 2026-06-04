@@ -1,7 +1,9 @@
 export { getTonkaSparkPostById } from './methods/tonkaSparkPost.controller.getById.js';
 export { getTonkaSparkPostList } from './methods/tonkaSparkPost.controller.list.js';
+export { swapTonkaSparkPostTitle } from './methods/tonkaSparkPost.controller.swapTitle.js';
 export { toggleTonkaSparkPostUsed } from './methods/tonkaSparkPost.controller.toggleUsed.js';
 export { updateFinalDraft } from './methods/tonkaSparkPost.controller.updateFinalDraft.js';
+export { updateTonkaSparkPostTitle } from './methods/tonkaSparkPost.controller.updateTitle.js';
 export { addVisualPromptImage } from './methods/tonkaSparkPost.controller.visualPrompt.addImage.js';
 export { deleteVisualPromptImage } from './methods/tonkaSparkPost.controller.visualPrompt.deleteImage.js';
 export { uploadVisualPromptImage } from './methods/tonkaSparkPost.controller.visualPrompt.uploadImage.js';
