@@ -6,6 +6,7 @@
 // change the final_draft text.
 // ----------------------------------------------------------------------------
 
+import { extractJson } from '../llm/extractJson.js';
 import { callLlmFromPrompt } from '../llm/index.js';
 
 const SLUG = 'socialMediaDirector';
@@ -39,7 +40,7 @@ function buildSocialMediaContext(ctx) {
 export async function socialMediaDirector(ctx) {
   const enriched = buildSocialMediaContext(ctx);
   const result = await callLlmFromPrompt(SLUG, enriched);
-  const parsed = typeof result === 'string' ? JSON.parse(result) : result;
+  const parsed = typeof result === 'string' ? extractJson(result) : result;
   return {
     ...ctx,
     blog_post_package:

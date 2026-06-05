@@ -11,6 +11,8 @@ import { config } from '../../../config/env.js';
 import { PIPELINE_ERROR_CODE } from '../../../constants/writersroom.js';
 import { logger } from '../../../utils/logger.js';
 
+import { extractJson } from './extractJson.js';
+
 let client = null;
 
 // gpt-5 (non-chat) and o-series reasoning models reject custom sampling
@@ -90,7 +92,7 @@ export async function callOpenAi({
 
   if (schema) {
     try {
-      return JSON.parse(text);
+      return extractJson(text);
     } catch (err) {
       logger.error('[WritersRoom] OpenAI returned invalid JSON', {
         error: err.message,

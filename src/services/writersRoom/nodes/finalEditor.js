@@ -15,6 +15,7 @@
 
 import { FINAL_EDITOR_MIN_LENGTH_RATIO } from '../../../constants/writersroom.js';
 import { logger } from '../../../utils/logger.js';
+import { extractJson } from '../llm/extractJson.js';
 import { callLlmFromPrompt } from '../llm/index.js';
 
 const SLUG = 'finalEditor';
@@ -56,7 +57,7 @@ function buildFinalEditorContext(ctx) {
 export async function finalEditor(ctx) {
   const enriched = buildFinalEditorContext(ctx);
   const result = await callLlmFromPrompt(SLUG, enriched);
-  const parsed = typeof result === 'string' ? JSON.parse(result) : result;
+  const parsed = typeof result === 'string' ? extractJson(result) : result;
 
   const sourceDraft = enriched.head_draft.draft_markdown || '';
   const editedStory = parsed.story || parsed.draft_markdown || '';

@@ -18,9 +18,26 @@
 //      extract that span
 //   4. Parse — throw if still invalid
 //
-// We don't try to fix invalid JSON (unterminated strings, trailing commas,
-// etc.) — that's a model-prompt problem, not a parsing problem.
+// We don't try to fix structurally invalid JSON (unterminated strings,
+// trailing commas, etc.) — that's a model-prompt problem. The ONE defect we
+// do repair is raw control characters inside string literals (a literal
+// newline/tab where the model should have emitted \n / \t), because that's a
+// frequent, mechanically-fixable model defect that otherwise crashes the run
+// with "Bad control character in string literal".
 // ----------------------------------------------------------------------------
+
+import { escapeJsonControlChars } from '../../../utils/sanitizeControlChars.js';
+
+// JSON.parse, retried once with control chars inside string literals escaped.
+function parseLoose(jsonText) {
+  try {
+    return JSON.parse(jsonText);
+  } catch (err) {
+    const repaired = escapeJsonControlChars(jsonText);
+    if (repaired === jsonText) throw err;
+    return JSON.parse(repaired);
+  }
+}
 
 export function extractJson(text) {
   if (typeof text !== 'string') {
@@ -37,7 +54,7 @@ export function extractJson(text) {
     (trimmed.startsWith('{') && trimmed.endsWith('}')) ||
     (trimmed.startsWith('[') && trimmed.endsWith(']'))
   ) {
-    return JSON.parse(trimmed);
+    return parseLoose(trimmed);
   }
 
   // Find the outermost JSON span. We pick whichever bracket appears
@@ -66,5 +83,5 @@ export function extractJson(text) {
   }
 
   const span = trimmed.slice(openIdx, closeIdx + 1);
-  return JSON.parse(span);
+  return parseLoose(span);
 }

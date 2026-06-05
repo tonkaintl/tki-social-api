@@ -8,6 +8,7 @@
 // Notes" code node — we fold that step in here for cleanliness).
 // ----------------------------------------------------------------------------
 
+import { extractJson } from '../../llm/extractJson.js';
 import { callLlmFromPrompt } from '../../llm/index.js';
 
 function normalizeNote(raw, role, weight) {
@@ -34,7 +35,7 @@ export async function runWriterBrainstorm({ ctx, role, slug }) {
   let parsed = result;
   if (typeof result === 'string') {
     try {
-      parsed = JSON.parse(result);
+      parsed = extractJson(result);
     } catch {
       parsed = { notes: [result], role, weight };
     }
