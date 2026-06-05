@@ -67,6 +67,55 @@ export function sanitizeText(value) {
   return out;
 }
 
+// Escape raw (unescaped) control characters that appear INSIDE a JSON string
+// literal so JSON.parse() will accept the text. Models without a native JSON
+// mode sometimes emit a literal newline/tab inside a value (e.g. a multi-
+// paragraph draft_text) instead of the required \n / \t escape — invalid JSON
+// that throws "Bad control character in string literal". We can't strip the
+// chars (we'd lose paragraph breaks in the prose) and can't blindly escape
+// every control byte (structural newlines BETWEEN tokens must stay raw), so we
+// walk the text tracking string context and only escape the bytes inside a
+// string literal. Returns repaired JSON text, not a parsed value.
+export function escapeJsonControlChars(text) {
+  if (typeof text !== 'string') return text;
+  let out = '';
+  let inString = false;
+  let escaped = false;
+  for (let i = 0; i < text.length; i += 1) {
+    const ch = text[i];
+    if (!inString) {
+      if (ch === '"') inString = true;
+      out += ch;
+      continue;
+    }
+    if (escaped) {
+      out += ch;
+      escaped = false;
+      continue;
+    }
+    if (ch === '\\') {
+      out += ch;
+      escaped = true;
+      continue;
+    }
+    if (ch === '"') {
+      out += ch;
+      inString = false;
+      continue;
+    }
+    const code = ch.charCodeAt(0);
+    if (code < 0x20) {
+      if (ch === '\n') out += '\\n';
+      else if (ch === '\r') out += '\\r';
+      else if (ch === '\t') out += '\\t';
+      else out += `\\u${code.toString(16).padStart(4, '0')}`;
+      continue;
+    }
+    out += ch;
+  }
+  return out;
+}
+
 // Walk an arbitrary parsed-JSON value and sanitize every string leaf.
 export function deepSanitize(value) {
   if (typeof value === 'string') return sanitizeText(value);

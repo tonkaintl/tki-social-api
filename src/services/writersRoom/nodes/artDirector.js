@@ -6,6 +6,7 @@
 //   { visual_prompts: [{ id, intent, prompt }, ...] }
 // ----------------------------------------------------------------------------
 
+import { extractJson } from '../llm/extractJson.js';
 import { callLlmFromPrompt } from '../llm/index.js';
 
 const SLUG = 'artDirector';
@@ -14,7 +15,7 @@ const DEFAULT_VISUAL_PROMPTS = { visual_prompts: [] };
 
 export async function artDirector(ctx) {
   const result = await callLlmFromPrompt(SLUG, ctx);
-  const parsed = typeof result === 'string' ? JSON.parse(result) : result;
+  const parsed = typeof result === 'string' ? extractJson(result) : result;
   return {
     ...ctx,
     visual_prompts:

@@ -11,6 +11,7 @@
 //   { role: 'head_writer', title, thesis, draft_text, summary }
 // ----------------------------------------------------------------------------
 
+import { extractJson } from '../llm/extractJson.js';
 import { callLlmFromPrompt } from '../llm/index.js';
 
 const SLUG = 'headWriter';
@@ -52,6 +53,6 @@ export async function headWriter(ctx) {
   // OpenAI provider returns parsed JSON when schema is present.
   return {
     ...ctx,
-    head_draft: typeof result === 'string' ? JSON.parse(result) : result,
+    head_draft: typeof result === 'string' ? extractJson(result) : result,
   };
 }

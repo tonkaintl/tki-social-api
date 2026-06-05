@@ -5,6 +5,7 @@
 //   { arcs: [{ arc_title, one_line_premise, why_it_matters, suggested_story_seed }, ...] }
 // ----------------------------------------------------------------------------
 
+import { extractJson } from '../llm/extractJson.js';
 import { callLlmFromPrompt } from '../llm/index.js';
 
 const SLUG = 'futureStoryArc';
@@ -13,7 +14,7 @@ const EMPTY_ARC = { future_story_arc_generator: { arcs: [] } };
 
 export async function futureStoryArc(ctx) {
   const result = await callLlmFromPrompt(SLUG, ctx);
-  const parsed = typeof result === 'string' ? JSON.parse(result) : result;
+  const parsed = typeof result === 'string' ? extractJson(result) : result;
   return {
     ...ctx,
     future_arcs:
