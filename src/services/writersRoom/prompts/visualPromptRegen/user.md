@@ -1,9 +1,12 @@
-Create exactly 5 still-image prompts based strictly on the article below — one
-for each intent (hero, detail, process, environment, metaphor).
+Generate ONE still-image prompt for the **{{intent}}** intent, based strictly
+on the article below.
 
-Anchor every prompt in the concrete subject, objects, and setting of THIS
+Anchor the prompt in the concrete subject, objects, and setting of THIS
 article. Do not introduce concepts, settings, or objects that are not present
 or implied in it. Do not fall back to a default industry.
+
+ADDITIONAL DIRECTION (optional, may be blank):
+{{instructions}}
 
 TITLE:
 {{final_draft.title}}
