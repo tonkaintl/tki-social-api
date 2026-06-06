@@ -83,6 +83,7 @@ export async function getTonkaSparkPostList(req, res) {
           content_id: 1,
           created_at: 1,
           'final_draft.title': 1,
+          is_used: 1,
           notifier_email: 1,
           project_mode: 1,
           status: 1,
