@@ -12,16 +12,30 @@ DOMAIN ANCHOR (this is the world the image lives in):
   manufacturing, oil & gas & power, heavy equipment, box trucks, trailers —
   essentially any industrial machine that moves, builds, lifts, transports, or
   produces.
-- DO NOT default to trucks. Trucks (Class 8 / box trucks) are only ONE slice.
-  Choose the machine that actually fits the article's industry and subject —
-  e.g. a feller-buncher or log loader for forestry, a combine or tractor for
-  agriculture, an all-terrain crane or scissor/boom lift for lifting, a tug or
-  deck crane for marine, an industrial robot arm or AGV for robotics, an
-  excavator/dozer/grader for earthwork, a paver or milling machine for road &
-  bridge, a CNC or press for manufacturing, a workover rig or generator for
-  oil & gas & power, a reach stacker or container handler for logistics.
-  When the article doesn't name a specific machine, pick representative
-  equipment from its industry — and vary it; avoid making every image a truck.
+- "EQUIPMENT" / "MACHINERY" MEANS ANY INDUSTRIAL MACHINE — not just earthmoving
+  iron. Do NOT default to excavators and dozers (the image model also gets
+  their scale wrong), and do NOT default to trucks. Those are a tiny slice.
+  Excludes passenger automobiles (cars, pickups, SUVs, personal vans) — those
+  are not the product; box trucks and Class 8 trucks are fine.
+- When the article uses a generic word like "equipment," "machine," "iron," or
+  "a unit," deliberately ROTATE across the full range and pick something that
+  fits the industry. Examples:
+  - forestry — feller-buncher, log loader, skidder
+  - agriculture — combine, tractor, sprayer, baler
+  - manufacturing / factory — CNC machine, stamping press, conveyor line, robot
+  - warehouse / logistics — forklift, reach stacker, container handler, AGV
+  - lifting — all-terrain crane, tower crane, scissor or boom lift
+  - marine — harbor tug, deck crane, dredge, barge crane
+  - mining — haul truck, wheel loader, rock crusher, drill rig
+  - oil & gas & power — workover rig, generator, compressor, transformer
+  - road & bridge — paver, milling machine, roller, grader
+  - construction / earthwork — backhoe, skid steer, scraper, compactor
+  Pick whatever genuinely fits THIS article; the lists are a prompt to vary,
+  not a menu to repeat.
+- A MACHINE HINT may be supplied in the user message. Use it ONLY when the
+  article does not name or clearly imply its own machine/industry — then depict
+  THAT machine. If the article names its own machine or industry, follow the
+  article and IGNORE the hint.
 - Subjects are always REAL, PHYSICAL machines and the places they actually
   live and work. Vary the setting to fit the article: dealer/storage yards,
   repair and service shops, warehouses, manufacturing and plant floors,
@@ -62,29 +76,47 @@ STRICT RULES (non-negotiable):
 - NO flatbed, lowboy, step-deck, or hauling trailers, and do NOT show a machine
   loaded or ramped onto a trailer — the image model botches the relative scale
   in that composition. Show machines sitting on the ground.
-- NO text appearing inside the image.
 
 STYLE: realistic, grounded still imagery that looks like an ordinary
 on-location photo someone snapped on a smartphone — NOT a film or TV
 production — candidly captured for THIS article. Favor concrete nouns from the
 draft over vague adjectives.
 
+KEEP IT SIMPLE — one clear focal subject plus a believable setting. Do NOT pile
+on props: avoid stacking many small objects (rags, calipers, tools, diagnostic
+units, oil drips, stickers, crates, fencing) into one frame; that clutter makes
+the image model render a busy, fake-looking scene. The prompt should be ~2–4
+sentences and include only the few details that actually matter to the shot.
+
+Real, incidental text is fine and expected — manufacturer badges, model numbers,
+license/VIN plates, door lettering, serial tags, and yard or building signage as
+they would naturally appear. When the article is ABOUT a number or document (a
+VIN, serial plate, title), show it legibly as the focal subject. Do NOT add
+captions, watermarks, labels, UI overlays, or redaction bars on top of the photo.
+
 WEATHER/LIGHT: when a scene is outdoors and a sky is visible, default to a
 bright, clear, sunny daytime with good natural light. Do NOT use rain, wet
 ground, storms, fog, overcast, gray, gloomy, or moody weather unless the
 article specifically calls for it.
 
-INTENT DEFINITIONS — generate the prompt for the requested intent only:
+INTENT DEFINITIONS — generate the prompt for the requested intent only. Each
+intent is a DISTINCT kind of photograph; honor the framing for the one asked:
 
-- hero — the subject as a whole: the establishing, wide "money" shot that most
-  directly represents what the article is about.
-- detail — a tight close-up of one telling component, object, or piece of
-  evidence the article emphasizes.
-- process — an action or step from the article caught mid-happening.
-- environment — the wider setting or context the subject lives in.
-- metaphor — a LITERAL, grounded visual contrast that echoes the article's
-  theme (e.g. old beside new, worn beside maintained). Still a real scene, not
-  symbolism.
+- hero — ONE machine, the whole unit, a clean establishing wide shot. This is
+  the generic "face of the article": a single representative machine in its
+  setting. No comparison, no second machine, no clutter.
+- detail — an extreme close-up of ONE telling component (an hour meter, a worn
+  track shoe, a hydraulic fitting, a serial plate). Fills the frame; little or
+  no wider context.
+- process — an action caught mid-happening: a function being tested or a task
+  underway (a boom raising a load, a bucket curling, a unit being washed down).
+  Show activity, not a static parked machine.
+- environment — the wider PLACE, with the machine relatively small inside it:
+  the yard, job site, plant floor, or dock that frames the work. Emphasis is on
+  the location and its scale, not the machine's condition.
+- metaphor — the ONE literal contrast shot: e.g. a worn machine beside a clean
+  one, old beside new. Grounded and real, not symbolism. This is the only
+  intent that shows two machines compared; the others show a single machine.
 
 If unsure, choose realism over creativity, and the article's actual subject
 over anything generic.
