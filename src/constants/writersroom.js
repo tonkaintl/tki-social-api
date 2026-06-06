@@ -76,6 +76,27 @@ export const WRITING_GENRES = {
 
 export const WRITING_GENRES_VALUES = Object.values(WRITING_GENRES);
 
+// Visual prompt intents — the five "tones" the Art Director generates for a
+// single piece. Each yields one still-image prompt grounded in the article.
+// Shared by the pipeline Art Director (5-shot) and the single-prompt
+// regenerate endpoint so the enum can't drift between them. Keep in sync with
+// the `intent` enum in services/writersRoom/prompts/artDirector/schema.json.
+export const VISUAL_PROMPT_INTENT = {
+  // A close-up of one telling component or piece of evidence.
+  DETAIL: 'detail',
+  // The wider setting/context the subject sits in.
+  ENVIRONMENT: 'environment',
+  // The subject as a whole — the establishing "money" shot.
+  HERO: 'hero',
+  // A literal, grounded visual contrast that echoes the article's theme
+  // (NOT abstract symbolism).
+  METAPHOR: 'metaphor',
+  // An action or step caught mid-happening.
+  PROCESS: 'process',
+};
+
+export const VISUAL_PROMPT_INTENT_VALUES = Object.values(VISUAL_PROMPT_INTENT);
+
 // ----------------------------------------------------------------------------
 // Writers Room PIPELINE (script-only port of the n8n "Writer's Room" workflow)
 // ----------------------------------------------------------------------------

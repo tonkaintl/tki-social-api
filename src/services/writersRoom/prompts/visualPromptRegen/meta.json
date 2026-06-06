@@ -1,0 +1,10 @@
+{
+  "provider": "openai",
+  "model": "gpt-5-mini",
+  "temperature": null,
+  "maxOutputTokens": null,
+  "topP": null,
+  "jsonOutput": false,
+  "hasStructuredOutput": true,
+  "structuredOutputName": "visual_prompt_regen_schema"
+}

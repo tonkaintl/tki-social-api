@@ -7,4 +7,5 @@ export { updateFinalDraft } from './methods/tonkaSparkPost.controller.updateFina
 export { updateTonkaSparkPostTitle } from './methods/tonkaSparkPost.controller.updateTitle.js';
 export { addVisualPromptImage } from './methods/tonkaSparkPost.controller.visualPrompt.addImage.js';
 export { deleteVisualPromptImage } from './methods/tonkaSparkPost.controller.visualPrompt.deleteImage.js';
+export { regenerateVisualPrompt } from './methods/tonkaSparkPost.controller.visualPrompt.regenerate.js';
 export { uploadVisualPromptImage } from './methods/tonkaSparkPost.controller.visualPrompt.uploadImage.js';

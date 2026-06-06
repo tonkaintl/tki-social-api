@@ -6,6 +6,7 @@ import {
   deleteVisualPromptImage,
   getTonkaSparkPostById,
   getTonkaSparkPostList,
+  regenerateVisualPrompt,
   swapTonkaSparkPostTitle,
   toggleTonkaSparkPostUsed,
   updateFinalDraft,
@@ -39,6 +40,9 @@ router.patch('/:id/used', toggleTonkaSparkPostUsed);
 // ----------------------------------------------------------------------------
 // Visual Prompts Routes
 // ----------------------------------------------------------------------------
+// Regenerate the TEXT prompt (not the image) for a single visual prompt,
+// grounded in the post's final_draft. Optional body: { intent, instructions }.
+router.post('/:id/visual-prompts/:promptId/regenerate', regenerateVisualPrompt);
 router.post('/:id/visual-prompts/:promptId/images', addVisualPromptImage);
 router.post(
   '/:id/visual-prompts/:promptId/images/upload',
