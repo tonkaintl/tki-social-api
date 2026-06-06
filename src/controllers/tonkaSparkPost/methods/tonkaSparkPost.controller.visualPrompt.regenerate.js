@@ -21,6 +21,7 @@ import { VISUAL_PROMPT_INTENT_VALUES } from '../../../constants/writersroom.js';
 import TonkaSparkPosts from '../../../models/tonkaSparkPost.model.js';
 import { extractJson } from '../../../services/writersRoom/llm/extractJson.js';
 import { callLlmFromPrompt } from '../../../services/writersRoom/llm/index.js';
+import { machineHintFor } from '../../../services/writersRoom/machineHint.js';
 import { logger } from '../../../utils/logger.js';
 import { sanitizeText } from '../../../utils/sanitizeControlChars.js';
 
@@ -105,6 +106,9 @@ export const regenerateVisualPrompt = async (req, res) => {
       },
       instructions: instructions || '',
       intent: effectiveIntent,
+      // Seeded on the same title the 5-shot Art Director used, so a re-rolled
+      // prompt lands on the same machine as its siblings instead of drifting.
+      machine_hint: machineHintFor(finalDraft.title),
     };
 
     const result = await callLlmFromPrompt('visualPromptRegen', ctx);
