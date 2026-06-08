@@ -64,6 +64,15 @@ export const MAX_PER_CATEGORY_IN_RESULTS =
 // Env: DISPATCH_MAX_PER_CATEGORY_POOL (default 8)
 export const MAX_PER_CATEGORY_POOL = config.DISPATCH_MAX_PER_CATEGORY_POOL;
 
+// ── Scoring budget (per category) ────────────────────────────────────────────
+// How many of the NEWEST recent articles to score per category each run. This
+// is the daily LLM-scoring budget and the reason this pipeline can never build
+// a backlog: we only ever pay to score a bounded, category-balanced shortlist
+// of recent articles — never the whole ingest firehose. Scores are persisted,
+// so an article in the 5-day window is scored at most once.
+// Env: DISPATCH_SCORE_PER_CATEGORY (default 8)
+export const SCORE_PER_CATEGORY = config.DISPATCH_SCORE_PER_CATEGORY;
+
 // ── Pare: global pool cap (sent to LLM) ─────────────────────────────────────
 
 // Env: DISPATCH_MAX_POOL_TOTAL (default 60)
@@ -81,8 +90,16 @@ export const RANKINGS_TARGET_COUNT = config.DISPATCH_RANKINGS_TARGET_COUNT;
 export const RANKING_CRON_SCHEDULE = '0 7 * * 1-5';
 export const RANKING_CRON_TIMEZONE = 'America/Chicago';
 
-// ── LLM prompt ───────────────────────────────────────────────────────────────
+// ── Relevance scoring prompt ─────────────────────────────────────────────────
+// Per-article 0–100 "how interesting is this to our audience" score. This is
+// the same prompt the collector historically used (relevance-scorer.txt); it
+// now lives here because scoring is owned by the ranking pipeline. The score it
+// produces is what selection sorts on — there is no second ranking LLM pass.
+export const RELEVANCE_SCORER_PROMPT = `You are an expert analyst specializing in the interests of professionals in heavy equipment, semi-truck and trailer, crane, marine, fleet ownership, construction, manufacturing, agriculture, and road construction. The audience is blue-collar, practical, but business-savvy and technically educated. They care about market trends, regulations, safety, equipment technology, financing, costs, and real-world impact. Your job is to rate how interesting a given news story is for this audience from 0 to 100. Return only a single integer from 0 to 100 with no explanation.`;
 
+// ── LLM prompt (legacy ranking pass — no longer used by runDailyRanking) ──────
+// Kept for reference / the webhook ranking controller. The daily pipeline now
+// selects by per-article relevance score, not a whole-pool ranking call.
 export const RANKING_SYSTEM_PROMPT = `You are a ranking engine for a daily trucking, heavy equipment, and industrial newsletter called Tonka Dispatch.
 
 Your audience is trucking/logistics professionals, but the newsletter covers a broad mix of industries including:
