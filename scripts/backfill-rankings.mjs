@@ -26,6 +26,7 @@ import mongoose from 'mongoose';
 const args = process.argv.slice(2);
 const GO = args.includes('--go');
 const EMAIL = args.includes('--email');
+const RESET = args.includes('--reset'); // delete all backfill-* batches first
 const dates = args.filter(a => /^\d{4}-\d{2}-\d{2}$/.test(a));
 
 // Default: the missed weekdays we want populated (the 6th/7th are a weekend).
@@ -84,6 +85,17 @@ if (!GO) {
 }
 
 await mongoose.connect(directUri(process.env.MONGODB_TKISOCIAL_URI));
+
+if (RESET) {
+  const TonkaDispatchRanking = (
+    await import('../src/models/tonkaDispatchRankings.model.js')
+  ).default;
+  const res = await TonkaDispatchRanking.deleteMany({
+    batch_id: { $regex: '^backfill-' },
+  });
+  console.log(`\n[reset] deleted ${res.deletedCount} prior backfill-* rankings`);
+}
+
 const { runDailyRanking } = await import(
   '../src/services/dispatchRanking.service.js'
 );

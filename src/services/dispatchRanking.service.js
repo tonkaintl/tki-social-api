@@ -230,10 +230,18 @@ async function selectShortlist(asOf) {
   const filter = { published_at_ms: { $gte: cutoff, $lte: asOf } };
 
   if (CANDIDATE_EXCLUDE_USED) {
-    const usedIds = (
-      await TonkaDispatchRanking.distinct('dispatch_article_id')
-    ).filter(Boolean);
-    if (usedIds.length > 0) filter._id = { $nin: usedIds };
+    // Exclude by BOTH article id and link. The same story is frequently
+    // ingested as several dispatch_articles docs (syndicated across feeds with
+    // different guids), so excluding only by _id would let the same link reappear
+    // in a later batch. canonical_id on a ranking == the article link.
+    const [usedIds, usedLinks] = await Promise.all([
+      TonkaDispatchRanking.distinct('dispatch_article_id'),
+      TonkaDispatchRanking.distinct('canonical_id'),
+    ]);
+    const ids = usedIds.filter(Boolean);
+    const links = usedLinks.filter(Boolean);
+    if (ids.length > 0) filter._id = { $nin: ids };
+    if (links.length > 0) filter.link = { $nin: links };
   }
 
   const articles = await DispatchArticle.find(filter)
@@ -241,12 +249,28 @@ async function selectShortlist(asOf) {
     .lean();
 
   // Free pre-filters — drop low-value patterns and link-less items. $0 cost.
-  const filtered = articles.filter(a => {
+  const prefiltered = articles.filter(a => {
     if (!a.link) return false;
     if (dropPatternMatch(a.title, DROP_TITLE_PATTERNS)) return false;
     if (dropPatternMatch(a.link, DROP_LINK_PATTERNS)) return false;
     return true;
   });
+
+  // Dedupe by link WITHIN this run — keep one doc per story. Prefer a copy that
+  // is already scored (reuse the cache), then the newest.
+  const byLink = new Map();
+  for (const a of prefiltered) {
+    const existing = byLink.get(a.link);
+    if (!existing) {
+      byLink.set(a.link, a);
+      continue;
+    }
+    const better =
+      (scoreOf(a) >= 0 ? 1 : 0) - (scoreOf(existing) >= 0 ? 1 : 0) ||
+      getMs(a) - getMs(existing);
+    if (better > 0) byLink.set(a.link, a);
+  }
+  const filtered = [...byLink.values()];
 
   // Group by category.
   const byCat = new Map();
