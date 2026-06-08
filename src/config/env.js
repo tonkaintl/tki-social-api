@@ -72,16 +72,16 @@ const envSchema = z.object({
     .transform(Number)
     .pipe(z.number().min(1))
     .default(60),
-  DISPATCH_SCORE_PER_CATEGORY: z
-    .string()
-    .transform(Number)
-    .pipe(z.number().min(1))
-    .default(8),
   DISPATCH_RANKINGS_TARGET_COUNT: z
     .string()
     .transform(Number)
     .pipe(z.number().min(1))
     .default(10),
+  DISPATCH_SCORE_PER_CATEGORY: z
+    .string()
+    .transform(Number)
+    .pipe(z.number().min(1))
+    .default(8),
   GEMINI_API_KEY: z.string().optional(),
   // Default Gemini model the Writer's Room router falls back to when a
   // prompt's meta.json doesn't specify one. Per-prompt model in meta.json
