@@ -15,6 +15,7 @@ import {
   runDailyRanking,
   runDispatchRetentionCleanup,
 } from './dispatchRanking.service.js';
+import { logCategorySnapshot } from './dispatchStats.service.js';
 
 let isRunning = false;
 
@@ -26,8 +27,15 @@ async function runWithGuard() {
     return;
   }
   isRunning = true;
+  logger.info('[DispatchRanking] Cron fired — starting scheduled run', {
+    schedule: RANKING_CRON_SCHEDULE,
+    timezone: RANKING_CRON_TIMEZONE,
+  });
   try {
     await runDispatchRetentionCleanup();
+    // Snapshot AFTER cleanup, BEFORE scoring/assignment — leaves a per-run
+    // record of the article inventory by category in the server logs.
+    await logCategorySnapshot({ label: 'cron-post-cleanup' });
     await runDailyRanking();
   } catch (err) {
     logger.error('[DispatchRanking] Cron run failed', {

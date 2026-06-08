@@ -502,6 +502,104 @@ async function sendDigestEmail(finalRankings, articleMap, batchId, asOf) {
   }
 }
 
+// ── Resend recent digests (manual / ops) ─────────────────────────────────────
+
+/**
+ * Re-send the most recent N ranking batches as individual digest emails to
+ * TONKA_DISPATCH_RECIPIENTS — one email per batch — reusing the live digest
+ * template. Read-only: never writes the DB. Sends oldest-first so the newest
+ * batch is delivered last and lands on top in the inbox.
+ *
+ * @param {object} [opts]
+ * @param {number} [opts.count=3]  How many recent batches to resend.
+ * @returns {Promise<{batches: Array, sent: number}>}
+ */
+export async function resendRecentDigests({ count = 3 } = {}) {
+  const recentBatches = await TonkaDispatchRanking.aggregate([
+    {
+      $group: {
+        _id: '$batch_id',
+        created_at: { $max: '$created_at' },
+        pub_date_ms: { $max: '$pub_date_ms' },
+      },
+    },
+    { $sort: { created_at: -1 } },
+    { $limit: count },
+  ]);
+
+  if (recentBatches.length === 0) {
+    logger.warn('[DispatchRanking] resendRecentDigests — no batches found');
+    return { batches: [], sent: 0 };
+  }
+
+  const recipients = config.TONKA_DISPATCH_RECIPIENTS.split(',')
+    .map(e => e.trim())
+    .filter(Boolean);
+
+  // Oldest-first so the most recent digest is delivered last.
+  const ordered = [...recentBatches].reverse();
+  const results = [];
+
+  for (const batch of ordered) {
+    const batchId = batch._id;
+    const docs = await TonkaDispatchRanking.find({ batch_id: batchId })
+      .sort({ rank: 1 })
+      .lean();
+
+    if (docs.length === 0) continue;
+
+    const whenMs =
+      batch.pub_date_ms ||
+      (batch.created_at ? new Date(batch.created_at).getTime() : Date.now());
+    const today = new Date(whenMs).toLocaleDateString('en-US', {
+      day: '2-digit',
+      month: 'short',
+      timeZone: 'America/Chicago',
+      weekday: 'short',
+      year: 'numeric',
+    });
+
+    const enriched = docs.map(d => ({
+      article: {
+        category: d.category || null,
+        link: d.link || null,
+        pub_date_ms: d.pub_date_ms || null,
+        snippet: d.snippet || '',
+        title: d.title || '',
+      },
+      rank: d.rank,
+      reason: '',
+    }));
+
+    const htmlBody = buildEmailHtml({ batchId, rankings: enriched, today });
+    const subject = `Tonka Dispatch Dailies (resend) - ${today}`;
+
+    try {
+      await emailService.sendEmail({ htmlBody, subject, to: recipients });
+      logger.info('[DispatchRanking] Resent digest email', {
+        articles: docs.length,
+        batch_id: batchId,
+        recipients,
+        subject,
+      });
+      results.push({ articles: docs.length, batch_id: batchId, sent: true });
+    } catch (err) {
+      logger.error('[DispatchRanking] Failed to resend digest email', {
+        batch_id: batchId,
+        error: err.message,
+      });
+      results.push({ batch_id: batchId, error: err.message, sent: false });
+    }
+  }
+
+  const sent = results.filter(r => r.sent).length;
+  logger.info('[DispatchRanking] resendRecentDigests complete', {
+    requested: count,
+    sent,
+  });
+  return { batches: results, sent };
+}
+
 // ── Main entry point ──────────────────────────────────────────────────────────
 
 /**

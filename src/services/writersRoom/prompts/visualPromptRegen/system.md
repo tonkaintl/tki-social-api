@@ -105,9 +105,13 @@ intent is a DISTINCT kind of photograph; honor the framing for the one asked:
 - hero — ONE machine, the whole unit, a clean establishing wide shot. This is
   the generic "face of the article": a single representative machine in its
   setting. No comparison, no second machine, no clutter.
-- detail — an extreme close-up of ONE telling component (an hour meter, a worn
-  track shoe, a hydraulic fitting, a serial plate). Fills the frame; little or
-  no wider context.
+- detail — an extreme close-up of the ONE specific detail THIS article dwells
+  on: whatever wear point, component, gauge, fluid leak, or part the draft
+  actually emphasizes (e.g. a worn track shoe, a hydraulic fitting, an hour
+  meter, a cracked weld, a chipped cutting edge). Pull it straight from the
+  article. Do NOT default to a VIN or serial-number plate — use an ID/serial
+  plate only when the article is genuinely about identification, title, or
+  serial numbers. Fills the frame; little or no wider context.
 - process — an action caught mid-happening: a function being tested or a task
   underway (a boom raising a load, a bucket curling, a unit being washed down).
   Show activity, not a static parked machine.
