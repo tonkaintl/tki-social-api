@@ -81,7 +81,7 @@ const envSchema = z.object({
     .string()
     .transform(Number)
     .pipe(z.number().min(1))
-    .default(8),
+    .default('8'),
   GEMINI_API_KEY: z.string().optional(),
   // Default Gemini model the Writer's Room router falls back to when a
   // prompt's meta.json doesn't specify one. Per-prompt model in meta.json
