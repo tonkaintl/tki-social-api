@@ -13,6 +13,16 @@ import { config } from '../config/env.js';
 // Env: DISPATCH_CANDIDATE_SCORE_MIN (default 70)
 export const CANDIDATE_SCORE_MIN = config.DISPATCH_CANDIDATE_SCORE_MIN;
 
+// Logistics dominates the high-score pool (~56% of all >=80 articles), so it is
+// held to a higher floor than other categories — only genuinely top-tier
+// logistics stories earn a digest slot. Every other category uses
+// CANDIDATE_SCORE_MIN, so thin categories (marine, mining, etc.) aren't starved.
+// Env: DISPATCH_LOGISTICS_SCORE_MIN (default 85)
+export const LOGISTICS_SCORE_MIN = config.DISPATCH_LOGISTICS_SCORE_MIN;
+
+// The category subject to the higher floor above.
+export const DOMINANT_CATEGORY = 'logistics';
+
 // Only look at articles published within this many days.
 // 5 days covers the weekend gap — Monday's run picks up Thu/Fri/Sat/Sun/Mon articles.
 // Env: DISPATCH_CANDIDATE_MAX_AGE_DAYS (default 3)

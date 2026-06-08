@@ -22,7 +22,7 @@ Replaces the n8n workflow. Runs entirely in-process on this server.
 
 Queries `dispatch_articles` for articles that:
 
-- Have `relevance.score ≥ CANDIDATE_SCORE_MIN` (default **70**)
+- Have `relevance.score ≥ CANDIDATE_SCORE_MIN` (default **70**) — except **logistics**, which must clear the higher `LOGISTICS_SCORE_MIN` (default **85**) since it supplies most high scorers
 - Were published within the last `CANDIDATE_MAX_AGE_DAYS` (env-driven)
 - Have NOT already appeared in any previous ranking batch (controlled by `CANDIDATE_EXCLUDE_USED`)
 
@@ -49,7 +49,7 @@ Any article IDs the LLM returns that don't match the pool are silently discarded
 
 ### Step 4 — Category Cap on Results
 
-After LLM ranking, a hard cap of `MAX_PER_CATEGORY_IN_RESULTS` (default **3**) per category is enforced on the final `RANKINGS_TARGET_COUNT` (default **10**) results. This is the primary fix for logistics dominance (historically 61% of all rankings). Results are renumbered 1–10.
+Selection takes the top `MAX_PER_CATEGORY_IN_RESULTS` (default **3**) per category by score, sorts the survivors best-first, then **hard-caps the digest at `RANKINGS_TARGET_COUNT` (default 10)** — nobody reviews more than 10. Combined with the higher logistics floor, this is the fix for logistics dominance (historically 61% of all rankings): logistics can never exceed its top 3, and only its ≥85 stories qualify.
 
 ### Step 5 — Save
 
@@ -80,7 +80,8 @@ All in **`src/constants/dispatchRanking.js`** — change here, redeploy, done.
 
 | Constant                      | Default             | What it controls                                         |
 | ----------------------------- | ------------------- | -------------------------------------------------------- |
-| `CANDIDATE_SCORE_MIN`         | `70`                | Minimum Perplexity score for an article to be considered |
+| `CANDIDATE_SCORE_MIN`         | `70`                | Minimum score for an article to be considered            |
+| `LOGISTICS_SCORE_MIN`         | `85`                | Higher floor for logistics only (the dominant category)  |
 | `CANDIDATE_MAX_AGE_DAYS`      | env value           | How many days back to look for articles                  |
 | `DISPATCH_BACKLOG_DAYS`       | `28`                | Retention window used for old-record cleanup             |
 | `CANDIDATE_EXCLUDE_USED`      | `true`              | Skip articles already in any previous batch              |

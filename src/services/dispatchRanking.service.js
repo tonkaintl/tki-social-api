@@ -27,10 +27,13 @@ import {
   CANDIDATE_MAX_AGE_DAYS,
   CANDIDATE_SCORE_MIN,
   DISPATCH_BACKLOG_DAYS,
+  DOMINANT_CATEGORY,
   DROP_LINK_PATTERNS,
   DROP_TITLE_PATTERNS,
+  LOGISTICS_SCORE_MIN,
   MAX_PER_CATEGORY_IN_RESULTS,
   MAX_PER_FEED,
+  RANKINGS_TARGET_COUNT,
   RELEVANCE_SCORER_PROMPT,
   SCORE_PER_CATEGORY,
 } from '../constants/dispatchRanking.js';
@@ -376,13 +379,20 @@ async function scoreAndPersist(articles) {
   return { failed, scored };
 }
 
-// ── Step 3: Pick top-N per category by score (>= floor), no global cap ────────
+// ── Step 3: Pick top-N per category by score, then hard-cap the digest ────────
+
+// Per-category quality floor: logistics must clear a higher bar than everyone
+// else (it supplies the bulk of high scorers); thin categories use the base
+// floor so they aren't starved.
+function floorForCategory(cat) {
+  return cat === DOMINANT_CATEGORY ? LOGISTICS_SCORE_MIN : CANDIDATE_SCORE_MIN;
+}
 
 function pickResults(shortlist) {
   const byCat = new Map();
   for (const a of shortlist) {
-    if (scoreOf(a) < CANDIDATE_SCORE_MIN) continue; // quality floor
     const cat = a.category || 'uncategorized';
+    if (scoreOf(a) < floorForCategory(cat)) continue; // per-category floor
     if (!byCat.has(cat)) byCat.set(cat, []);
     byCat.get(cat).push(a);
   }
@@ -393,9 +403,12 @@ function pickResults(shortlist) {
     selected.push(...list.slice(0, MAX_PER_CATEGORY_IN_RESULTS));
   }
 
-  // Present best-first across the whole digest.
+  // Best-first across the whole digest, then hard-cap to the review limit —
+  // nobody reviews more than RANKINGS_TARGET_COUNT, so drop the lowest-scoring
+  // tail. The per-category cap (3) + higher logistics floor mean the survivors
+  // stay diverse and logistics can never exceed its top-3.
   selected.sort((x, y) => scoreOf(y) - scoreOf(x));
-  return selected;
+  return selected.slice(0, RANKINGS_TARGET_COUNT);
 }
 
 // ── Step 4: Save to DB ────────────────────────────────────────────────────────

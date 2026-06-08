@@ -52,6 +52,13 @@ const envSchema = z.object({
     .transform(Number)
     .pipe(z.number().min(0).max(100))
     .default(70),
+  // Higher score floor applied ONLY to the dominant category (logistics), so it
+  // must clear a steeper bar than thinner categories to earn a digest slot.
+  DISPATCH_LOGISTICS_SCORE_MIN: z
+    .string()
+    .transform(Number)
+    .pipe(z.number().min(0).max(100))
+    .default('85'),
   DISPATCH_MAX_PER_CATEGORY_IN_RESULTS: z
     .string()
     .transform(Number)
