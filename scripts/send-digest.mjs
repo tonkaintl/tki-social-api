@@ -16,7 +16,9 @@ function directUri(uri) {
   const [, creds, host, dbName] = m;
   const base = host.replace(/^[^.]+\./, '');
   const prefix = host.split('.')[0];
-  const hosts = [0, 1, 2].map(i => `${prefix}-shard-00-0${i}.${base}:27017`).join(',');
+  const hosts = [0, 1, 2]
+    .map(i => `${prefix}-shard-00-0${i}.${base}:27017`)
+    .join(',');
   return `mongodb://${creds}@${hosts}/${dbName}?ssl=true&replicaSet=atlas-uys7di-shard-0&authSource=admin&retryWrites=true&w=majority`;
 }
 
@@ -38,18 +40,29 @@ if (rows.length === 0) {
 function fmtDate(ms) {
   if (!ms || !Number.isFinite(ms)) return '';
   return new Date(ms).toLocaleDateString('en-US', {
-    day: '2-digit', month: 'short', timeZone: 'America/Chicago', year: 'numeric',
+    day: '2-digit',
+    month: 'short',
+    timeZone: 'America/Chicago',
+    year: 'numeric',
   });
 }
 
 const today = new Date().toLocaleDateString('en-US', {
-  day: '2-digit', month: 'short', timeZone: 'America/Chicago', weekday: 'short', year: 'numeric',
+  day: '2-digit',
+  month: 'short',
+  timeZone: 'America/Chicago',
+  weekday: 'short',
+  year: 'numeric',
 });
 
 const htmlRows = rows
   .map((a, i) => {
-    const meta = [a.category, fmtDate(a.pub_date_ms)].filter(Boolean).join(' · ');
-    const snip = a.snippet ? `<br><span style="font-size:13px;color:#444;">${a.snippet.slice(0, 300)}${a.snippet.length > 300 ? '…' : ''}</span>` : '';
+    const meta = [a.category, fmtDate(a.pub_date_ms)]
+      .filter(Boolean)
+      .join(' · ');
+    const snip = a.snippet
+      ? `<br><span style="font-size:13px;color:#444;">${a.snippet.slice(0, 300)}${a.snippet.length > 300 ? '…' : ''}</span>`
+      : '';
     return `<tr>
       <td style="padding:4px 8px;color:#888;font-size:12px;vertical-align:top;">${i + 1}</td>
       <td style="padding:4px 8px;vertical-align:top;">
@@ -67,7 +80,9 @@ const htmlBody = `<!DOCTYPE html><html><body style="font-family:sans-serif;max-w
 </body></html>`;
 
 const to = config.TONKA_DISPATCH_RECIPIENTS.split(',').map(e => e.trim());
-console.log(`Sending "${batchId}" (${rows.length} articles) to: ${to.join(', ')}`);
+console.log(
+  `Sending "${batchId}" (${rows.length} articles) to: ${to.join(', ')}`
+);
 await emailService.sendEmail({
   htmlBody,
   subject: `Tonka Dispatch Dailies - ${today}`,

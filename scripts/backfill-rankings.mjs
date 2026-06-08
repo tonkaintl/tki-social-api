@@ -64,9 +64,9 @@ function directUri(uri) {
 }
 
 const plan = targetDates.map(d => ({
+  asOf: new Date(asOfFor(d)).toISOString(),
   date: d,
   weekend: isWeekend(d),
-  asOf: new Date(asOfFor(d)).toISOString(),
 }));
 
 console.log('Backfill plan (forward order):');
@@ -93,7 +93,9 @@ if (RESET) {
   const res = await TonkaDispatchRanking.deleteMany({
     batch_id: { $regex: '^backfill-' },
   });
-  console.log(`\n[reset] deleted ${res.deletedCount} prior backfill-* rankings`);
+  console.log(
+    `\n[reset] deleted ${res.deletedCount} prior backfill-* rankings`
+  );
 }
 
 const { runDailyRanking } = await import(
