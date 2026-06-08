@@ -169,31 +169,79 @@
     {
       "id": "p1",
       "intent": "hero",
-      "prompt": "Realistic daylight photo of a single used white commercial service/utility work truck parked on an asphalt dealer lot, the whole unit centered and filling the frame. Driver-side door is slightly open to reveal the doorjamb area with a small metal VIN plate (intentionally not legible) and the dashboard VIN plate visible through the windshield, all surfaces showing normal wear for a used work truck. Background: chain-link fence and out-of-focus industrial yard equipment under a clear sunny sky, no people, no signage or readable text.",
-      "images": []
+      "prompt": "Hero-style, eye-level photo of a single used medium-duty white box truck parked whole in a dealer/storage lot on a bright sunny day. The truck fills the frame as the clear subject, clean but with light work-wear; through the driver-side windshield the factory VIN plate on the dashboard is clearly visible and legible, and the driver door is slightly ajar to reveal a stamped metal VIN plate on the doorjamb. Natural background of paved lot, a low dealership building and chain-link fence softly out of focus, no people or other vehicles close to the truck.",
+      "images": [
+        {
+          "alt": "Visual for hero prompt",
+          "created_at": {
+            "$date": "2026-06-06T22:50:02.553Z"
+          },
+          "description": "Uploaded from Spark detail page",
+          "filename": "6a22c9c88444ad426ba8ff47-1780786202250.png",
+          "r2_key": "sparks/cf5f01f1-dc4f-4013-99f6-1123a9ebab7e/6a22c9c88444ad426ba8ff47-1780786202250.png",
+          "size": 1706709,
+          "url": "https://social-media.tonkaintl.com/sparks/cf5f01f1-dc4f-4013-99f6-1123a9ebab7e/6a22c9c88444ad426ba8ff47-1780786202250.png"
+        }
+      ]
     },
     {
       "id": "p2",
       "intent": "detail",
-      "prompt": "Extreme close-up of a work truck’s driver-side doorjamb VIN plate filling the frame: a stamped metal plate showing a full 17-character VIN, two rivets with visibly different styles (one factory flush, one replacement), fresh overspray paint and faint grinding marks around the plate suggesting tampering, and small smudges of dirt and road grime in the jamb. Sharp focus on the stamped characters and rivet heads, background softly blurred, natural daylight and a candid smartphone-photo look, no people or other objects.",
-      "images": []
+      "prompt": "Extreme close-up, smartphone-style photo of a truck's VIN plate on the driver-side doorjamb filling the frame; the full 17-character VIN is crisp and legible on the stamped metal plate. Visible tamper signs: one rivet is shiny and new while the other is older and corroded, and a thin ring of fresh paint and uneven edges around the plate suggest recent disturbance; a partial factory sticker and painted doorjamb surface sit slightly out of focus for context. Bright daylight, realistic, unposed detail shot focused on the stamped characters and rivets.",
+      "images": [
+        {
+          "alt": "Visual for detail prompt",
+          "created_at": {
+            "$date": "2026-06-06T22:48:50.071Z"
+          },
+          "description": "Uploaded from Spark detail page",
+          "filename": "6a22c9c88444ad426ba8ff47-1780786129439.png",
+          "r2_key": "sparks/cf5f01f1-dc4f-4013-99f6-1123a9ebab7e/6a22c9c88444ad426ba8ff47-1780786129439.png",
+          "size": 1937989,
+          "url": "https://social-media.tonkaintl.com/sparks/cf5f01f1-dc4f-4013-99f6-1123a9ebab7e/6a22c9c88444ad426ba8ff47-1780786129439.png"
+        }
+      ]
     },
     {
       "id": "p3",
       "intent": "process",
-      "prompt": "Process shot of a used white medium-duty work truck parked in a sunny equipment yard with the driver door open and the hood raised; three VIN locations are clearly visible in the frame — the dashboard VIN through the windshield, the metal VIN plate on the driver-side doorjamb, and the stamped VIN on the engine bay firewall. A smartphone sits on the fender showing a close-up photo of the full 17-character VIN on its screen, conveying an on-site VIN verification in progress; no people, realistic, candid daylight photo.",
-      "images": []
+      "prompt": "Process shot: gloved hands holding a smartphone close to the driver-side doorjamb of a parked used medium-duty box truck, phone screen framing and photographing the metal VIN plate so the full 17-character VIN is legible; the driver's door is open, the VIN plate shows slightly mismatched rivets and a narrow strip of fresh paint around it indicating possible tampering. Background: a neat dealer yard with other commercial trucks softly out of focus, bright clear daytime light, candid handheld look, no people or paperwork visible.",
+      "images": [
+        {
+          "alt": "Visual for process prompt",
+          "created_at": {
+            "$date": "2026-06-06T22:50:51.137Z"
+          },
+          "description": "Uploaded from Spark detail page",
+          "filename": "6a22c9c88444ad426ba8ff47-1780786250814.png",
+          "r2_key": "sparks/cf5f01f1-dc4f-4013-99f6-1123a9ebab7e/6a22c9c88444ad426ba8ff47-1780786250814.png",
+          "size": 1554469,
+          "url": "https://social-media.tonkaintl.com/sparks/cf5f01f1-dc4f-4013-99f6-1123a9ebab7e/6a22c9c88444ad426ba8ff47-1780786250814.png"
+        }
+      ]
     },
     {
       "id": "p4",
       "intent": "environment",
-      "prompt": "A bright, sunny used commercial truck yard photographed from a low smartphone angle to show scale: rows of parked work trucks and box trucks on compacted gravel beside an industrial warehouse and chain-link fence. In the midground a service-body work truck sits with its driver-side door open and the hood popped (VIN plate area visible but unreadable), other flatbed and box trucks recede into the lot to emphasize the buying-inspection setting. No people, candid on-location feel, clear daylight.",
-      "images": []
+      "prompt": "Wide daytime view of a used truck sales lot or dealer yard: neat rows of medium-duty work trucks — a white service-body pickup with ladder rack, a flatbed truck, and a Class 6 box truck — parked on gravel beside a small office and chain-link fence. The foreground shows the white service truck with its driver-side door slightly ajar so the doorjamb VIN plate and the dashboard visible through the windshield read as natural incidental text. Bright clear sky and neutral natural light, realistic on-location smartphone-style photo, no people.",
+      "images": [
+        {
+          "alt": "Visual for environment prompt",
+          "created_at": {
+            "$date": "2026-06-06T22:52:02.308Z"
+          },
+          "description": "Uploaded from Spark detail page",
+          "filename": "6a22c9c88444ad426ba8ff47-1780786321984.png",
+          "r2_key": "sparks/cf5f01f1-dc4f-4013-99f6-1123a9ebab7e/6a22c9c88444ad426ba8ff47-1780786321984.png",
+          "size": 2059588,
+          "url": "https://social-media.tonkaintl.com/sparks/cf5f01f1-dc4f-4013-99f6-1123a9ebab7e/6a22c9c88444ad426ba8ff47-1780786321984.png"
+        }
+      ]
     },
     {
       "id": "p5",
       "intent": "metaphor",
-      "prompt": "Side-by-side comparison in a used-truck lot on a bright sunny day: on the left, a clean late-model white medium-duty service truck parked on asphalt, metal VIN plates visible on the driver-side doorjamb and on the dashboard through the windshield but not legible, paint in good condition and no dents. On the right, an older faded-gray service/utility truck with dents and rust, fresh paint around the doorjamb, mismatched rivets and a scratched/obscured VIN plate suggesting tampering; chain-link fence and rows of other used trucks in soft focus in the background, no people.",
+      "prompt": "Close-up comparison of two driver-side doorjamb VIN plates on medium-duty work trucks parked side-by-side in a used commercial truck yard on a clear sunny day. Left plate is factory-stamped, clean and legible showing a full 17-character VIN with original rivets; the truck in the background looks well-maintained. Right plate shows signs of tampering — mismatched rivets, fresh paint around the plate, scratched or partially altered characters — with the older, dented work truck visible behind it. No people, natural daylight, shallow depth so the two VIN plates are the clear focal contrast.",
       "images": []
     }
   ],
@@ -248,7 +296,7 @@
     "$date": "2026-06-05T13:06:16.661Z"
   },
   "updated_at": {
-    "$date": "2026-06-06T22:32:40.836Z"
+    "$date": "2026-06-06T22:52:02.308Z"
   },
   "__v": 1,
   "email_sent_at": {

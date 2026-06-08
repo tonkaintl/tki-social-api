@@ -72,6 +72,11 @@ const envSchema = z.object({
     .transform(Number)
     .pipe(z.number().min(1))
     .default(60),
+  DISPATCH_SCORE_PER_CATEGORY: z
+    .string()
+    .transform(Number)
+    .pipe(z.number().min(1))
+    .default(8),
   DISPATCH_RANKINGS_TARGET_COUNT: z
     .string()
     .transform(Number)
