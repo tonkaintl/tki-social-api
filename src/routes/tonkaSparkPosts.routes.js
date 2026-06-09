@@ -7,8 +7,10 @@ import {
   getTonkaSparkPostById,
   getTonkaSparkPostList,
   regenerateVisualPrompt,
+  removeMainImage,
+  setMainImage,
   swapTonkaSparkPostTitle,
-  toggleTonkaSparkPostUsed,
+  toggleTonkaSparkPostLive,
   updateFinalDraft,
   updateTonkaSparkPostTitle,
   uploadVisualPromptImage,
@@ -35,7 +37,15 @@ router.get('/:id', getTonkaSparkPostById);
 router.patch('/:id/final-draft', updateFinalDraft);
 router.patch('/:id/title', updateTonkaSparkPostTitle);
 router.patch('/:id/title/swap', swapTonkaSparkPostTitle);
-router.patch('/:id/used', toggleTonkaSparkPostUsed);
+router.patch('/:id/live', toggleTonkaSparkPostLive);
+
+// ----------------------------------------------------------------------------
+// Main Image Routes
+// ----------------------------------------------------------------------------
+// Set accepts EITHER a multipart file upload (field "file") OR a JSON body
+// { url }. uploadImage parses multipart and passes JSON through untouched.
+router.patch('/:id/main-image', uploadImage, setMainImage);
+router.delete('/:id/main-image', removeMainImage);
 
 // ----------------------------------------------------------------------------
 // Visual Prompts Routes

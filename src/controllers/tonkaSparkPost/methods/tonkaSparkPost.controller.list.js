@@ -14,6 +14,7 @@ export async function getTonkaSparkPostList(req, res) {
   try {
     const {
       brand,
+      is_live,
       is_used,
       limit = 50,
       mode,
@@ -26,6 +27,7 @@ export async function getTonkaSparkPostList(req, res) {
 
     logger.info('Get Tonka Spark Post list request', {
       brand,
+      is_live,
       is_used,
       limit: Number(limit),
       mode,
@@ -56,6 +58,10 @@ export async function getTonkaSparkPostList(req, res) {
       filter.is_used = is_used === 'true';
     }
 
+    if (is_live !== undefined) {
+      filter.is_live = is_live === 'true';
+    }
+
     if (search) {
       filter.$or = [
         { 'final_draft.title': { $options: 'i', $regex: search } },
@@ -83,8 +89,10 @@ export async function getTonkaSparkPostList(req, res) {
           content_id: 1,
           created_at: 1,
           'final_draft.title': 1,
+          is_live: 1,
           is_used: 1,
           notifier_email: 1,
+          post_main_image: 1,
           project_mode: 1,
           status: 1,
           'target_brand.project.name': 1,
@@ -113,6 +121,7 @@ export async function getTonkaSparkPostList(req, res) {
       count: content.length,
       filters: {
         brand: brand || null,
+        is_live: is_live !== undefined ? is_live === 'true' : null,
         is_used: is_used !== undefined ? is_used === 'true' : null,
         mode: mode || null,
         search: search || null,

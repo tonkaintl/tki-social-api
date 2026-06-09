@@ -354,6 +354,7 @@ export const ARTICLE_UPDATE_FIELDS = {
   CUSTOM_SNIPPET: 'custom_snippet',
   CUSTOM_SOURCE_NAME: 'custom_source_name',
   CUSTOM_TITLE: 'custom_title',
+  HIDE_IMAGE: 'hide_image',
 };
 
 export const ARTICLE_UPDATE_FIELDS_VALUES = Object.values(

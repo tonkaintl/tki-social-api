@@ -139,6 +139,25 @@ var VisualPromptImageSchema = new Schema(
   { _id: false }
 );
 
+// The single "main" image chosen for the post (e.g. the hero picked in
+// Beehiiv). Mirrors a visual-prompt image, plus `source` to record how it got
+// here: 'upload' = a file we streamed to R2 and own (safe to delete on
+// remove); 'url' = a pasted URL that may reference a visual-prompt image we
+// must NOT delete. Null when no main image is set.
+var PostMainImageSchema = new Schema(
+  {
+    alt: { type: String },
+    created_at: { default: Date.now, type: Date },
+    description: { type: String },
+    filename: { type: String },
+    r2_key: { type: String },
+    size: { type: Number },
+    source: { enum: ['upload', 'url'], type: String },
+    url: { type: String },
+  },
+  { _id: false }
+);
+
 var VisualPromptSchema = new Schema(
   {
     id: { type: String },
@@ -228,11 +247,18 @@ var tonkaSparkPostSchema = new Schema({
   final_draft: FinalDraftSchema,
   future_story_arc_generator: FutureStoryArcGeneratorSchema,
   head_writer_system_message: { type: String },
+  // User-controlled "live" toggle — marks that the post's article is live.
+  // Used (with is_used) to gate newsletter Lead Spark eligibility:
+  // is_used:false && is_live:true.
+  is_live: { default: false, type: Boolean },
   // User-controlled "used" toggle.
   is_used: { default: false, type: Boolean },
   notifier_email: { type: String },
   outputs: OutputsSchema,
   platform_summaries: PlatformSummariesSchema,
+  // User-chosen main/hero image for the post (set via /main-image). Null when
+  // none chosen. See PostMainImageSchema.
+  post_main_image: { default: null, type: PostMainImageSchema },
   project: ProjectSchema,
   project_mode: { enum: PLATFORM_MODES_VALUES, type: String },
   project_mode_profile: ProjectModeProfileSchema,

@@ -34,7 +34,11 @@ function articleToItem(article) {
     custom_byline: '',
     custom_snippet: a.custom_snippet || '',
     custom_title: a.custom_title || '',
-    hero_image_url: a.custom_image_url || r.og_image_url || '',
+    // hide_image wins outright: no custom override, no ranking fallback. An
+    // empty hero_image_url makes the renderer omit the image entirely.
+    hero_image_url: a.hide_image
+      ? ''
+      : a.custom_image_url || r.og_image_url || '',
     published_label: publishedLabel,
     snippet: r.ai_summary || r.snippet || r.og_description || '',
     source_name: a.custom_source_name || r.source_name || '',

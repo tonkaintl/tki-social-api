@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import { NEWSLETTER_ERROR_CODE } from '../../../constants/tonkaDispatch.js';
 import TonkaDispatchNewsletter from '../../../models/tonkaDispatchNewsletters.model.js';
 import TonkaDispatchRanking from '../../../models/tonkaDispatchRankings.model.js';
+import { setTonkaSparkPostUsedByRef } from '../../../services/tonkaSparkPost.service.js';
 import { logger } from '../../../utils/logger.js';
 
 /**
@@ -52,6 +53,13 @@ export async function deleteNewsletter(req, res) {
       { used_in_newsletter_id: newsletter._id },
       { $set: { used_in_newsletter_id: null } }
     );
+
+    // Release the lead spark (if any) so it's no longer marked used and can be
+    // chosen for another newsletter. is_used is API-managed via this linkage.
+    const leadSparkRef = newsletter.lead_spark?.spark_post_id || null;
+    if (leadSparkRef) {
+      await setTonkaSparkPostUsedByRef(leadSparkRef, false);
+    }
 
     logger.info('Newsletter deleted successfully', {
       id,

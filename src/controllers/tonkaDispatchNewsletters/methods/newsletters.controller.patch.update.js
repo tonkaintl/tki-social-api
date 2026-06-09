@@ -6,6 +6,7 @@ import {
   NEWSLETTER_UPDATE_FIELDS_VALUES,
 } from '../../../constants/tonkaDispatch.js';
 import TonkaDispatchNewsletter from '../../../models/tonkaDispatchNewsletters.model.js';
+import { setTonkaSparkPostUsedByRef } from '../../../services/tonkaSparkPost.service.js';
 import { logger } from '../../../utils/logger.js';
 
 /**
@@ -122,12 +123,38 @@ export async function updateNewsletter(req, res) {
       }
     }
 
+    // Capture the lead spark we're about to replace so we can release its
+    // is_used flag below. Only relevant when this update touches lead_spark.
+    const leadSparkChanging = Object.prototype.hasOwnProperty.call(
+      updates,
+      'lead_spark'
+    );
+    const previousSparkRef = leadSparkChanging
+      ? newsletter.lead_spark?.spark_post_id || null
+      : null;
+    const nextSparkRef = leadSparkChanging
+      ? updates.lead_spark?.spark_post_id || null
+      : null;
+
     // Apply updates
     Object.keys(updates).forEach(key => {
       newsletter[key] = updates[key];
     });
 
     await newsletter.save();
+
+    // Sync the linked Spark Post's is_used flag now that the lead spark has
+    // changed. is_used is API-managed: set true when a spark becomes the lead,
+    // false when it's removed/replaced. Best-effort — failures are logged in
+    // the service and never roll back the saved newsletter.
+    if (leadSparkChanging && previousSparkRef !== nextSparkRef) {
+      if (previousSparkRef) {
+        await setTonkaSparkPostUsedByRef(previousSparkRef, false);
+      }
+      if (nextSparkRef) {
+        await setTonkaSparkPostUsedByRef(nextSparkRef, true);
+      }
+    }
 
     logger.info('Newsletter updated successfully', {
       id,
