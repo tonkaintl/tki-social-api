@@ -109,18 +109,21 @@ export async function listRankings(req, res) {
         });
       }
 
-      // Convert sort string to Mongoose format
-      if (sort.startsWith('-')) {
-        sortObj = {
-          [RANKING_FIELDS.RANK]: 1,
-          [sort.substring(1)]: -1,
-        };
-      } else {
-        sortObj = {
-          [RANKING_FIELDS.RANK]: 1,
-          [sort]: 1,
-        };
-      }
+      // The requested field is the PRIMARY sort key, with rank as a stable
+      // tiebreaker. Previously rank was forced first, which made
+      // `sort=-created_at&limit=1` return the lowest-rank document instead of
+      // the newest one — breaking the "latest batch" lookup (it landed on a
+      // stray manual batch with a single article instead of the latest feed
+      // batch). Sorting by rank itself omits the tiebreaker to avoid a
+      // duplicate key.
+      const descending = sort.startsWith('-');
+      const field = descending ? sort.substring(1) : sort;
+      const direction = descending ? -1 : 1;
+
+      sortObj =
+        field === RANKING_FIELDS.RANK
+          ? { [RANKING_FIELDS.RANK]: direction }
+          : { [field]: direction, [RANKING_FIELDS.RANK]: 1 };
     }
 
     logger.info('Listing rankings', {
