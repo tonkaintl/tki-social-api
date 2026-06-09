@@ -20,6 +20,65 @@ import TonkaSparkPosts from '../models/tonkaSparkPost.model.js';
 import { logger } from '../utils/logger.js';
 
 import { emailService } from './email.service.js';
+import { deleteObject } from './r2.service.js';
+
+// Delete the R2 object backing a post_main_image, but ONLY when we own it: a
+// 'upload'-sourced image is a dedicated object we created, so it's safe to
+// remove. A 'url'-sourced image may point at a visual-prompt image (shared),
+// so we never delete it. Pass keepR2Key to skip deletion when the replacement
+// reuses the same object. Best-effort — a failed cleanup never throws.
+export async function deleteOwnedMainImageObject(mainImage, keepR2Key = null) {
+  if (!mainImage || mainImage.source !== 'upload' || !mainImage.r2_key) return;
+  if (keepR2Key && mainImage.r2_key === keepR2Key) return;
+
+  try {
+    await deleteObject(mainImage.r2_key);
+  } catch (error) {
+    logger.error('[TonkaSparkPost] main image R2 cleanup failed', {
+      error: error.message,
+      r2_key: mainImage.r2_key,
+    });
+  }
+}
+
+// Set the user-facing "used" flag on a single Spark Post, resolving the
+// reference the same way the API does: a UUID-shaped ref (contains "-") is a
+// content_id, otherwise it is treated as a Mongo _id. This is the single place
+// newsletter linkage drives is_used — sparks are marked used when added as a
+// newsletter's lead and released when removed. Best-effort and idempotent;
+// returns the updated doc or null when the ref is missing/unresolvable.
+export async function setTonkaSparkPostUsedByRef(ref, isUsed) {
+  if (!ref) return null;
+
+  const query = String(ref).includes('-') ? { content_id: ref } : { _id: ref };
+
+  try {
+    const updated = await TonkaSparkPosts.findOneAndUpdate(
+      query,
+      { $set: { is_used: isUsed, updated_at: new Date() } },
+      {
+        new: true,
+        projection: { _id: 1, content_id: 1, is_used: 1 },
+        runValidators: true,
+      }
+    );
+
+    if (!updated) {
+      logger.warn('[TonkaSparkPost] setUsed: spark not found', { isUsed, ref });
+    }
+
+    return updated;
+  } catch (error) {
+    // A bad _id cast or transient db error shouldn't fail the caller's primary
+    // operation (the newsletter update/delete). Log and move on.
+    logger.error('[TonkaSparkPost] setUsed failed', {
+      error: error.message,
+      isUsed,
+      ref,
+    });
+    return null;
+  }
+}
 
 // Normalize visual_prompts so every entry has an id (required by the
 // image upload endpoint downstream).
@@ -68,6 +127,7 @@ export async function saveTonkaSparkPost(content, options = {}) {
         }
       : null,
     head_writer_system_message: content.head_writer_system_message || null,
+    is_live: false,
     is_used: false,
     notifier_email: content.notifier_email || config.TONKA_SPARK_RECIPIENTS,
     outputs: content.outputs || null,

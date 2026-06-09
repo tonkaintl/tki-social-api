@@ -20,6 +20,12 @@ var articleSchema = new Schema({
   custom_snippet: String,
   custom_source_name: String,
   custom_title: String,
+  // When true, render no image at all — overrides both custom_image_url and
+  // the ranking's og_image_url. Missing is treated as false.
+  hide_image: {
+    default: false,
+    type: Boolean,
+  },
   is_manual_section: {
     default: false,
     type: Boolean,

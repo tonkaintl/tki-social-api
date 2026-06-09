@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
-// PATCH /api/tonka-spark-posts/:id/used
-// Toggle the user-controlled "used" flag. The desired state must be supplied
+// PATCH /api/tonka-spark-posts/:id/live
+// Toggle the user-controlled "live" flag. The desired state must be supplied
 // explicitly as a boolean.
 // ----------------------------------------------------------------------------
 
@@ -18,32 +18,32 @@ const paramsSchema = z.object({
   id: z.string().min(1, 'Post ID is required'),
 });
 
-const usedBodySchema = z.object({
-  is_used: z.boolean({
-    invalid_type_error: 'is_used must be a boolean',
-    required_error: 'is_used is required',
+const liveBodySchema = z.object({
+  is_live: z.boolean({
+    invalid_type_error: 'is_live must be a boolean',
+    required_error: 'is_live is required',
   }),
 });
 
-export const toggleTonkaSparkPostUsed = async (req, res) => {
+export const toggleTonkaSparkPostLive = async (req, res) => {
   try {
     const { id } = paramsSchema.parse(req.params);
-    const { is_used } = usedBodySchema.parse(req.body);
+    const { is_live } = liveBodySchema.parse(req.body);
 
     const query = id.includes('-') ? { content_id: id } : { _id: id };
 
-    logger.info('Toggling tonka spark post used flag', {
-      is_used,
+    logger.info('Toggling tonka spark post live flag', {
+      is_live,
       postId: id,
       requestId: req.id,
     });
 
     const updated = await TonkaSparkPosts.findOneAndUpdate(
       query,
-      { $set: { is_used, updated_at: new Date() } },
+      { $set: { is_live, updated_at: new Date() } },
       {
         new: true,
-        projection: { _id: 1, content_id: 1, is_used: 1, updated_at: 1 },
+        projection: { _id: 1, content_id: 1, is_live: 1, updated_at: 1 },
         runValidators: true,
       }
     );
@@ -60,15 +60,15 @@ export const toggleTonkaSparkPostUsed = async (req, res) => {
       });
     }
 
-    logger.info('Tonka spark post used flag updated', {
+    logger.info('Tonka spark post live flag updated', {
       contentId: updated.content_id,
-      is_used: updated.is_used,
+      is_live: updated.is_live,
       requestId: req.id,
     });
 
     return res.status(200).json({
       content_id: updated.content_id,
-      is_used: updated.is_used,
+      is_live: updated.is_live,
       requestId: req.id,
       updated_at: updated.updated_at,
     });
@@ -87,7 +87,7 @@ export const toggleTonkaSparkPostUsed = async (req, res) => {
       });
     }
 
-    logger.error('Error toggling tonka spark post used flag', {
+    logger.error('Error toggling tonka spark post live flag', {
       error: error.message,
       postId: req.params.id,
       requestId: req.id,
@@ -101,7 +101,7 @@ export const toggleTonkaSparkPostUsed = async (req, res) => {
     return res.status(apiError.statusCode).json({
       code: apiError.code,
       error: apiError.message,
-      message: 'Failed to toggle used flag',
+      message: 'Failed to toggle live flag',
     });
   }
 };

@@ -1,8 +1,10 @@
 export { deleteTonkaSparkPost } from './methods/tonkaSparkPost.controller.delete.js';
 export { getTonkaSparkPostById } from './methods/tonkaSparkPost.controller.getById.js';
 export { getTonkaSparkPostList } from './methods/tonkaSparkPost.controller.list.js';
+export { removeMainImage } from './methods/tonkaSparkPost.controller.removeMainImage.js';
+export { setMainImage } from './methods/tonkaSparkPost.controller.setMainImage.js';
 export { swapTonkaSparkPostTitle } from './methods/tonkaSparkPost.controller.swapTitle.js';
-export { toggleTonkaSparkPostUsed } from './methods/tonkaSparkPost.controller.toggleUsed.js';
+export { toggleTonkaSparkPostLive } from './methods/tonkaSparkPost.controller.toggleLive.js';
 export { updateFinalDraft } from './methods/tonkaSparkPost.controller.updateFinalDraft.js';
 export { updateTonkaSparkPostTitle } from './methods/tonkaSparkPost.controller.updateTitle.js';
 export { addVisualPromptImage } from './methods/tonkaSparkPost.controller.visualPrompt.addImage.js';
