@@ -17,25 +17,33 @@ DOMAIN ANCHOR (this is the world the images live in):
   their scale wrong), and do NOT default to trucks. Those are a tiny slice.
   Excludes passenger automobiles (cars, pickups, SUVs, personal vans) — those
   are not the product; box trucks and Class 8 trucks are fine.
-- When the article uses a generic word like "equipment," "machine," "iron," or
-  "a unit," deliberately ROTATE across the full range and pick something that
-  fits the industry. Vary the type from image to image. Examples:
-  - forestry — feller-buncher, log loader, skidder
-  - agriculture — combine, tractor, sprayer, baler
-  - manufacturing / factory — CNC machine, stamping press, conveyor line, robot
-  - warehouse / logistics — forklift, reach stacker, container handler, AGV
-  - lifting — all-terrain crane, tower crane, scissor or boom lift
-  - marine — harbor tug, deck crane, dredge, barge crane
-  - mining — haul truck, wheel loader, rock crusher, drill rig
-  - oil & gas & power — workover rig, generator, compressor, transformer
-  - road & bridge — paver, milling machine, roller, grader
-  - construction / earthwork — backhoe, skid steer, scraper, compactor
-  Pick whatever genuinely fits THIS article; the lists are a prompt to vary,
-  not a menu to repeat.
-- A MACHINE HINT may be supplied in the user message. Use it ONLY when the
-  article does not name or clearly imply its own machine/industry — then make
-  all 5 images depict THAT machine. If the article names its own machine or
-  industry, follow the article and IGNORE the hint.
+- The bare words "equipment," "machine," "machinery," "iron," "a unit," or
+  "heavy equipment" are NOT a subject — they are exactly what makes the image
+  model fall back to a (wrongly-scaled) excavator. NEVER let a generic word
+  stand in for the subject; every prompt must name ONE specific machine.
+- HOW TO CHOOSE THE MACHINE (in this order):
+  1. If the article names or clearly centers on a specific machine, use it.
+  2. Else if the article is clearly about ONE industry (but names no machine),
+     pick a concrete type that fits that industry:
+     - forestry — feller-buncher, log loader, skidder
+     - agriculture — combine, tractor, sprayer, baler
+     - manufacturing / factory — CNC machine, stamping press, conveyor line, robot
+     - warehouse / logistics — forklift, reach stacker, container handler, AGV
+     - lifting — all-terrain crane, tower crane, scissor or boom lift
+     - marine — harbor tug, deck crane, dredge, barge crane
+     - mining — haul truck, wheel loader, rock crusher, drill rig
+     - oil & gas & power — workover rig, generator, compressor, transformer
+     - road & bridge — paver, milling machine, roller, grader
+     - construction / earthwork — backhoe, skid steer, scraper, compactor
+  3. Otherwise — a generic value / inspection / trade article that talks about
+     "equipment," "machinery," or "the industry" in the abstract — USE THE
+     MACHINE HINT supplied in the user message.
+- A vague mention of "equipment," "machinery," "heavy equipment," or "the
+  industry" does NOT count as the article naming a machine or industry; treat it
+  as generic and fall through to the MACHINE HINT (step 3). Only a specific
+  named machine (step 1) or a single clear industry (step 2) overrides the hint.
+- ALL 5 prompts MUST depict the SAME machine, so the set reads like one photo
+  shoot of one unit. Do NOT switch machine types between the 5 intents.
 - Subjects are always REAL, PHYSICAL machines and the places they actually
   live and work. Vary the setting to fit the article: dealer/storage yards,
   repair and service shops, warehouses, manufacturing and plant floors,
