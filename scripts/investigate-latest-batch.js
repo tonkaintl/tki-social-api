@@ -47,19 +47,19 @@ try {
     {
       $group: {
         _id: '$batch_id',
-        total: { $sum: 1 },
-        claimed: {
-          $sum: {
-            $cond: [{ $ne: ['$used_in_newsletter_id', null] }, 1, 0],
-          },
-        },
         available: {
           $sum: {
             $cond: [{ $eq: ['$used_in_newsletter_id', null] }, 1, 0],
           },
         },
-        last_created: { $max: '$created_at' },
+        claimed: {
+          $sum: {
+            $cond: [{ $ne: ['$used_in_newsletter_id', null] }, 1, 0],
+          },
+        },
         first_created: { $min: '$created_at' },
+        last_created: { $max: '$created_at' },
+        total: { $sum: 1 },
       },
     },
     { $sort: { last_created: -1 } },
@@ -90,7 +90,9 @@ try {
   }
 
   // ---- Orphaned claims: claimed by a newsletter that no longer exists ----
-  console.log('=== Orphaned claims (used_in_newsletter_id -> missing newsletter) ===');
+  console.log(
+    '=== Orphaned claims (used_in_newsletter_id -> missing newsletter) ==='
+  );
   const claimed = await TonkaDispatchRanking.find({
     used_in_newsletter_id: { $ne: null },
   }).select('used_in_newsletter_id batch_id rank title');
