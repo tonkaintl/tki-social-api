@@ -1,55 +1,55 @@
 {
   "_id": {
-    "$oid": "6a22c9c88444ad426ba8ff47"
+    "$oid": "6a22461af84e62d5fd20f595"
   },
-  "content_id": "cf5f01f1-dc4f-4013-99f6-1123a9ebab7e",
+  "content_id": "aefcc22f-6f62-43d4-9f01-0261b06c2e8c",
   "creative": {
-    "creativity_to_reporter": 1,
+    "creativity_to_reporter": 20,
     "fact_to_fiction": 100,
     "length": "short",
-    "tone_strictness": 35
+    "tone_strictness": 89
   },
   "final_draft": {
-    "draft_markdown": "A seller who won’t let the buyer write down the VIN is selling a problem. The VIN is a truck’s serial number; it’s how ownership, accident history, title brands, and recalls are traced. Skip that check and hidden damage, stolen-recovery flags, or a washed title can turn a work truck into a legal and financial headache.\n\nHow the problem shows up\n\nA typical scenario: the truck looks solid in the lot, the seller offers a quick cash deal, and paperwork looks thin. The buyer glances at the dash and sees a VIN, but the numbers on the title aren’t the same. That mismatch is a hard red flag. It often signals fraud, a rebuilt or salvage history, or errors that will block registration.\n\nWhat the VIN actually reveals\n\nThe VIN is a 17-character identifier required by federal regulation. It encodes manufacture details—country, manufacturer, vehicle type and engine options—that public decoders can read. The NHTSA’s public VIN decoder will return build plant and country information and accepts partial VINs for searches. Paid vehicle-history services pull the VIN into detailed reports that list accidents, ownership counts, service records, and recall status. Free checks exist too: the National Insurance Crime Bureau’s VINCheck will flag insurance theft claims and vehicles reported as salvage by participating insurers. NMVTIS aggregates title-brand and salvage data specifically to protect buyers from fraud and unsafe vehicles.\n\nWhere to look on the truck\n\nCommon VIN locations include the driver-side dashboard visible through the windshield, the driver-side doorjamb, and under the hood. Compare those physical VINs to the number on the title, bill of sale, and any maintenance records. If the numbers don’t match exactly, the sale should not proceed until the discrepancy is resolved.\n\nA practical verification flow\n\n- Step 1: Record the VIN from the dashboard, doorjamb, and under the hood. Note any signs of tampering: mismatched rivets, fresh paint around the plate, or different font styles.\n- Step 2: Compare the VIN to the title and bill of sale. Exact match only; transposed digits are a legal problem. If a partial VIN is offered, use NHTSA’s decoder to verify model year and build plant immediately.\n- Step 3: Run free checks. Use NICB’s VINCheck to screen for theft or salvage claims and query NMVTIS for title-brand history. These searches catch many obvious red flags without upfront cost.\n- Step 4: Purchase a paid history report (CARFAX, AutoCheck) when the truck clears the free checks. Paid reports typically show accident history, service records, previous owners, and whether the truck was branded salvage or rebuilt—information critical to estimating repair needs and resale value.\n- Step 5: Check recalls via NHTSA and verify any open recall work has been completed. Use Kelley Blue Book or AutoCheck tools to cross-check market value after adjusting for condition and title history.\n\nWhen to walk away or press the seller\n\nA mismatch between the vehicle’s VIN and title, a history showing salvage/rebuilt branding, or a NICB theft flag are non-starters for most buyers. If the seller can’t produce a corrected DMV title, a notarized lien release, or a verifiable explanation backed by paperwork, do not proceed. For borderline cases—minor title errors or old brands—get a DMV or sheriff’s office VIN verification and a professional inspection before any payment or transport is arranged.\n\nSmall steps that save big money\n\nWrite the VIN down and run the checks from the truck before arranging payment or hauling. The checks listed above expose the biggest risks: unrecovered theft, insurance salvage, title washing, and undisclosed accidents. That single 17-character string protects cash and the operation’s uptime; skillful buyers make it the first question, not the last.",
+    "draft_markdown": "A buyer flies in for a two-hour demo. Midway through the test, the engine stalls, hydraulics feel soft, and the seller produces a handful of low-resolution photos taken at dusk. Negotiations slow, the buyer asks for a certified inspection, and the deal dies after the inspection flags welded frame cracks and inconsistent service records.\n\nThat scenario plays out in different forms across yards and online listings. The root causes are predictable, and they are fixable. The most damaging vendor mistakes show up in five buckets: documentation, condition disclosure, mechanical and cosmetic prep, presentation and pricing, and sales logistics/payment risk.\n\nDocumentation: missing, partial, or unverifiable\n\nListing a machine without the original purchase invoice, a full service history, and any required compliance or safety certificates turns buyers into investigators. Expect negotiations to stall and serious buyers to walk away rather than chase paperwork. A complete documentation pack should be assembled before the first inquiry: title or bill of sale, purchase invoice, full service entries, parts invoices for major repairs, emissions or safety certificates where applicable, and clear hour-meter photos.\n\nCondition disclosure: hiding wear items invites re-trades\n\nNot disclosing the state of pins and bushings, track links, tires, and other wear items guarantees post-inspection price cuts. Treat those items as first-order facts: list expected remaining life, recent replacements, and any measured tolerances or wear-plate readings. If a certified inspection has already been completed, attach it to the listing to remove guesswork.\n\nMechanical and cosmetic prep: simple work pays\n\nDirty, leaky, or poorly staged machines sell for less because buyers assume deferred maintenance. Invest in a deep clean, fix obvious leaks, run a fluid/oil analysis on engines and hydraulics, and resolve simple repairs that would be found in any decent inspection. Photos of a clean engine bay and lab results for oil samples reduce perceived risk and preserve asking price.\n\nPresentation and pricing: bad photos and gut pricing are deal killers\n\nOffer 20\t30 high-resolution shots that show all four corners, the undercarriage/track or tires, the engine bay, the cab, the hour meter, and any defect close-ups. Include a short walk-around video with the machine running and the controls cycled. Price against current market comparables and recent sale results for the same make, model, hours, and country or region96not an instinct or an auction result from three years ago. Overpriced listings sit and decay; underpriced listings leave cash on the table.\n\nChannel choice and buyer/payment risk: match method to goal\n\nChoosing unreserved auction, online marketplaces, brokered sale, or dealer consignment each has trade-offs. Match the channel to time frame, machine condition, and price expectations. Vet buyers: confirm identity, source of funds, and use an escrow or a verified-payment intermediary when full payment clears only after title and documents are verified. Never ship a machine or sign transfer documents before funds are confirmed and liens are cleared.\n\nDont skip inspections or pressure buyers to waive them. Forged records, rolled-back hour meters, and concealed structural repairs create legal exposure and reputational damage that outlast a single sale. Similarly, transporting a machine on an overloaded trailer to cut costs exposes the seller to insurance disputes and fines if an accident occurs.\n\nA short checklist to include with every listing:\n- Complete documentation pack: title, purchase invoice, full service history, compliance certificates\n- Condition summary: pins/bushings, tracks/tires, hydraulic leaks, recent repairs\n- Mechanical prep: clean, fix leaks, oil/fluid analysis, running video\n- Media: 20\t30 high-res photos + walk-around video + hour-meter close-ups\n- Pricing note: comps and recent sale data used to set asking price\n- Sales logistics: chosen channel rationale, buyer vetting steps, escrow/payment flow\n\nFinal detail to enforce on every deal: hold funds in escrow until title, bill of sale, and a signed delivery worksheet are all in hand and verified. That single control closes more sales cleanly than any clever listing copy.",
     "role": "FINAL EDITOR",
-    "summary": "Request the VIN before progressing a sale, verify it on the truck (dash, doorjamb, under the hood) and on the title, and run free and paid checks. Use NHTSA’s decoder, NICB’s VINCheck, NMVTIS, and a paid report (CARFAX or AutoCheck) to reveal theft, salvage, accident history, and recalls; walk away from mismatches or unresolved title issues.",
-    "thesis": "Request the VIN before progressing a sale, verify it on the truck (dash, doorjamb, under the hood) and on the title, and run free and paid checks. Use NHTSA’s decoder, NICB’s VINCheck, NMVTIS, and a paid report (CARFAX or AutoCheck) to reveal theft, salvage, accident history, and recalls; walk away from mismatches or unresolved title issues.",
-    "title": "The Essential VIN Check: Protect Yourself Before You Buy"
+    "summary": "Most failed equipment sales are avoidable: missing paperwork, undisclosed wear, poor prep and photos, bad pricing, and weak buyer/payment controls are the usual culprits. Assemble a documentation pack, disclose wear items, perform basic mechanical prep and fluid analysis, supply 20\t30 clear photos plus video, price from current comps, choose the right sales channel, and require escrowed payment before transfer.",
+    "thesis": "Most failed equipment sales are avoidable by addressing key vendor mistakes in documentation, condition disclosure, mechanical prep, presentation, pricing, and sales logistics.",
+    "title": "How to Fix Vendor Mistakes That Derail Equipment Deals"
   },
   "future_story_arc_generator": {
     "arcs": [
       {
-        "arc_title": "Bulk-Buy VIN Vetting Playbook for Fleet Buyers",
-        "one_line_premise": "A practical system for running credible VIN checks when you're buying multiple Class 8 trucks at once — scale without sacrificing safety.",
-        "suggested_story_seed": "Show a stepwise workflow: intake form for VINs, batch NMVTIS/CARFAX ordering, red-flag spreadsheet columns (title brand mismatch, extreme mileage jumps, flood or salvage codes), vendor negotiation tips, and a simple pass/fail rule-set that tells procurement when to pull a deal.",
-        "why_it_matters": "Fleet managers and brokers make decisions by the dozen; a single missed salvage or lien in a lot can wipe out margins. You need repeatable rules, automation points, and stop-loss criteria."
+        "arc_title": "Vet the Seller Before You Show Up",
+        "one_line_premise": "A practical playbook for pre-inspection seller verification so buyers avoid wasted trips and deals killed by bad paper or bad intent.",
+        "suggested_story_seed": "Walk readers through a short, repeatable verification sequence: VIN history (NMVTIS/CARFAX), lien/title chain, lease/consignment flags, basic service-log checks, red-flag answers from common seller questions, and when to walk away before scheduling a mechanic.",
+        "why_it_matters": "Most deal-breakers are detectable before the on-site inspection; catching title issues, omitted repairs, or inconsistent service records early saves time and money."
       },
       {
-        "arc_title": "VIN Matches but Something's Wrong — A Field Guide for Owner-Operators",
-        "one_line_premise": "When VINs and titles line up but your gut and the truck's details don't, here’s how to dig deeper and decide whether to walk.",
-        "suggested_story_seed": "Lay out concise, actionable checks beyond VINs: inspect paint and weld seams referenced to repair records, cross-check service invoices to stamped VIN, spot odometer tampering indicators, insist on a frame/alignment printout or third-party inspection, and a short script of exact documents to demand before closing.",
-        "why_it_matters": "Cautious owner-operators often buy one rig at a time and can’t afford hidden structural damage, odometer rollbacks, or incomplete repairs — all masked even when VIN checks look clean."
+        "arc_title": "The Uptime Buyer: When Reliability Beats a Bargain",
+        "one_line_premise": "Guidance for fleet buyers who must prioritize uptime and predictable cost over lowest purchase price when vendors skimp on prep or disclosure.",
+        "suggested_story_seed": "Compare two real-world purchase scenarios (low-price, limited disclosure vs higher-price, inspected/prepped), include simple uptime-cost math (downtime/day × average haul rate), checklist of must-have prep items, and negotiation levers to shift vendor responsibility for post-sale failures.",
+        "why_it_matters": "A ‘cheap’ truck that fails shortly after delivery costs more in lost revenue, tow/repair, and schedule disruption than a slightly pricier unit with documented prep and guarantees."
       },
       {
-        "arc_title": "Out-of-State and Imported Trucks: VIN, Title Transfers, and Legal Traps",
-        "one_line_premise": "How state title brands, bonded titles, and import histories can break a sale even when the VIN appears legitimate — and what to verify before you wire money.",
-        "suggested_story_seed": "Provide concrete scenarios (out-of-state flood title, bonded title after salvage, import with altered VIN plates), a checklist of agency lookups (NMVTIS, state DMV salvage databases, CBP import records), and practical next steps: how to verify chain of custody, when to use an escrow/title service, and when to walk.",
-        "why_it_matters": "Buying across state lines or from ports introduces different title rules and branding standards. A truck legal in one state can be unregistrable or heavily branded in your state — costly surprises for cautious buyers."
+        "arc_title": "When Paperwork Lies: Practical Remedies After a Bad Buy",
+        "one_line_premise": "Clear, no-nonsense steps a cautious buyer can take if a vendor hid damage, omitted repairs, or sold a truck with undisclosed liens.",
+        "suggested_story_seed": "Short action plan: preserve evidence (photos, service records), run immediate title/lien re-checks, get repair estimates, decide threshold for legal action vs repair, who to call (inspector, broker, industry association), and contract clauses to add next time to limit exposure.",
+        "why_it_matters": "Even careful buyers get burned; knowing immediate actions and realistic recourse preserves value and improves outcomes for the next purchase."
       }
     ]
   },
-  "head_writer_system_message": "You are the HEAD WRITER in a multi-writer room.\n\nStory seed: Why You Should Always Ask for the VIN (and What to Do With It). A VIN check confirms a truck's real identity and history, exposing fraud, hidden damage, or title issues before you commit. Verifying the number across the truck and documents, decoding it through NHTSA or paid reports, and walking away from mismatches protects your money and your operation. The right buyer isn't lucky--they just ask for the VIN first.\n\n\nBrand: Tonka Blog\nTagline: Dispatches from the iron business.\nVoice: Straight-talking broker, reflective but practical\nBrand guidelines:\nDo:\n- Explain how the business actually works\n- Use real scenarios, deals, and shop-floor logic\n- Emphasize trust, transparency, and long-term thinking\nDon’t:\n- No generic “content marketing” tone\n- No pretending every deal is perfect\nCreative sliders:\n- fact_to_fiction: 100\n- creativity_to_reporter: 1\n- tone_strictness: 35\n- length: short\n\nWriter panel (roles + weighted notes):\n[\n  {\n    \"role\": \"documentary\",\n    \"weight\": 1\n  }\n]\n\nProject mode: Blog post (blog_post)\n\nMode description:\nWrite a clear, engaging blog post that blends story, insight, and practical value for the reader.\n\nHead Writer instructions:\n- Open with a hook — a concrete scenario or the real situation a truck buyer faces. Keep the register straight and professional, not folksy: no homespun idioms or cutesy relatable touches (e.g. \"before any handshake\").\n- Blend real-world examples and clear explanations.\n- Focus on one main idea or lesson, not everything at once.\n- Use headings and short paragraphs so it is easy to skim.\n\nStructural hints (not strict, but preferred):\n- Open on a problem the reader immediately recognizes.\n- A concrete scenario or example showing how the problem actually shows up.\n- Breakdown of what’s really going on.\n- Concrete recommendations or steps.\n- Short closing that reinforces the main takeaway.\n\nBanned phrases (HARD RULE — every draft is auto-scanned for these after writing; any match gets the entire draft rejected and unpublished, so do not use them or close variants):\n- \"long haul\"\n- \"doesn't lie\"\n- \"— and that's how\"\n- \"in conclusion\"\n- \"at the end of the day\"\n- \"the bottom line is\"\n- \"the smart ones learn it\"\n- \"transparency sells\"\n- \"trust is earned, not bought\"\n- \"a buyer I knew\"\n- \"in my experience\"\n- \"back when I\"\n- \"we had a buyer\"\n- \"we had a customer\"\n- \"fluff\"\n- \"long-form content\"\n- \"seamlessly\"\n- \"leverage\"\n- \"synergy\"\n- \"let's dive\"\n- \"in today's fast-paced\"\n- \"best in class\"\n- \"premium quality\"\n- \"we were\"\n\nTask:\n- Treat the story_seed and writer_notes as conceptual origin only, not as a literal fable you must retell.\n- Write a professional Tonka Blog article for working truck buyers, not a children’s story.\n- A scenario or real-world example to open is good. Avoid folksy or cutesy metaphors and homespun analogies; if a comparison genuinely clarifies, keep it plain and to one short line at most.\n- Use the research findings to ground inspections, risk, and process details whenever you describe “what to do”.\n- Use headings and short paragraphs; prioritize clarity and usefulness over cleverness.\n- Avoid extended scenes about mice or characters; anchor the piece in inspections, deals, and shop-floor reality.",
+  "head_writer_system_message": "You are the HEAD WRITER in a multi-writer room.\n\nStory seed: The Biggest Mistakes Vendors Make When Selling Heavy Equipment\n\n\nBrand: Tonka Blog\nTagline: Dispatches from the iron business.\nVoice: Straight-talking broker, reflective but practical\nBrand guidelines:\nDo:\n- Explain how the business actually works\n- Use real scenarios, deals, and shop-floor logic\n- Emphasize trust, transparency, and long-term thinking\nDon’t:\n- No generic “content marketing” tone\n- No pretending every deal is perfect\nCreative sliders:\n- fact_to_fiction: 100\n- creativity_to_reporter: 20\n- tone_strictness: 89\n- length: short\n\nWriter panel (roles + weighted notes):\n[\n  {\n    \"role\": \"documentary\",\n    \"weight\": 0.7\n  },\n  {\n    \"role\": \"action\",\n    \"weight\": 0.2\n  },\n  {\n    \"role\": \"comedy\",\n    \"weight\": 0.1\n  }\n]\n\nProject mode: Blog post (blog_post)\n\nMode description:\nWrite a clear, engaging blog post that blends story, insight, and practical value for the reader.\n\nHead Writer instructions:\n- Open with a hook — a concrete scenario or the real situation a truck buyer faces. Keep the register straight and professional, not folksy: no homespun idioms or cutesy relatable touches (e.g. \"before any handshake\").\n- Blend real-world examples and clear explanations.\n- Focus on one main idea or lesson, not everything at once.\n- Use headings and short paragraphs so it is easy to skim.\n\nStructural hints (not strict, but preferred):\n- Open on a problem the reader immediately recognizes.\n- A concrete scenario or example showing how the problem actually shows up.\n- Breakdown of what’s really going on.\n- Concrete recommendations or steps.\n- Short closing that reinforces the main takeaway.\n\nBanned phrases (HARD RULE — every draft is auto-scanned for these after writing; any match gets the entire draft rejected and unpublished, so do not use them or close variants):\n- \"long haul\"\n- \"doesn't lie\"\n- \"— and that's how\"\n- \"in conclusion\"\n- \"at the end of the day\"\n- \"the bottom line is\"\n- \"the smart ones learn it\"\n- \"transparency sells\"\n- \"trust is earned, not bought\"\n- \"a buyer I knew\"\n- \"in my experience\"\n- \"back when I\"\n- \"we had a buyer\"\n- \"we had a customer\"\n- \"fluff\"\n- \"long-form content\"\n- \"seamlessly\"\n- \"leverage\"\n- \"synergy\"\n- \"let's dive\"\n- \"in today's fast-paced\"\n- \"best in class\"\n- \"premium quality\"\n- \"iron\"\n- \"rig\"\n- \"we were\"\n\nTask:\n- Treat the story_seed and writer_notes as conceptual origin only, not as a literal fable you must retell.\n- Write a professional Tonka Blog article for working truck buyers, not a children’s story.\n- A scenario or real-world example to open is good. Avoid folksy or cutesy metaphors and homespun analogies; if a comparison genuinely clarifies, keep it plain and to one short line at most.\n- Use the research findings to ground inspections, risk, and process details whenever you describe “what to do”.\n- Use headings and short paragraphs; prioritize clarity and usefulness over cleverness.\n- Avoid extended scenes about mice or characters; anchor the piece in inspections, deals, and shop-floor reality.",
   "is_used": false,
   "notifier_email": "stephen@tonkaintl.com,gary@tonkaintl.com",
   "outputs": {
     "gdocs_folder_id": null
   },
   "platform_summaries": {
-    "linkedin": "Before closing a truck sale, request and verify the VIN on the vehicle and title. Use free and paid checks to uncover theft, salvage, and accident history, ensuring a transparent and secure purchase.",
-    "meta": "Request the VIN before buying a truck and verify it on the vehicle and title. Use free and paid services to check for theft, salvage, accidents, and recalls. Avoid mismatches and protect your purchase.",
-    "tonkaintl": "Before buying a truck, always ask for the VIN and verify it on the vehicle and title. Run free and paid checks to uncover hidden issues and ensure a safe, transparent purchase.",
-    "x": "Always ask for the VIN first when buying a truck. Verify it on the vehicle and title, run free and paid checks, and walk away from mismatches or unresolved issues to protect your investment.",
-    "youtube": "Learn why asking for and verifying the VIN is crucial before buying a truck. Discover how to check the VIN on the vehicle and title, run free and paid history reports, and avoid costly mistakes."
+    "linkedin": "Discover how addressing common vendor errors in documentation, condition disclosure, and sales logistics can save heavy-equipment deals and build trust with buyers.",
+    "meta": "Most heavy-equipment sales fail due to vendor mistakes like missing documents, hidden wear, poor photos, and bad pricing. Learn how to fix these issues and close deals smoothly.",
+    "tonkaintl": "Understand the common vendor mistakes that kill heavy-equipment deals worldwide and how to fix them with better documentation, prep, pricing, and payment controls.",
+    "x": "Avoid costly vendor mistakes in heavy-equipment sales by ensuring complete paperwork, honest condition disclosure, proper prep, accurate pricing, and secure payment methods.",
+    "youtube": "Learn the top vendor mistakes that cause heavy-equipment sales to fail and practical steps to fix them, from documentation to pricing and payment safeguards."
   },
   "project": {
     "audience": null,
@@ -105,34 +105,31 @@
   },
   "research": {
     "citations": [
-      "https://www.carfax.com/company/vehicle-identification-numbers-vins",
-      "https://www.edmunds.com/how-to/how-to-quickly-decode-your-vin.html",
-      "https://www.nhtsa.gov/vin-decoder",
-      "https://www.cuofco.org/resources/buying-used-car-why-vin-check-must",
-      "https://www.nicb.org/vincheck",
-      "https://www.kbb.com/camp/vehicle-history-report/",
-      "https://vpic.nhtsa.dot.gov/decoder/",
-      "https://www.vinsmart.com",
-      "https://vehiclehistory.bja.ojp.gov/%3Cfront%3E",
-      "https://www.autocheck.com/vehiclehistory/vin-basics"
+      "https://www.machineric.com/blog/equipment-sales-4/mistakes-to-avoid-when-selling-heavy-equipment-13",
+      "https://blog.rbauction.com/selling-heavy-equipment-and-trucks-in-2026-how-to-maximize/",
+      "https://www.rdoequipment.com/resources/careers/skills-for-success-heavy-equipment-sales",
+      "https://www.redpowermagazine.com/forums/topic/156979-selling-equipment-dos-donts-wishes-regrets/",
+      "https://www.hopenn.com/blog/common-mistakes-first-time-equipment-buyers-make-and-how-to-avoid-them/",
+      "https://www.heavyequipmentforums.com/threads/equipment-sales-tips-advice.64445/",
+      "https://www.financialpc.com/financing-insights/top-5-financing-pitfalls-vendors-should-avoid-when-selling-equipment"
     ],
     "enable_research": true,
     "facts": null,
     "findings": [
-      "NHTSA says every motor vehicle must contain a **17-character VIN** under its regulations, and its public decoder can identify information encoded in that number.[3]",
-      "NHTSA’s VIN decoder can return the **build plant and country** for a vehicle after a VIN lookup, and it also accepts **partial VINs**.[3][7]",
-      "CARFAX says a VIN lookup can reveal the vehicle’s **make, model, trim, engine, build location, ownership count, service history, and accidents**.[1]",
-      "Edmunds says a VIN is the vehicle’s **serial number** and its decoder can show **year, make, model, available trim levels, dimensions, fuel economy ratings, safety ratings, MSRP when new, and engine type**.[2]",
-      "Edmunds lists common VIN locations on a vehicle as the **driver-side dashboard near the windshield**, the **driver-side doorjamb**, and **under the hood**.[2]",
-      "The National Insurance Crime Bureau’s free VINCheck service is designed to show whether a vehicle has an **insurance theft claim**, has **not been recovered**, or has been reported as a **salvage vehicle** by participating insurers.[5]",
-      "The Office of Justice Programs says **NMVTIS** is designed to protect consumers from **fraud** and **unsafe vehicles** and to keep **stolen vehicles** from being resold.[9]",
-      "Kelley Blue Book says a full **AutoCheck Vehicle History Report** can help buyers identify potential problems before making a purchase decision, and its search tool can start from the VIN.[6]"
+      "One of the biggest mistakes heavy equipment vendors make is listing a machine without complete documentation, such as the original purchase invoice, full service history, and any required compliance certificates, which immediately raises buyer skepticism and slows negotiations.[1]",
+      "Failing to document and disclose the current condition of critical wear items—like bushings, pins, track links, and tires—invites re-negotiation after inspection, forces last-minute price cuts, and can cause deals to collapse.[1]",
+      "Many sellers underprepare the machine cosmetically and mechanically, skipping deep cleaning, fluid/oil analysis, and basic repairs, even though dirty or leaking equipment routinely sells for less because buyers assume deferred maintenance and hidden problems.[1][2]",
+      "A common pricing error is relying on gut feel or old auction results instead of current market data for comparable units, which leads to overpricing that causes listings to sit and depreciate, or underpricing that leaves significant capital on the table.[1][2]",
+      "Vendors frequently underinvest in photos and video, offering only a handful of low-quality images instead of 20–30 high-resolution shots that show all four corners, engine bay, cab, hour meter, and undercarriage/tires, which dramatically reduces lead volume and serious buyer interest.[1][2]",
+      "Sellers often provide vague or incomplete online descriptions instead of detailed specifications, condition notes, and transparency about defects, even though buyers strongly prefer listings with thorough data and certified inspection reports to reduce risk before traveling or wiring funds.[1][2]",
+      "Choosing the wrong selling channel or going it alone without understanding the trade-offs between unreserved auction, online marketplace, broker, or dealer is a recurring mistake; the optimal method depends on time constraints, condition, and price goals, and mismatching these can cut net proceeds.[2]",
+      "Many vendors ignore buyer qualification and payment risk, failing to screen purchasers or use intermediaries that verify buyers and provide faster, more certain payment, which exposes sellers to failed closings, extended holding costs, and potential non-payment.[2]"
     ],
     "sources": []
   },
   "send_email": true,
   "status": "sent",
-  "story_seed": "Why You Should Always Ask for the VIN (and What to Do With It). A VIN check confirms a truck's real identity and history, exposing fraud, hidden damage, or title issues before you commit. Verifying the number across the truck and documents, decoding it through NHTSA or paid reports, and walking away from mismatches protects your money and your operation. The right buyer isn't lucky--they just ask for the VIN first.",
+  "story_seed": "The Biggest Mistakes Vendors Make When Selling Heavy Equipment",
   "target_audience": null,
   "target_brand": {
     "id": "tonka_blog",
@@ -159,129 +156,184 @@
     }
   },
   "title_variations": [
-    "Ask for the VIN First — Then Check It",
-    "Why You Should Always Verify the VIN Before Buying a Truck",
-    "VIN Verification: Your First Step in Truck Buying",
-    "Don’t Buy a Truck Without Checking the VIN First"
+    "Key Vendor Errors That Sink Heavy-Equipment Transactions and Solutions",
+    "Preventing Heavy-Equipment Sales Failures: Vendor Mistakes to Avoid",
+    "Fixing the Top Vendor Mistakes That Kill Equipment Deals",
+    "Avoiding Common Vendor Pitfalls That Kill Heavy-Equipment Sales"
   ],
   "tokens": null,
   "visual_prompts": [
     {
-      "id": "p1",
+      "id": "hero-001",
       "intent": "hero",
-      "prompt": "Hero-style, eye-level photo of a single used medium-duty white box truck parked whole in a dealer/storage lot on a bright sunny day. The truck fills the frame as the clear subject, clean but with light work-wear; through the driver-side windshield the factory VIN plate on the dashboard is clearly visible and legible, and the driver door is slightly ajar to reveal a stamped metal VIN plate on the doorjamb. Natural background of paved lot, a low dealership building and chain-link fence softly out of focus, no people or other vehicles close to the truck.",
+      "prompt": "A single mid-sized articulated wheel loader parked on compacted gravel in a dealer storage yard, whole machine centered in frame and shown clean and freshly detailed with no visible oil leaks; manufacturer badge on the loader arm visible. Bright, clear daytime light, frontal three-quarter view showing all four wheels and the bucket resting on the ground, cab glass clear with the hour-meter faintly legible inside. Service bay and rows of other equipment softly out of focus in the background, authentic on-location smartphone snapshot style.",
       "images": [
         {
           "alt": "Visual for hero prompt",
           "created_at": {
-            "$date": "2026-06-06T22:50:02.553Z"
+            "$date": "2026-06-09T08:08:11.410Z"
           },
           "description": "Uploaded from Spark detail page",
-          "filename": "6a22c9c88444ad426ba8ff47-1780786202250.png",
-          "r2_key": "sparks/cf5f01f1-dc4f-4013-99f6-1123a9ebab7e/6a22c9c88444ad426ba8ff47-1780786202250.png",
-          "size": 1706709,
-          "url": "https://social-media.tonkaintl.com/sparks/cf5f01f1-dc4f-4013-99f6-1123a9ebab7e/6a22c9c88444ad426ba8ff47-1780786202250.png"
+          "filename": "6a22461af84e62d5fd20f595-1780992491172.png",
+          "r2_key": "sparks/aefcc22f-6f62-43d4-9f01-0261b06c2e8c/6a22461af84e62d5fd20f595-1780992491172.png",
+          "size": 1922213,
+          "url": "https://social-media.tonkaintl.com/sparks/aefcc22f-6f62-43d4-9f01-0261b06c2e8c/6a22461af84e62d5fd20f595-1780992491172.png"
         }
       ]
     },
     {
-      "id": "p2",
+      "id": "detail-002",
       "intent": "detail",
-      "prompt": "Extreme close-up, smartphone-style photo of a truck's VIN plate on the driver-side doorjamb filling the frame; the full 17-character VIN is crisp and legible on the stamped metal plate. Visible tamper signs: one rivet is shiny and new while the other is older and corroded, and a thin ring of fresh paint and uneven edges around the plate suggest recent disturbance; a partial factory sticker and painted doorjamb surface sit slightly out of focus for context. Bright daylight, realistic, unposed detail shot focused on the stamped characters and rivets.",
+      "prompt": "Extreme close-up of the hour meter inside the cab of a used wheel loader — the round instrument face labeled \"HOURS\" fills the frame with a clear, legible reading of 5432.7 h. The plastic bezel shows fine scratches, dust, and a light grease smear from handling, with a faint sun reflection from the cab window on the meter lens. Handheld smartphone snapshot, natural daylight, no people or additional props visible.",
       "images": [
         {
           "alt": "Visual for detail prompt",
           "created_at": {
-            "$date": "2026-06-06T22:48:50.071Z"
+            "$date": "2026-06-09T08:09:47.923Z"
           },
           "description": "Uploaded from Spark detail page",
-          "filename": "6a22c9c88444ad426ba8ff47-1780786129439.png",
-          "r2_key": "sparks/cf5f01f1-dc4f-4013-99f6-1123a9ebab7e/6a22c9c88444ad426ba8ff47-1780786129439.png",
-          "size": 1937989,
-          "url": "https://social-media.tonkaintl.com/sparks/cf5f01f1-dc4f-4013-99f6-1123a9ebab7e/6a22c9c88444ad426ba8ff47-1780786129439.png"
+          "filename": "6a22461af84e62d5fd20f595-1780992587751.png",
+          "r2_key": "sparks/aefcc22f-6f62-43d4-9f01-0261b06c2e8c/6a22461af84e62d5fd20f595-1780992587751.png",
+          "size": 1954987,
+          "url": "https://social-media.tonkaintl.com/sparks/aefcc22f-6f62-43d4-9f01-0261b06c2e8c/6a22461af84e62d5fd20f595-1780992587751.png"
         }
       ]
     },
     {
-      "id": "p3",
+      "id": "process-003",
       "intent": "process",
-      "prompt": "Process shot: gloved hands holding a smartphone close to the driver-side doorjamb of a parked used medium-duty box truck, phone screen framing and photographing the metal VIN plate so the full 17-character VIN is legible; the driver's door is open, the VIN plate shows slightly mismatched rivets and a narrow strip of fresh paint around it indicating possible tampering. Background: a neat dealer yard with other commercial trucks softly out of focus, bright clear daytime light, candid handheld look, no people or paperwork visible.",
+      "prompt": "Process photo of a used telescopic handler in a dealer yard undergoing a live demo: boom extended mid-stroke with forks tilted, hydraulic cylinders actively moving and a small fresh seep at a hose fitting indicating a system check. Engine compartment slightly open revealing a cleaned engine bay and a legible hour-meter visible through the cab glass. Bright sunny daytime, no people, other parked industrial machines blurred in the background, realistic on-location still.",
       "images": [
         {
           "alt": "Visual for process prompt",
           "created_at": {
-            "$date": "2026-06-06T22:50:51.137Z"
+            "$date": "2026-06-09T08:16:42.009Z"
           },
           "description": "Uploaded from Spark detail page",
-          "filename": "6a22c9c88444ad426ba8ff47-1780786250814.png",
-          "r2_key": "sparks/cf5f01f1-dc4f-4013-99f6-1123a9ebab7e/6a22c9c88444ad426ba8ff47-1780786250814.png",
-          "size": 1554469,
-          "url": "https://social-media.tonkaintl.com/sparks/cf5f01f1-dc4f-4013-99f6-1123a9ebab7e/6a22c9c88444ad426ba8ff47-1780786250814.png"
+          "filename": "6a22461af84e62d5fd20f595-1780993001780.png",
+          "r2_key": "sparks/aefcc22f-6f62-43d4-9f01-0261b06c2e8c/6a22461af84e62d5fd20f595-1780993001780.png",
+          "size": 2017647,
+          "url": "https://social-media.tonkaintl.com/sparks/aefcc22f-6f62-43d4-9f01-0261b06c2e8c/6a22461af84e62d5fd20f595-1780993001780.png"
+        },
+        {
+          "alt": "Visual for process prompt",
+          "created_at": {
+            "$date": "2026-06-09T08:16:46.003Z"
+          },
+          "description": "Uploaded from Spark detail page",
+          "filename": "6a22461af84e62d5fd20f595-1780993005843.png",
+          "r2_key": "sparks/aefcc22f-6f62-43d4-9f01-0261b06c2e8c/6a22461af84e62d5fd20f595-1780993005843.png",
+          "size": 2107505,
+          "url": "https://social-media.tonkaintl.com/sparks/aefcc22f-6f62-43d4-9f01-0261b06c2e8c/6a22461af84e62d5fd20f595-1780993005843.png"
         }
       ]
     },
     {
-      "id": "p4",
+      "id": "environment-004",
       "intent": "environment",
-      "prompt": "Wide daytime view of a used truck sales lot or dealer yard: neat rows of medium-duty work trucks — a white service-body pickup with ladder rack, a flatbed truck, and a Class 6 box truck — parked on gravel beside a small office and chain-link fence. The foreground shows the white service truck with its driver-side door slightly ajar so the doorjamb VIN plate and the dashboard visible through the windshield read as natural incidental text. Bright clear sky and neutral natural light, realistic on-location smartphone-style photo, no people.",
+      "prompt": "Wide, daylight view of an active road-repair site: a weathered asphalt paver working down the middle of a two-lane highway, laying a fresh strip of black asphalt with a tandem roller following behind. Cone line and temporary traffic-control signs flank the work zone, several crew members in high-visibility vests stand nearby with hand tools and a worker signaling traffic, piles of aggregate and a small service truck sit at the roadside; the machine is a working unit in its natural operating environment, shown at scale within the job site on a clear sunny day.",
       "images": [
         {
           "alt": "Visual for environment prompt",
           "created_at": {
-            "$date": "2026-06-06T22:52:02.308Z"
+            "$date": "2026-06-09T08:24:14.350Z"
           },
           "description": "Uploaded from Spark detail page",
-          "filename": "6a22c9c88444ad426ba8ff47-1780786321984.png",
-          "r2_key": "sparks/cf5f01f1-dc4f-4013-99f6-1123a9ebab7e/6a22c9c88444ad426ba8ff47-1780786321984.png",
-          "size": 2059588,
-          "url": "https://social-media.tonkaintl.com/sparks/cf5f01f1-dc4f-4013-99f6-1123a9ebab7e/6a22c9c88444ad426ba8ff47-1780786321984.png"
+          "filename": "6a22461af84e62d5fd20f595-1780993454172.png",
+          "r2_key": "sparks/aefcc22f-6f62-43d4-9f01-0261b06c2e8c/6a22461af84e62d5fd20f595-1780993454172.png",
+          "size": 2131172,
+          "url": "https://social-media.tonkaintl.com/sparks/aefcc22f-6f62-43d4-9f01-0261b06c2e8c/6a22461af84e62d5fd20f595-1780993454172.png"
         }
       ]
     },
     {
-      "id": "p5",
+      "id": "metaphor-005",
       "intent": "metaphor",
-      "prompt": "Close-up comparison of two driver-side doorjamb VIN plates on medium-duty work trucks parked side-by-side in a used commercial truck yard on a clear sunny day. Left plate is factory-stamped, clean and legible showing a full 17-character VIN with original rivets; the truck in the background looks well-maintained. Right plate shows signs of tampering — mismatched rivets, fresh paint around the plate, scratched or partially altered characters — with the older, dented work truck visible behind it. No people, natural daylight, shallow depth so the two VIN plates are the clear focal contrast.",
-      "images": []
+      "prompt": "Wide, ground-level shot of two mid-sized wheel loaders parked side-by-side in a bright dealer storage yard on a sunny day, forming a clear before-and-after comparison. Left loader is worn: faded, chipped paint, visible rust, a messy oil stain under the engine bay, a rough welded patch along the frame, and worn bucket teeth; right loader is freshly detailed with glossy paint, a clean engine bay visible through an open access panel, a new cutting edge on the bucket, and a laminated inspection sheet clipped to the cab window. Manufacturer badges and serial plates are naturally visible on both machines; background shows other equipment yards slightly out of focus.",
+      "images": [
+        {
+          "alt": "Visual for metaphor prompt",
+          "created_at": {
+            "$date": "2026-06-09T08:28:39.408Z"
+          },
+          "description": "Uploaded from Spark detail page",
+          "filename": "6a22461af84e62d5fd20f595-1780993719121.png",
+          "r2_key": "sparks/aefcc22f-6f62-43d4-9f01-0261b06c2e8c/6a22461af84e62d5fd20f595-1780993719121.png",
+          "size": 1976177,
+          "url": "https://social-media.tonkaintl.com/sparks/aefcc22f-6f62-43d4-9f01-0261b06c2e8c/6a22461af84e62d5fd20f595-1780993719121.png"
+        }
+      ]
     }
   ],
   "writer_notes": {
+    "action": {
+      "notes": [
+        "Seller stages a rushed demo; engine stalls and hydraulics lock up mid-test—injury and deal collapse on the spot.",
+        "Team scrambles to hide welded frame cracks and fresh paint before delivery, risking catastrophic structural failure in operation.",
+        "Vendor forges service records and rolls back hours; buyer pays full price, discovers fraud after payment—massive loss and legal exposure.",
+        "Title transfer delayed while machine ships; buyer finances the purchase and faces a surprise lien and potential repossession.",
+        "Transporter overloads trailer to cut costs; tire blows on highway and the excavator tumbles, triggering insurance disputes and fines.",
+        "Sales rep pressures buyer to waive inspection to hit quota; warranty voided, costly field failures and reputational blowback follow."
+      ],
+      "role": "action",
+      "weight": 0.2
+    },
+    "comedy": {
+      "notes": [
+        "Listing a 20-ton excavator with a toy dump truck photo — nostalgia doesn't qualify as a spec sheet.",
+        "Calling surface rust 'patina' — marketing calls it charm, mechanics call it 'rebuild.'",
+        "Price set by 'feel' instead of a spec sheet — spiritual guidance isn't an appraisal.",
+        "Photos taken at dusk with one headlight on — moody, mysterious, and wildly uninformative.",
+        "Assuming every buyer speaks your acronym dialect — 'GP bucket' is not universal love language.",
+        "Treating maintenance records like optional reading — buyers prefer machines that start, surprisingly."
+      ],
+      "role": "comedy",
+      "weight": 0.1
+    },
     "documentary": {
       "notes": [
-        "A Vehicle Identification Number (VIN) serves as a unique identifier for every motor vehicle, crucial for tracking its history.",
-        "Discrepancies in VINs across a truck and its documentation often indicate potential fraud or undisclosed issues.",
-        "Verifying the VIN through official databases or paid services reveals critical information such as accident history, previous ownership, and recall status.",
-        "Failure to conduct a VIN check can result in significant financial loss due to purchasing a vehicle with hidden damage or legal complications.",
-        "The VIN's 17 characters encode manufacturing details, including the country of origin, manufacturer, and vehicle type.",
-        "NHTSA provides resources for decoding VINs, offering a primary layer of due diligence for prospective buyers.",
-        "A thorough VIN verification process mitigates risks associated with misrepresented vehicle conditions and title washing."
+        "Misunderstanding client operational needs often leads to mismatched equipment recommendations.",
+        "Failure to articulate total cost of ownership, including maintenance and fuel efficiency, can deter potential buyers.",
+        "Inadequate demonstration of equipment capabilities in relevant work environments reduces perceived value.",
+        "Overlooking regulatory compliance and safety standards for specific industries creates significant liability risks.",
+        "A lack of post-sale support and readily available parts can damage long-term client relationships and future sales.",
+        "Ignoring market trends in technology and automation can render proposed solutions obsolete.",
+        "Poorly structured financing options can be a major barrier, even for suitable heavy equipment."
       ],
       "role": "documentary",
-      "weight": 1
+      "weight": 0.7
     }
   },
   "writer_panel": [
     {
       "role": "documentary",
-      "weight": 1
+      "weight": 0.7
+    },
+    {
+      "role": "action",
+      "weight": 0.2
+    },
+    {
+      "role": "comedy",
+      "weight": 0.1
     }
   ],
   "writers": {
     "action": {
-      "enabled": false,
-      "weight": 0
+      "enabled": true,
+      "weight": 0.2
     },
     "biographer": {
       "enabled": false,
       "weight": 0
     },
     "comedy": {
-      "enabled": false,
-      "weight": 0
+      "enabled": true,
+      "weight": 0.1
     },
     "documentary": {
       "enabled": true,
-      "weight": 1
+      "weight": 0.7
     },
     "historic": {
       "enabled": false,
@@ -293,13 +345,13 @@
     }
   },
   "created_at": {
-    "$date": "2026-06-05T13:06:16.661Z"
+    "$date": "2026-06-05T03:44:26.415Z"
   },
   "updated_at": {
-    "$date": "2026-06-06T22:52:02.308Z"
+    "$date": "2026-06-09T09:47:41.528Z"
   },
-  "__v": 1,
+  "__v": 2,
   "email_sent_at": {
-    "$date": "2026-06-05T13:06:17.417Z"
+    "$date": "2026-06-05T03:44:27.236Z"
   }
 }
