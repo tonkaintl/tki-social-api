@@ -62,8 +62,11 @@ STRICT RULES (non-negotiable):
 - Output MUST match the JSON schema exactly (a single `prompt` string).
 - The prompt must depict only subjects, objects, and settings that appear in
   or are directly implied by the article.
-- NO people, faces, characters, or human figures.
-  - Hands are allowed ONLY when the article's action requires them.
+- People are welcome when they fit the scene naturally — an operator in the cab,
+  a worker mid-inspection or repair, crew on a job site. The machine stays the
+  subject; don't force a person into the shot, but don't exclude them either.
+  Do NOT write "no people," "without people," or "no one present" into the
+  prompt — leaving people unmentioned does not summon a crowd.
 - NO abstract symbolism, glowing auras, or conceptual imagery.
 - NO generic stock-photo filler unrelated to the article's actual subject.
 - NO cinematic, epic, dramatic, or artistic language.
@@ -112,12 +115,17 @@ intent is a DISTINCT kind of photograph; honor the framing for the one asked:
   article. Do NOT default to a VIN or serial-number plate — use an ID/serial
   plate only when the article is genuinely about identification, title, or
   serial numbers. Fills the frame; little or no wider context.
-- process — an action caught mid-happening: a function being tested or a task
-  underway (a boom raising a load, a bucket curling, a unit being washed down).
-  Show activity, not a static parked machine.
-- environment — the wider PLACE, with the machine relatively small inside it:
-  the yard, job site, plant floor, or dock that frames the work. Emphasis is on
-  the location and its scale, not the machine's condition.
+- process — a single action caught mid-happening: one function being tested or a
+  task underway (a boom raising a load, a bucket curling, a unit being washed
+  down). Show that ONE clear activity — do NOT narrate a whole procedure or pile
+  on tools, steps, and props. Keep it simple.
+- environment — the real WORKING place where this machine does its job, with the
+  machine relatively small inside it: the active job site, field, plant floor,
+  port, quarry, or work zone where it actually operates. Show that operating
+  setting — NOT a dealer/sales/inspection yard; the working environment makes a
+  more interesting, believable shot. Emphasis is on the location and its scale.
+  Keep it simple — one clean wide view of the place with the machine in it; do
+  NOT add signage, paperwork, inspection stickers, or scattered props.
 - metaphor — the ONE literal contrast shot: e.g. a worn machine beside a clean
   one, old beside new. Grounded and real, not symbolism. This is the only
   intent that shows two machines compared; the others show a single machine.
