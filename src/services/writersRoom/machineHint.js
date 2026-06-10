@@ -8,10 +8,14 @@
 // prompt context. The prompt uses it ONLY when the article doesn't center on
 // its own machine/industry; an article that clearly names one wins.
 //
-// The hint is DETERMINISTIC from a per-article seed (the draft title) so:
-//   - all 5 prompts in one run share the same machine (visual consistency)
-//   - re-rolling a single prompt later picks the SAME machine (no drift)
-//   - different articles rotate across the full industrial range
+// The hint is picked at RANDOM per run so machine choices stay varied instead
+// of locking to one machine per article title. Within a single Art Director
+// run the hint is resolved once and shared by all 5 prompts, so the set stays
+// visually consistent; a separately re-rolled prompt may land on a different
+// machine than its siblings (randomness is prioritized over re-roll coherence).
+//
+// `machineHintFor(seed)` is kept for callers that still want a deterministic,
+// seed-stable pick (e.g. to deliberately match a previous run).
 //
 // Crawler excavators and dozers are intentionally excluded from the pool.
 // ----------------------------------------------------------------------------
@@ -50,6 +54,13 @@ export const VISUAL_PROMPT_MACHINE_HINTS = [
   'a box truck at a loading dock',
   'a Class 8 sleeper tractor in a yard',
 ];
+
+// Random pick: a fresh machine each call. This is the default the pipeline
+// uses so generic articles rotate freely across the full industrial range.
+export function randomMachineHint() {
+  const pool = VISUAL_PROMPT_MACHINE_HINTS;
+  return pool[Math.floor(Math.random() * pool.length)];
+}
 
 // Deterministic pick: same seed always maps to the same machine. Uses a small
 // rolling string hash so a missing/empty seed falls back to the first entry

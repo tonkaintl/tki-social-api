@@ -8,20 +8,20 @@
 
 import { extractJson } from '../llm/extractJson.js';
 import { callLlmFromPrompt } from '../llm/index.js';
-import { machineHintFor } from '../machineHint.js';
+import { randomMachineHint } from '../machineHint.js';
 
 const SLUG = 'artDirector';
 
 const DEFAULT_VISUAL_PROMPTS = { visual_prompts: [] };
 
 export async function artDirector(ctx) {
-  // Inject a deterministic machine hint (seeded on the draft title) so generic
-  // articles rotate across the full industrial range instead of defaulting to
-  // excavators/dozers. The prompt only uses it when the article names no
-  // machine of its own.
+  // Inject a random machine hint so generic articles rotate across the full
+  // industrial range instead of defaulting to excavators/dozers. Resolved once
+  // here so all 5 prompts in this run share the same machine. The prompt only
+  // uses it when the article names no machine of its own.
   const withHint = {
     ...ctx,
-    machine_hint: ctx.machine_hint || machineHintFor(ctx.final_draft?.title),
+    machine_hint: ctx.machine_hint || randomMachineHint(),
   };
   const result = await callLlmFromPrompt(SLUG, withHint);
   const parsed = typeof result === 'string' ? extractJson(result) : result;
