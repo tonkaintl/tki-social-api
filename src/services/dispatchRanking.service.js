@@ -413,7 +413,7 @@ function pickResults(shortlist) {
 
 // ── Step 4: Save to DB ────────────────────────────────────────────────────────
 
-async function saveRankings(finalRankings, articleMap, batchId) {
+async function saveRankings(finalRankings, articleMap, batchId, createdAt) {
   const saved = [];
   const errors = [];
 
@@ -436,6 +436,10 @@ async function saveRankings(finalRankings, articleMap, batchId) {
         batch_id: batchId,
         canonical_id: article.link || null,
         category: article.category || null,
+        // Date the batch by the day it represents (asOf), not insert time, so
+        // backfilled days land on their own row in the Daily Rankings UI (which
+        // groups/sorts by created_at). Live cron passes asOf=now, unchanged.
+        created_at: createdAt,
         creator: article.author || null,
         dispatch_article_id: article._id,
         feed_match_reason: 'embedded',
@@ -702,7 +706,12 @@ export async function runDailyRanking({
 
   // 5. Save.
   const id = batchId || crypto.randomUUID();
-  const { errors, saved } = await saveRankings(finalRankings, articleMap, id);
+  const { errors, saved } = await saveRankings(
+    finalRankings,
+    articleMap,
+    id,
+    new Date(asOf)
+  );
 
   // 6. Email (optional — backfill of past days runs with sendEmail=false).
   if (sendEmail) await sendDigestEmail(finalRankings, articleMap, id, asOf);
