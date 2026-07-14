@@ -13,6 +13,7 @@ import {
   RANKING_FIELDS,
 } from '../constants/tonkaDispatch.js';
 import TonkaDispatchRanking from '../models/tonkaDispatchRankings.model.js';
+import { decodeHtmlEntities } from '../utils/decodeHtmlEntities.js';
 import { logger } from '../utils/logger.js';
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -45,7 +46,12 @@ function extractMeta(html, attrName, attrValue) {
     'i'
   );
 
-  return (html.match(fwd) || html.match(rev))?.[1]?.trim() ?? null;
+  const raw = (html.match(fwd) || html.match(rev))?.[1]?.trim() ?? null;
+
+  // Meta content is HTML-entity-encoded in source markup (e.g.
+  // content="Caterpillar&#39;s Q3 &amp; earnings"). Decode so og_title /
+  // og_description are stored as plain text, matching extractBodyText below.
+  return raw === null ? null : decodeHtmlEntities(raw);
 }
 
 /**
@@ -101,19 +107,15 @@ export function parsePageMetadata(html) {
  * Removes script/style/nav/header/footer blocks first.
  */
 export function extractBodyText(html) {
-  const cleaned = html
+  const stripped = html
     .replace(/<script[\s\S]*?<\/script>/gi, '')
     .replace(/<style[\s\S]*?<\/style>/gi, '')
     .replace(/<nav[\s\S]*?<\/nav>/gi, '')
     .replace(/<header[\s\S]*?<\/header>/gi, '')
     .replace(/<footer[\s\S]*?<\/footer>/gi, '')
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/&nbsp;/gi, ' ')
-    .replace(/&amp;/gi, '&')
-    .replace(/&lt;/gi, '<')
-    .replace(/&gt;/gi, '>')
-    .replace(/&quot;/gi, '"')
-    .replace(/&#39;/gi, "'")
+    .replace(/<[^>]+>/g, ' ');
+
+  const cleaned = decodeHtmlEntities(stripped)
     .replace(/\s+/g, ' ')
     .trim();
 

@@ -1,8 +1,16 @@
 import mongoose from 'mongoose';
 
+import { decodeHtmlEntities } from '../utils/decodeHtmlEntities.js';
+
 // ----------------------------------------------------------
 
 var Schema = mongoose.Schema;
+
+// Every write path (webhook ingest, service ingest, enrichment update) flows
+// through these setters, so text pulled from RSS/OG markup lands in the DB as
+// clean plain text — decoded exactly once, here. Nothing downstream (the
+// newsletter HTML builder, the React UI) should ever need to decode again.
+const htmlText = { set: decodeHtmlEntities, type: String };
 
 // Flat schema - one ranking per document
 var tonkaDispatchRankingSchema = new Schema({
@@ -38,14 +46,14 @@ var tonkaDispatchRankingSchema = new Schema({
   feed_match_status: String,
   link: String,
   match_method: String,
-  og_description: String,
+  og_description: htmlText,
   og_image_url: String,
-  og_title: String,
+  og_title: htmlText,
   pub_date_ms: Number,
   rank: Number,
-  snippet: String,
+  snippet: htmlText,
   source_name: String,
-  title: String,
+  title: htmlText,
   tonka_dispatch_rss_links_id: String,
   // Single-use claim: set to the newsletter that uses this ranking.
   // null = available for use. An article (ranking) may only be used in
