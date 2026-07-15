@@ -115,9 +115,7 @@ export function extractBodyText(html) {
     .replace(/<footer[\s\S]*?<\/footer>/gi, '')
     .replace(/<[^>]+>/g, ' ');
 
-  const cleaned = decodeHtmlEntities(stripped)
-    .replace(/\s+/g, ' ')
-    .trim();
+  const cleaned = decodeHtmlEntities(stripped).replace(/\s+/g, ' ').trim();
 
   return cleaned.slice(0, BODY_TEXT_MAX_CHARS);
 }

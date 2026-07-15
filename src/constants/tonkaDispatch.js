@@ -255,6 +255,7 @@ export const NEWSLETTER_STATUS_VALUES = Object.values(NEWSLETTER_STATUS);
 
 // Newsletter error codes
 export const NEWSLETTER_ERROR_CODE = {
+  AI_GENERATION_FAILED: 'AI_GENERATION_FAILED',
   ARTICLE_IN_USE: 'ARTICLE_IN_USE',
   ARTICLE_NOT_FOUND: 'ARTICLE_NOT_FOUND',
   DUPLICATE_ARTICLE: 'DUPLICATE_ARTICLE',
@@ -270,12 +271,15 @@ export const NEWSLETTER_ERROR_CODE = {
   NEWSLETTER_LIST_FAILED: 'NEWSLETTER_LIST_FAILED',
   NEWSLETTER_NOT_FOUND: 'NEWSLETTER_NOT_FOUND',
   NEWSLETTER_UPDATE_FAILED: 'NEWSLETTER_UPDATE_FAILED',
+  NO_ARTICLES: 'NO_ARTICLES',
   RANKING_NOT_FOUND: 'RANKING_NOT_FOUND',
 };
 
 // Newsletter field names
 export const NEWSLETTER_FIELDS = {
   ARTICLES: 'articles',
+  BEEHIIV_SUBTITLE: 'beehiiv_subtitle',
+  BEEHIIV_TITLE: 'beehiiv_title',
   CREATED_AT: 'created_at',
   HERO_IMAGE_URL: 'hero_image_url',
   HTML_CONTENT: 'html_content',
@@ -334,6 +338,8 @@ export const NEWSLETTER_PAGINATION = {
 
 // Allowed fields for newsletter PATCH updates
 export const NEWSLETTER_UPDATE_FIELDS = {
+  BEEHIIV_SUBTITLE: 'beehiiv_subtitle',
+  BEEHIIV_TITLE: 'beehiiv_title',
   HERO_IMAGE_URL: 'hero_image_url',
   LEAD_SPARK: 'lead_spark',
   SCHEDULED_DATE: 'scheduled_date',

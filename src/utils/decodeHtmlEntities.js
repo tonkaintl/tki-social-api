@@ -56,7 +56,10 @@ export function decodeHtmlEntities(value) {
     // Numeric reference: decimal (#39) or hex (#x27).
     if (entity[0] === '#') {
       const isHex = entity[1] === 'x' || entity[1] === 'X';
-      const code = Number.parseInt(entity.slice(isHex ? 2 : 1), isHex ? 16 : 10);
+      const code = Number.parseInt(
+        entity.slice(isHex ? 2 : 1),
+        isHex ? 16 : 10
+      );
       if (Number.isNaN(code)) return match;
       try {
         return String.fromCodePoint(code);
