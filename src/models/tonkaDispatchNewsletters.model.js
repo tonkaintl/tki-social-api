@@ -57,6 +57,11 @@ var leadSparkSchema = new Schema(
 // Newsletter schema
 var tonkaDispatchNewsletterSchema = new Schema({
   articles: [articleSchema],
+  // Reader-facing Beehiiv headline + deck, generated from the article set and
+  // hand-editable. Distinct from `title` (the internal admin label). Persisted
+  // via PATCH after the user picks a generated candidate.
+  beehiiv_subtitle: String,
+  beehiiv_title: String,
   created_at: {
     default: Date.now,
     type: Date,

@@ -8,6 +8,11 @@ import { updateNewsletter } from './methods/newsletters.controller.patch.update.
 import { addArticle } from './methods/newsletters.controller.post.add-article.js';
 import { createNewsletter } from './methods/newsletters.controller.post.create.js';
 import { generateNewsletter } from './methods/newsletters.controller.post.generate.js';
+import {
+  generateNewsletterSubtitle,
+  generateNewsletterTitle,
+  generateNewsletterTitleSubtitle,
+} from './methods/newsletters.controller.post.generate-headline.js';
 import { reorderArticles } from './methods/newsletters.controller.post.reorder.js';
 
 export {
@@ -15,6 +20,9 @@ export {
   createNewsletter,
   deleteNewsletter,
   generateNewsletter,
+  generateNewsletterSubtitle,
+  generateNewsletterTitle,
+  generateNewsletterTitleSubtitle,
   getNewsletter,
   listNewsletters,
   removeArticle,

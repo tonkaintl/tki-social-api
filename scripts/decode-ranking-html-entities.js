@@ -73,7 +73,9 @@ try {
     }
     if (Object.keys(set).length > 0) {
       // Raw $set (bypasses setters) — we've already decoded with the same util.
-      ops.push({ updateOne: { filter: { _id: doc._id }, update: { $set: set } } });
+      ops.push({
+        updateOne: { filter: { _id: doc._id }, update: { $set: set } },
+      });
     }
   }
 
@@ -103,7 +105,9 @@ try {
   } else if (ops.length === 0) {
     console.log('\nNothing to decode. Every ranking is already clean.');
   } else {
-    const result = await TonkaDispatchRanking.bulkWrite(ops, { ordered: false });
+    const result = await TonkaDispatchRanking.bulkWrite(ops, {
+      ordered: false,
+    });
     console.log('\nDecode complete:');
     console.log(`  matched : ${result.matchedCount}`);
     console.log(`  modified: ${result.modifiedCount}`);

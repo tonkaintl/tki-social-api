@@ -5,6 +5,9 @@ import {
   createNewsletter,
   deleteNewsletter,
   generateNewsletter,
+  generateNewsletterSubtitle,
+  generateNewsletterTitle,
+  generateNewsletterTitleSubtitle,
   getNewsletter,
   listNewsletters,
   removeArticle,
@@ -25,6 +28,13 @@ const router = express.Router();
 // ----------------------------------------------------------------------------
 router.post('/', verifyToken, createNewsletter);
 router.post('/:id/generate', verifyToken, generateNewsletter);
+router.post('/:id/generate-title', verifyToken, generateNewsletterTitle);
+router.post('/:id/generate-subtitle', verifyToken, generateNewsletterSubtitle);
+router.post(
+  '/:id/generate-title-subtitle',
+  verifyToken,
+  generateNewsletterTitleSubtitle
+);
 router.post('/:id/articles', verifyToken, addArticle);
 router.post('/:id/articles/reorder', verifyToken, reorderArticles);
 
