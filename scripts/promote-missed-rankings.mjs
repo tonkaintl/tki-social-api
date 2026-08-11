@@ -240,7 +240,8 @@ for (const a of selected) {
 console.log(
   `\ninserted: ${inserted}   already-ranked (skipped): ${skipped}   errors: ${errors.length}`
 );
-for (const e of errors) console.log(`  ! ${e.title?.slice(0, 60)} — ${e.error}`);
+for (const e of errors)
+  console.log(`  ! ${e.title?.slice(0, 60)} — ${e.error}`);
 console.log(
   `\nRollback: db.tonka_dispatch_rankings.deleteMany({ batch_id: "${batchId}" })`
 );
