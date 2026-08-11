@@ -27,12 +27,35 @@ export async function listCatalogCategories(req, res) {
       {
         $group: {
           _id: `$${RANKING_FIELDS.CATEGORY}`,
+          // Articles are single-use; once claimed by a newsletter they can't be
+          // picked again. availableCount is what the picker shows when the
+          // editor has hidden the already-used ("Live") rows.
+          availableCount: {
+            $sum: {
+              $cond: [
+                {
+                  $eq: [
+                    {
+                      $ifNull: [
+                        `$${RANKING_FIELDS.USED_IN_NEWSLETTER_ID}`,
+                        null,
+                      ],
+                    },
+                    null,
+                  ],
+                },
+                1,
+                0,
+              ],
+            },
+          },
           count: { $sum: 1 },
         },
       },
       {
         $project: {
           _id: 0,
+          availableCount: 1,
           category: '$_id',
           count: 1,
         },
