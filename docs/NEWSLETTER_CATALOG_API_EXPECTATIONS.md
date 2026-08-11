@@ -25,14 +25,17 @@ The picker is no longer a batch-based ranking chooser. It should act like an art
 
 Returns all categories that have available articles, along with counts.
 
+- `count` is every article in the category.
+- `availableCount` excludes articles already claimed by a newsletter (`used_in_newsletter_id` set). The chips show this while the picker's `LIVE` toggle is off, and `count` while it's on.
+
 Example response:
 
 ```json
 {
   "categories": [
-    { "category": "logistics", "count": 128 },
-    { "category": "building-construction", "count": 84 },
-    { "category": "marine", "count": 61 }
+    { "category": "logistics", "count": 128, "availableCount": 96 },
+    { "category": "building-construction", "count": 84, "availableCount": 84 },
+    { "category": "marine", "count": 61, "availableCount": 12 }
   ],
   "requestId": "..."
 }

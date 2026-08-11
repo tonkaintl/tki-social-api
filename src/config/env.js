@@ -41,49 +41,52 @@ const envSchema = z.object({
     .string()
     .transform(val => val === 'true')
     .pipe(z.boolean())
-    .default(true),
+    .default('true'),
   DISPATCH_CANDIDATE_MAX_AGE_DAYS: z
     .string()
     .transform(Number)
     .pipe(z.number().min(1).max(30))
-    .default(5),
+    .default('5'),
   DISPATCH_CANDIDATE_SCORE_MIN: z
     .string()
     .transform(Number)
     .pipe(z.number().min(0).max(100))
-    .default(70),
+    .default('70'),
   // Higher score floor applied ONLY to the dominant category (logistics), so it
   // must clear a steeper bar than thinner categories to earn a digest slot.
+  // Keep this reachable: the scorer's observed ceiling is ~82, so a floor at 85
+  // silently discards every logistics candidate (see DISPATCH_LOGISTICS_SCORE_MIN
+  // in .env). Dominance is already capped by MAX_PER_CATEGORY_IN_RESULTS.
   DISPATCH_LOGISTICS_SCORE_MIN: z
     .string()
     .transform(Number)
     .pipe(z.number().min(0).max(100))
-    .default('85'),
+    .default('75'),
   DISPATCH_MAX_PER_CATEGORY_IN_RESULTS: z
     .string()
     .transform(Number)
     .pipe(z.number().min(1))
-    .default(3),
+    .default('3'),
   DISPATCH_MAX_PER_CATEGORY_POOL: z
     .string()
     .transform(Number)
     .pipe(z.number().min(1))
-    .default(8),
+    .default('8'),
   DISPATCH_MAX_PER_FEED: z
     .string()
     .transform(Number)
     .pipe(z.number().min(1))
-    .default(5),
+    .default('5'),
   DISPATCH_MAX_POOL_TOTAL: z
     .string()
     .transform(Number)
     .pipe(z.number().min(1))
-    .default(60),
+    .default('60'),
   DISPATCH_RANKINGS_TARGET_COUNT: z
     .string()
     .transform(Number)
     .pipe(z.number().min(1))
-    .default(10),
+    .default('10'),
   DISPATCH_SCORE_PER_CATEGORY: z
     .string()
     .transform(Number)
@@ -138,7 +141,7 @@ const envSchema = z.object({
     .string()
     .transform(Number)
     .pipe(z.number().min(1).max(65535))
-    .default(8080),
+    .default('8080'),
   PORTAL_API_URL: z.string().url().default('http://localhost:4200'),
   PORTAL_INTERNAL_SECRET: z.string().min(1).default('test_portal_secret'),
   R2_ACCESS_KEY_ID: z.string().optional(),
@@ -161,7 +164,7 @@ const envSchema = z.object({
     .string()
     .transform(val => val === 'true')
     .pipe(z.boolean())
-    .default(true),
+    .default('true'),
   // ── Writers Room pipeline (n8n replacement) ──────────────────────────────
   // Kept alphabetical (sort/sort-keys rule). Semantic grouping in comments only.
   //
