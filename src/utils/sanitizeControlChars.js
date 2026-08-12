@@ -13,6 +13,14 @@
 // on write paths that accept user-edited text (so edits can't re-introduce
 // the same garbage).
 //
+// NOTE ON SCOPE — this is a net, not a root fix. The runs that produced the
+// control chars this repairs were traced (2026-08-12) to socialMediaDirector
+// re-transcribing the finished draft; see the header of
+// nodes/socialMediaDirector.js. That copy step is gone now. Keep this net
+// anyway (any LLM can emit the escapes), but do NOT read a clean draft as
+// proof that a new copy step is safe: the same slip resurfaced once as literal
+// "AD" text, which no control-char table can catch.
+//
 // We can't perfectly reconstruct intent (the same control char shows up for
 // both an apostrophe and a dash depending on context), so we map by the
 // dominant case and strip anything else. Real whitespace — tab (U+0009),

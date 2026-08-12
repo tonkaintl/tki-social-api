@@ -1,30 +1,8 @@
 {
   "type": "object",
   "additionalProperties": false,
-  "required": ["final_draft", "format_blog_post_generator"],
+  "required": ["format_blog_post_generator"],
   "properties": {
-    "final_draft": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["role", "title", "thesis", "draft_markdown", "summary"],
-      "properties": {
-        "role": {
-          "type": "string"
-        },
-        "title": {
-          "type": "string"
-        },
-        "thesis": {
-          "type": "string"
-        },
-        "draft_markdown": {
-          "type": "string"
-        },
-        "summary": {
-          "type": "string"
-        }
-      }
-    },
     "format_blog_post_generator": {
       "type": "object",
       "additionalProperties": false,
