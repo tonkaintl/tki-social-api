@@ -70,6 +70,44 @@ describe('deepSanitize', () => {
   });
 });
 
+// Real typographic punctuation must survive untouched. The sanitizer only
+// exists to repair C0 control chars; if it ever starts "normalizing" real
+// punctuation we get the corruption we were trying to prevent. Byte equality,
+// not visual equality — these are the exact code points the writers emit.
+describe('punctuation round trip', () => {
+  const FIXTURE = [
+    'soft­hyphen',
+    'non‑breaking',
+    'en–dash',
+    'em—dash',
+    'curly’s',
+    '‘single’',
+    '“double”',
+    'ellipsis…',
+  ].join(' | ');
+
+  it('preserves every unicode punctuation mark byte-for-byte', () => {
+    expect(sanitizeText(FIXTURE)).toBe(FIXTURE);
+    expect(hasControlChars(FIXTURE)).toBe(false);
+  });
+
+  it('survives the JSON serialize/parse hop used on every write path', () => {
+    const doc = {
+      final_draft: { draft_markdown: FIXTURE, summary: FIXTURE },
+      title_variations: [FIXTURE],
+    };
+    const roundTripped = JSON.parse(JSON.stringify(deepSanitize(doc)));
+    expect(roundTripped.final_draft.draft_markdown).toBe(FIXTURE);
+    expect(roundTripped.final_draft.summary).toBe(FIXTURE);
+    expect(roundTripped.title_variations[0]).toBe(FIXTURE);
+  });
+
+  it('repairs control chars WITHOUT disturbing neighbouring punctuation', () => {
+    const input = `it${c(0x19)}s a‑b “quoted”…`;
+    expect(sanitizeText(input)).toBe("it's a‑b “quoted”…");
+  });
+});
+
 describe('hasControlChars / deepHasControlChars', () => {
   it('detects control chars but ignores plain whitespace', () => {
     expect(hasControlChars(`x${c(0x19)}y`)).toBe(true);
