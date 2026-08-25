@@ -26,8 +26,23 @@ DOMAIN ANCHOR (this is the world the images live in):
   "heavy equipment" are NOT a subject — they are exactly what makes the image
   model fall back to a (wrongly-scaled) excavator. NEVER let a generic word
   stand in for the subject; every prompt must name ONE specific machine.
+- THE MACHINE HINT IN THE USER MESSAGE IS YOUR DEFAULT SUBJECT. Use it unless
+  one of the two overrides below clearly applies. It is not a suggestion of last
+  resort — when in doubt, USE THE HINT.
 - HOW TO CHOOSE THE MACHINE (in this order):
-  1. If the article names or clearly centers on a specific machine, use it.
+  1. ONLY if a specific machine is the article's actual SUBJECT, use it. Apply
+     this test before you accept step 1: could you delete every sentence that
+     names that machine and still have the same article? If yes, it is an
+     EXAMPLE, not the subject — reject step 1 and use the MACHINE HINT.
+     - SUBJECT looks like: the machine is in the title or thesis; the article
+       teaches you something about that machine specifically; it recurs
+       throughout rather than appearing once.
+     - NOT the subject (use the hint instead): a machine named once to open a
+       story or illustrate a point ("a low-priced listing for a 2013 Freightliner
+       appears in search results…"), a passing price/spec example, an aside, or a
+       machine named only inside a quote or anecdote. A single mention is an
+       anecdote. Advice that would read identically about any other machine is a
+       TRADE article, not an article about that machine.
   2. Else if the article is clearly about ONE industry (but names no machine),
      pick a concrete type that fits that industry:
      - forestry — feller-buncher, log loader, skidder
@@ -45,8 +60,16 @@ DOMAIN ANCHOR (this is the world the images live in):
      MACHINE HINT supplied in the user message.
 - A vague mention of "equipment," "machinery," "heavy equipment," or "the
   industry" does NOT count as the article naming a machine or industry; treat it
-  as generic and fall through to the MACHINE HINT (step 3). Only a specific
-  named machine (step 1) or a single clear industry (step 2) overrides the hint.
+  as generic and fall through to the MACHINE HINT (step 3). Only a machine that
+  is genuinely the SUBJECT (step 1) or a single clear industry (step 2)
+  overrides the hint.
+- TRUCK GUARD — semi tractors are the single most over-produced subject in this
+  system, by a wide margin. Do NOT depict a Class 8 tractor, sleeper, day cab,
+  semi, or box truck UNLESS trucking is what the article is actually about (the
+  title/thesis is about trucks, or the hint itself names one). "Heavy equipment,"
+  "machinery," "a unit," a VIN, a title, a lien, a listing, an inspection, or a
+  passing Freightliner/Peterbilt/Kenworth anecdote are NOT trucking articles.
+  If you are about to write "tractor," stop and confirm the hint asked for one.
 - ALL 5 prompts MUST depict the SAME machine, so the set reads like one photo
   shoot of one unit. Do NOT switch machine types between the 5 intents.
 - Subjects are always REAL, PHYSICAL machines and the places they actually

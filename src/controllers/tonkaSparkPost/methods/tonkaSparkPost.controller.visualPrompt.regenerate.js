@@ -21,7 +21,10 @@ import { VISUAL_PROMPT_INTENT_VALUES } from '../../../constants/writersroom.js';
 import TonkaSparkPosts from '../../../models/tonkaSparkPost.model.js';
 import { extractJson } from '../../../services/writersRoom/llm/extractJson.js';
 import { callLlmFromPrompt } from '../../../services/writersRoom/llm/index.js';
-import { randomMachineHint } from '../../../services/writersRoom/machineHint.js';
+import {
+  contextualMachineHint,
+  industryOfPrompt,
+} from '../../../services/writersRoom/machineHint.js';
 import { logger } from '../../../utils/logger.js';
 import { sanitizeText } from '../../../utils/sanitizeControlChars.js';
 
@@ -88,7 +91,20 @@ export const regenerateVisualPrompt = async (req, res) => {
 
     const finalDraft = entry.final_draft || {};
 
+    // A re-roll that hands back the same machine is a no-op to the user, so the
+    // new hint is picked with the CURRENT prompt's industry excluded. The pick
+    // is otherwise context aware (scored against the draft), so an article that
+    // genuinely leans an industry still stays in that world.
+    const currentIndustry = industryOfPrompt(existingPrompt.prompt);
+    const articleText = {
+      body: finalDraft.draft_markdown || '',
+      headline: [finalDraft.title, finalDraft.thesis, finalDraft.summary]
+        .filter(Boolean)
+        .join('\n'),
+    };
+
     logger.info('Regenerating visual prompt', {
+      currentIndustry,
       effectiveIntent,
       entryId: id,
       promptId,
@@ -98,6 +114,9 @@ export const regenerateVisualPrompt = async (req, res) => {
     // Build the LLM context. Mirror the keys the prompt package references
     // ({{intent}}, {{instructions}}, {{final_draft.*}}).
     const ctx = {
+      // What the prompt currently depicts, so the model can rotate away from it
+      // instead of re-describing the same shot.
+      current_prompt: existingPrompt.prompt || '',
       final_draft: {
         draft_markdown: finalDraft.draft_markdown || '',
         summary: finalDraft.summary || '',
@@ -106,9 +125,9 @@ export const regenerateVisualPrompt = async (req, res) => {
       },
       instructions: instructions || '',
       intent: effectiveIntent,
-      // Random machine for the re-rolled prompt. May differ from its siblings;
-      // randomness is prioritized over re-roll coherence.
-      machine_hint: randomMachineHint(),
+      machine_hint: contextualMachineHint(articleText, {
+        excludeIndustries: currentIndustry ? [currentIndustry] : [],
+      }),
     };
 
     const result = await callLlmFromPrompt('visualPromptRegen', ctx);
