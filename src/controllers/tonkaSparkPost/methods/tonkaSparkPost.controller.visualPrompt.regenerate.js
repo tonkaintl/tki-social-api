@@ -25,6 +25,7 @@ import {
   contextualMachineHint,
   industryOfPrompt,
 } from '../../../services/writersRoom/machineHint.js';
+import { randomMetaphorComposition } from '../../../services/writersRoom/metaphorComposition.js';
 import { logger } from '../../../utils/logger.js';
 import { sanitizeText } from '../../../utils/sanitizeControlChars.js';
 
@@ -128,6 +129,11 @@ export const regenerateVisualPrompt = async (req, res) => {
       machine_hint: contextualMachineHint(articleText, {
         excludeIndustries: currentIndustry ? [currentIndustry] : [],
       }),
+      // Only the metaphor intent stages two machines, so the other four leave
+      // this blank. Re-rolled every time, so a metaphor shot that composed badly
+      // gets a different staging rather than the same one again.
+      metaphor_composition:
+        effectiveIntent === 'metaphor' ? randomMetaphorComposition() : '',
     };
 
     const result = await callLlmFromPrompt('visualPromptRegen', ctx);

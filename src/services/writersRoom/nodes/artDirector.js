@@ -9,6 +9,7 @@
 import { extractJson } from '../llm/extractJson.js';
 import { callLlmFromPrompt } from '../llm/index.js';
 import { contextualMachineHint } from '../machineHint.js';
+import { randomMetaphorComposition } from '../metaphorComposition.js';
 
 const SLUG = 'artDirector';
 
@@ -39,6 +40,11 @@ export async function artDirector(ctx) {
     ...ctx,
     machine_hint:
       ctx.machine_hint || contextualMachineHint(articleTextFor(ctx)),
+    // How the metaphor shot stages its two-machine contrast. Rotated here so the
+    // set doesn't fall back to a facing "side by side" pair every time — that
+    // composition tangles the booms/forks of any machine with an appendage.
+    metaphor_composition:
+      ctx.metaphor_composition || randomMetaphorComposition(),
   };
   const result = await callLlmFromPrompt(SLUG, withHint);
   const parsed = typeof result === 'string' ? extractJson(result) : result;

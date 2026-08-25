@@ -9,6 +9,11 @@ MACHINE HINT — this is your DEFAULT subject. Use it unless a specific machine 
 genuinely the article's SUBJECT (not just named once as an example):
 {{machine_hint}}
 
+METAPHOR COMPOSITION — only relevant when the intent is **metaphor**; blank
+otherwise. When present, follow it instead of defaulting to a facing
+side-by-side pair:
+{{metaphor_composition}}
+
 CURRENT PROMPT (this is what the user is replacing — depict a DIFFERENT machine
 than this one unless the article's subject is a specific machine):
 {{current_prompt}}

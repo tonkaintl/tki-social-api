@@ -181,10 +181,19 @@ intent is a DISTINCT kind of photograph; honor the framing for the one asked:
   machine small in frame. NOT a dealer/sales/inspection yard. Keep the location
   generic and open; no signage, paperwork, stickers, or scattered props. The
   emphasis is space and scale.
-- metaphor — the ONE literal contrast: a worn machine beside a clean one, old
-  beside new. Grounded and real, not symbolism, and do NOT add tags, labels, or
-  props to signal which is which — let the wear itself show it. This is the only
-  intent that shows two machines compared; the others show a single machine.
+- metaphor — the ONE literal contrast: worn against clean, old against new.
+  Grounded and real, not symbolism, and do NOT add tags, labels, or props to
+  signal which is which — let the wear itself show it. This is the only intent
+  that shows two machines compared; the others show a single machine.
+  STAGE IT USING THE METAPHOR COMPOSITION given in the user message. That
+  composition is chosen for you — follow it rather than defaulting to a facing
+  "side by side" pair.
+  NEVER pose two machines in facing profile with their working ends toward each
+  other. On anything with a boom, mast, forks, or an arm — a reach stacker,
+  forklift, telehandler, boom lift, crane, loader — the two sets of gear overlap
+  in the middle of the frame and render as one tangled machine. Keep the
+  attachments lowered, pointed the same way, or out of frame entirely, and leave
+  clear space between the units.
 
 If unsure, choose realism over creativity, choose the article's actual subject
 over anything generic, and choose the simpler of two prompts.

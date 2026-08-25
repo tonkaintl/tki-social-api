@@ -158,11 +158,10 @@ STYLE GUIDELINES:
 
 PROMPT SET — generate EXACTLY 5 prompts, one per intent. The 5 MUST be FIVE
 DISTINCT photographs — different framing, distance, subject count, and angle.
-Do NOT reuse one composition across intents. In particular, the "two machines
-side by side" / "one clean, one worn" comparison belongs to the METAPHOR slot
-ONLY. Hero, detail, process, and environment must each show a SINGLE machine
-(or part of one) — never a side-by-side pair — EVEN IF the article's story is
-built around a comparison. If you catch two of your prompts describing the same
+Do NOT reuse one composition across intents. In particular, the two-machine
+"one clean, one worn" comparison belongs to the METAPHOR slot ONLY. Hero,
+detail, process, and environment must each show a SINGLE machine (or part of
+one) — never a pair — EVEN IF the article's story is built around a comparison. If you catch two of your prompts describing the same
 setup, rewrite one.
 
 - hero — ONE machine, the whole unit, a plain establishing wide shot in its
@@ -183,10 +182,19 @@ setup, rewrite one.
   machine small in frame. NOT a dealer/sales/inspection yard. Keep the location
   generic and open; no signage, paperwork, stickers, or scattered props. The
   emphasis is space and scale.
-- metaphor — the ONE literal contrast: a worn machine beside a clean one, old
-  beside new. Grounded and real, not symbolism, and do NOT add tags, labels, or
-  props to signal which is which — let the wear itself show it. The only slot
-  that may show two machines.
+- metaphor — the ONE literal contrast: worn against clean, old against new.
+  Grounded and real, not symbolism, and do NOT add tags, labels, or props to
+  signal which is which — let the wear itself show it. The only slot that may
+  show two machines.
+  STAGE IT USING THE METAPHOR COMPOSITION given in the user message. That
+  composition is chosen for you — follow it rather than defaulting to a facing
+  "side by side" pair.
+  NEVER pose two machines in facing profile with their working ends toward each
+  other. On anything with a boom, mast, forks, or an arm — a reach stacker,
+  forklift, telehandler, boom lift, crane, loader — the two sets of gear overlap
+  in the middle of the frame and render as one tangled machine. Keep the
+  attachments lowered, pointed the same way, or out of frame entirely, and leave
+  clear space between the units.
 
 If unsure, choose realism over creativity, choose the article's actual subject
 over anything generic, and choose the simpler of two prompts.
