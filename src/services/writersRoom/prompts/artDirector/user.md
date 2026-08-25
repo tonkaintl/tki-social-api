@@ -10,6 +10,11 @@ specific machine is genuinely the article's SUBJECT (not just named once as an
 example or anecdote):
 {{machine_hint}}
 
+METAPHOR COMPOSITION — use this staging for the **metaphor** prompt only (the
+other four intents show a single machine). Follow it instead of defaulting to a
+facing side-by-side pair:
+{{metaphor_composition}}
+
 TITLE:
 {{final_draft.title}}
 
