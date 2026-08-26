@@ -30,9 +30,18 @@
 // (e.g. U+2019 -> 0x19), plus the observed 0x1F dash/quote variant. Quote
 // codes map to straight ASCII (portable, and sidesteps the "smart quote" AI
 // tell); dash codes map to an em-dash (the clear intent in observed output).
+//
+// The hyphen family (0x10/0x11/0x12) matters more than it looks. Those used to
+// fall through to "unknown -> strip", which silently welded words together in
+// published drafts: "ultra-rich" shipped as "ultrarich", "12-month" as
+// "12month", "App-based" as "Appbased". Deleting a character is not a safe
+// default for punctuation, so they map to a plain ASCII hyphen.
 // ----------------------------------------------------------------------------
 
 const REMAP = {
+  0x10: '-', // hyphen U+2010          -> ascii hyphen
+  0x11: '-', // non-breaking hyphen    -> ascii hyphen
+  0x12: '-', // figure dash U+2012     -> ascii hyphen
   0x13: '—', // en-dash family   -> em dash
   0x14: '—', // em-dash          -> em dash
   0x18: "'", // left single quote             -> apostrophe

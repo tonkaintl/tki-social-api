@@ -35,6 +35,22 @@ describe('sanitizeText', () => {
     expect(sanitizeText(input)).toBe('"clean"');
   });
 
+  it('maps the hyphen family (0x10/0x11/0x12) to an ascii hyphen', () => {
+    // These used to be stripped, welding words together in published drafts.
+    expect(sanitizeText(`ultra${c(0x11)}rich`)).toBe('ultra-rich');
+    expect(sanitizeText(`App${c(0x11)}based order`)).toBe('App-based order');
+    expect(sanitizeText(`a 12${c(0x11)}month lead`)).toBe('a 12-month lead');
+    expect(sanitizeText(`x${c(0x10)}y and p${c(0x12)}q`)).toBe('x-y and p-q');
+  });
+
+  it('never silently deletes a punctuation code point', () => {
+    // Every code the high-byte drop can produce from the U+20xx punctuation
+    // block must map to something visible — dropping one welds words together.
+    for (const code of [0x10, 0x11, 0x12, 0x13, 0x14, 0x18, 0x19, 0x1c, 0x1d]) {
+      expect(sanitizeText(`left${c(code)}right`)).not.toBe('leftright');
+    }
+  });
+
   it('strips unknown control chars instead of leaving them', () => {
     const input = `a${c(0x01)}b`;
     expect(sanitizeText(input)).toBe('ab');
