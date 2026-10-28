@@ -16,6 +16,7 @@ import {
   internalRoutes,
   metricoolRoutes,
   platformsRoutes,
+  systemRoutes,
   tonkaDispatchArticlesRoutes,
   tonkaDispatchFeedsRoutes,
   tonkaDispatchNewslettersRoutes,
@@ -78,6 +79,7 @@ app.use('/api/health', healthRoutes);
 app.use('/api/internal', internalRoutes);
 app.use('/api/metricool', metricoolRoutes);
 app.use('/api/platforms', platformsRoutes);
+app.use('/api/system', systemRoutes);
 app.use('/api/tonka-spark', tonkaSparksRoutes);
 app.use('/api/tonka-spark-posts', tonkaSparkPostsRoutes);
 app.use('/api/webhooks', webhooksRoutes);
